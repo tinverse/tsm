@@ -1,10 +1,10 @@
+#include <future>
+#include <glog/logging.h>
+#include <gtest/gtest.h>
+#include <set>
 #include "Event.h"
 #include "EventQueue.h"
 #include "State.h"
-
-#include <future>
-#include <gtest/gtest.h>
-#include <set>
 
 class TestState : public testing::Test
 {
@@ -17,7 +17,7 @@ protected:
     State state_;
 };
 
-TEST_F(TestState, Construct) { std::cout << "Test" << std::endl; }
+TEST_F(TestState, Construct) { DLOG(INFO) << "Test" << std::endl; }
 
 TEST_F(TestState, Call) { state_.execute(); }
 
@@ -47,30 +47,42 @@ TEST_F(TestEventQueue, testSingleEvent)
     EXPECT_EQ(actualEvent1.id, e1.id);
 }
 
-TEST_F(TestEventQueue, testTwoEvents)
+TEST_F(TestEventQueue, testAddFrom100Threads)
 {
-    auto f1 = std::async(std::launch::async, &EventQueue<Event>::nextEvent, &eq_);
-    auto f2 = std::async(std::launch::async, &EventQueue<Event>::nextEvent, &eq_);
-    std::thread f3(&EventQueue<Event>::nextEvent, &eq_);
 
-    // Add 3 events from 3 threads
-    std::thread t1(&EventQueue<Event>::addEvent, &eq_, e1);
-    std::thread t2(&EventQueue<Event>::addEvent, &eq_, e2);
-    std::thread t3(&EventQueue<Event>::addEvent, &eq_, e3);
-    std::set<Event> eventSet;
-    // Use the same threads to retrieve events
-    t1.join();
-    t2.join();
-    t3.join();
-    f3.join();
-    Event ae1 = f1.get();
-    eventSet.insert(ae1); //, ae2 = f2.get();//, ae3=f3.get();
-    // std::printf("Event:%d ", ae1.id);
-    eventSet.insert(f2.get()); //, ae2 = f2.get();//, ae3=f3.get();
-    // std::printf("Event:%d ", ae2.id);
-    std::set<Event>::iterator it = eventSet.begin();
-    EXPECT_TRUE(it != eventSet.end());
-    it = eventSet.begin();
-    it = eventSet.find(e2.id);
-    EXPECT_TRUE(it != eventSet.end());
+    std::vector<Event> v; //{e3, e1, e2};
+    const int NEVENTS = 100;
+    for (int i = 0; i < NEVENTS; i++)
+    {
+        v.push_back(Event(i));
+    }
+
+    std::vector<std::thread> vt;
+    for (auto event : v)
+    {
+        vt.push_back(std::thread(&EventQueue<Event>::addEvent, &eq_, event));
+    }
+
+    for (auto& t : vt)
+    {
+        t.join();
+    }
+
+    EXPECT_EQ(eq_.size(), NEVENTS);
+
+    while (!eq_.empty())
+    {
+        auto e = eq_.front();
+        ASSERT_TRUE(std::find(v.begin(), v.end(), e) != v.end());
+        eq_.pop();
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    google::InitGoogleLogging(argv[0]);
+    google::InstallFailureSignalHandler();
+    testing::InitGoogleTest(&argc, argv);
+
+    return RUN_ALL_TESTS();
 }

@@ -5,16 +5,22 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+
+#include <glog/logging.h>
+
+using std::queue;
+
 // A thread safe event queue. Any thread can call addEvent if it has a pointer
 // to the event queue. The call to nextEvent is a blocking call
-template <typename Event> class EventQueue : private std::queue<Event>
+template <typename Event> class EventQueue : private queue<Event>
 {
-    using std::queue<Event>::empty;
-    using std::queue<Event>::front;
-    using std::queue<Event>::pop;
-    using std::queue<Event>::push;
-
 public:
+    using queue<Event>::empty;
+    using queue<Event>::front;
+    using queue<Event>::pop;
+    using queue<Event>::push;
+    using queue<Event>::size;
+
     // Block until you get an event
     const Event nextEvent()
     {
@@ -24,14 +30,14 @@ public:
         {
             // Wait until an event is available
             // There might be a bunch of threads blocked right here.
-            std::cout << "Thread:" << std::this_thread::get_id()
-                      << " grabbing eventLock\n";
+            LOG_EVERY_N(INFO, 100) << "Thread:" << std::this_thread::get_id()
+                                   << " grabbing eventLock";
             std::unique_lock<std::mutex> lock(eventLock);
-            std::cout << "Thread:" << std::this_thread::get_id()
-                      << " grabbed eventLock\n";
+            LOG_EVERY_N(INFO, 100) << "Thread:" << std::this_thread::get_id()
+                                   << " grabbed eventLock\n";
             cvEventAvailable.wait(lock);
-            std::cout << "Thread:" << std::this_thread::get_id()
-                      << " event Available\n";
+            LOG_EVERY_N(INFO, 100) << "Thread:" << std::this_thread::get_id()
+                                   << " event Available\n";
         }
 
         // Multiple threads can get to this point. However, only one thread can
@@ -47,14 +53,14 @@ public:
 
     void addEvent(const Event& e)
     {
-        std::cout << "Thread:" << std::this_thread::get_id()
+        LOG(INFO) << "Thread:" << std::this_thread::get_id()
                   << " grabbing eventQueueLock\n";
         std::lock_guard<std::mutex> lock(eventQueueLock);
-        std::cout << "Thread:" << std::this_thread::get_id()
+        LOG(INFO) << "Thread:" << std::this_thread::get_id()
                   << " grabbed eventQueueLock\n";
         push(e);
-        cvEventAvailable.notify_one();
-        std::cout << "Thread:" << std::this_thread::get_id()
+        cvEventAvailable.notify_all();
+        LOG(INFO) << "Thread:" << std::this_thread::get_id()
                   << " signaling event\n";
     }
 
@@ -63,4 +69,3 @@ private:
     std::condition_variable cvEventAvailable;
     std::mutex eventLock;
 };
-

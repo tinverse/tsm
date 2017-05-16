@@ -1,6 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <inttypes.h>
+#include <cstdint>
 class Event
 {
 public:

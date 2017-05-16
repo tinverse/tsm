@@ -1,3 +1,4 @@
+#include <glog/logging.h>
 #include <iostream>
 
 #include "EventQueue.h"
@@ -18,7 +19,7 @@ void StateMachine::execute(void)
     {
         if (currentState_ == stopState_)
         {
-            std::cout << "Done... " << std::endl;
+            DLOG(INFO) << "Done... " << std::endl;
             running = false;
             break;
         }
@@ -26,8 +27,8 @@ void StateMachine::execute(void)
         {
             Event nextEvent = eventQueue_.nextEvent();
 
-            std::cout << "Current State:" << currentState_->id
-                      << " Event:" << nextEvent.id << std::endl;
+            DLOG(INFO) << "Current State:" << currentState_->id
+                       << " Event:" << nextEvent.id << std::endl;
 
             Transition& t = table_.next(currentState_, nextEvent);
 
@@ -37,7 +38,7 @@ void StateMachine::execute(void)
             t.toState->OnEntry();
 
             currentState_ = t.toState;
-            std::cout << "Next State:" << currentState_->id << std::endl;
+            DLOG(INFO) << "Next State:" << currentState_->id << std::endl;
 
             // Now execute the current state
             currentState_->execute();

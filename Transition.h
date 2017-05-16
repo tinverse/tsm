@@ -3,9 +3,11 @@
 #include "State.h"
 #include "hash.h"
 
+#include <glog/logging.h>
 #include <iostream>
 #include <memory>
 #include <unordered_map>
+
 template <typename State, typename Event> class TransitionT
 {
 public:
@@ -39,7 +41,7 @@ public:
     Transition(const Transition&) = default;
     virtual ~Transition()         = default;
 
-    virtual void execute() { std::cout << __PRETTY_FUNCTION__ << std::endl; }
+    virtual void execute() { DLOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
 };
 
 typedef std::pair<std::shared_ptr<State>, Event> StateEventPair;
