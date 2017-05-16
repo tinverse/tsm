@@ -1,0 +1,6 @@
+A simple statemachine. Demonstrates use of stl to easily build up a state machine class.
+1. Install cmake (sudo apt install cmake)
+2. create a folder build within statemachine
+3. cd build; cmake ..
+4. make
+
