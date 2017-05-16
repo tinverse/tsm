@@ -1,10 +1,15 @@
 #include "StateMachine.h"
 #include <chrono>
 
+#include <glog/logging.h>
+
 // Simple test garageDoorStateMachine
-int main()
+int main(int argc, char* argv[])
 {
 
+    google::InitGoogleLogging(argv[0]);
+
+    google::InstallFailureSignalHandler();
     // States
     auto doorOpen    = std::make_shared<State>(10);
     auto doorOpening = std::make_shared<State>(15);
