@@ -5,6 +5,7 @@
 #include "Event.h"
 #include "EventQueue.h"
 #include "State.h"
+#include "StateMachine.h"
 
 class TestState : public testing::Test
 {
@@ -76,6 +77,72 @@ TEST_F(TestEventQueue, testAddFrom100Threads)
         ASSERT_TRUE(std::find(v.begin(), v.end(), e) != v.end());
         eq_.pop();
     }
+}
+
+// TODO: Test no end state
+// Model interruptions to workflow
+// For e.g. As door is opening or closing, one of the sensors
+// detects an obstacle.
+
+class TestStateMachine : public testing::Test
+{
+
+};
+TEST_F(TestStateMachine, testTransition)
+{
+    // States
+    auto doorOpen    = std::make_shared<State>(10, "Door Open");
+    auto doorOpening = std::make_shared<State>(15, "Door Opening");
+    auto doorClosed  = std::make_shared<State>(20, "Door Closed");
+    auto doorClosing = std::make_shared<State>(25, "Door Closing");
+
+    // Events
+    Event close_event(0);
+    Event bottomSensor_event(1);
+    Event topSensor_event(2);
+    Event open_event(3);
+
+
+
+    // Transitions
+    Transition openTransition(doorClosed, open_event, doorOpening);
+    Transition openedTransition(doorOpening, topSensor_event, doorOpen);
+    Transition closeTransition(doorOpen, close_event, doorClosing);
+    Transition closedTransition(doorClosing, bottomSensor_event, doorClosed);
+
+    // Add Transitions to the table
+
+    // TransitionTable
+    StateTransitionTable garageDoorTransitions;
+
+    garageDoorTransitions.add(openTransition);
+    garageDoorTransitions.add(openedTransition);
+    garageDoorTransitions.add(closeTransition);
+    garageDoorTransitions.add(closedTransition);
+
+    // Add the open event
+    EventQueue<Event> garageDoorEventQueue;
+
+    // The StateMachine
+    // Starting State: doorClosed
+    // Stop State: doorOpen
+    StateMachine garageDoorStateMachine(
+        doorClosed , doorOpen, garageDoorEventQueue, garageDoorTransitions);
+
+    garageDoorStateMachine.start();
+
+    EXPECT_EQ(garageDoorStateMachine.getCurrentState()->id, doorClosed->id);
+    garageDoorEventQueue.addEvent(open_event);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    EXPECT_EQ(doorOpening->id, garageDoorStateMachine.getCurrentState()->id);
+    garageDoorEventQueue.addEvent(topSensor_event);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    EXPECT_EQ(garageDoorStateMachine.getCurrentState()->id, doorOpen->id);
+
+
+    garageDoorStateMachine.stop();
+
 }
 
 int main(int argc, char* argv[])

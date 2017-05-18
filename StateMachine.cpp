@@ -9,25 +9,26 @@
 
 void StateMachine::start()
 {
-    running   = true;
     smThread_ = std::thread(&StateMachine::execute, this);
 }
 
 void StateMachine::execute(void)
 {
-    while (running)
+    LOG(INFO) << "interrupt:" << interrupt;
+    while (!interrupt)
     {
         if (currentState_ == stopState_)
         {
-            DLOG(INFO) << "Done... " << std::endl;
-            running = false;
+            LOG(INFO) << "StateMachine Done Exiting... " << std::endl;
+            interrupt = true;
             break;
         }
         else
         {
+            LOG(INFO) << "Waiting for event";
             Event nextEvent = eventQueue_.nextEvent();
 
-            DLOG(INFO) << "Current State:" << currentState_->id
+            LOG(INFO) << "Current State:" << currentState_->id
                        << " Event:" << nextEvent.id << std::endl;
 
             Transition& t = table_.next(currentState_, nextEvent);

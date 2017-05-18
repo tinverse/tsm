@@ -49,11 +49,12 @@ public:
 class StateMachine : public State
 {
 public:
+    StateMachine() = delete;
     StateMachine(std::shared_ptr<State> startState,
                  std::shared_ptr<State> stopState,
                  EventQueue<Event>& eventQueue,
                  StateTransitionTable table)
-        : running(false)
+        : interrupt(false)
         , currentState_(startState)
         , startState_(startState)
         , stopState_(stopState)
@@ -69,15 +70,18 @@ public:
 
     }
 
+    std::shared_ptr<State> getCurrentState() { return currentState_;  }
+    std::shared_ptr<State> getStartState() { return startState_;  }
+    std::shared_ptr<State> getStoptate() { return startState_;  }
     void start();
 
     void execute(void);
 
-    void stop() { smThread_.join(); }
+    void stop() { interrupt = true; smThread_.join(); }
 
     virtual void OnEntry() { startState_->execute(); }
     // Data
-    std::atomic<bool> running;
+    std::atomic<bool> interrupt;
 
 protected:
     std::shared_ptr<State> currentState_;
