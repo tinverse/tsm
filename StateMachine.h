@@ -1,5 +1,6 @@
 #pragma once
 
+#include "State.h"
 #include "Event.h"
 #include "EventQueue.h"
 #include "Transition.h"
@@ -8,6 +9,10 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+
+typedef TransitionT<State, Event> Transition;
+typedef std::pair<std::shared_ptr<State>, Event> StateEventPair;
+typedef std::unordered_map<StateEventPair, Transition> TransitionTable;
 
 class StateTransitionTable : private TransitionTable
 {
@@ -56,12 +61,12 @@ public:
         , table_(table)
     {
 
-        // "Somehow" initialize the state transition table.
+        // initialize the state transition table.
         // This could be hard coded in this constructor or
         // better still, read from an input file.
         // All States should be created by the time we exit
         // the constructor.
-        //
+
     }
 
     void start();
