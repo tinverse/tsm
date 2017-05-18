@@ -30,13 +30,13 @@ public:
         {
             // Wait until an event is available
             // There might be a bunch of threads blocked right here.
-            LOG_EVERY_N(INFO, 100) << "Thread:" << std::this_thread::get_id()
+            LOG(INFO) << "Thread:" << std::this_thread::get_id()
                                    << " grabbing eventLock";
             std::unique_lock<std::mutex> lock(eventLock);
-            LOG_EVERY_N(INFO, 100) << "Thread:" << std::this_thread::get_id()
+            LOG(INFO) << "Thread:" << std::this_thread::get_id()
                                    << " grabbed eventLock\n";
             cvEventAvailable.wait(lock);
-            LOG_EVERY_N(INFO, 100) << "Thread:" << std::this_thread::get_id()
+            LOG(INFO) << "Thread:" << std::this_thread::get_id()
                                    << " event Available\n";
         }
 

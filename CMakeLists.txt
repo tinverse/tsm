@@ -53,10 +53,6 @@ message(INFO ${SM_INSTALL_DIR})
 add_library(libstatemachine StateMachine.cpp UserDefined.cpp)
 target_include_directories(libstatemachine SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
 
-add_executable(statemachine main.cpp)
-target_include_directories(statemachine SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
-target_link_libraries(statemachine PRIVATE libstatemachine ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
-add_dependencies(statemachine libstatemachine)
 
 add_executable(statemachine_test StateMachineTests.cpp)
 add_dependencies(statemachine_test libstatemachine gtest)
