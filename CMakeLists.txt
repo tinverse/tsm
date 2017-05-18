@@ -50,14 +50,19 @@ message(INFO ${CMAKE_MODULE_PATH} " " ${GLOG_FOUND} " " ${GLOG_INCLUDE_DIRS} " "
 message(INFO ${SM_INSTALL_DIR})
 message(INFO ${SM_INSTALL_DIR})
 
-add_executable(statemachine StateMachine.cpp main.cpp)
-target_include_directories(statemachine SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
-target_link_libraries(statemachine PRIVATE ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
+add_library(libstatemachine StateMachine.cpp UserDefined.cpp)
+target_include_directories(libstatemachine SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
 
-add_executable(statemachine_test StateMachine.cpp StateMachineTests.cpp)
-add_dependencies(statemachine_test gtest)
+add_executable(statemachine main.cpp)
+target_include_directories(statemachine SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
+target_link_libraries(statemachine PRIVATE libstatemachine ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
+add_dependencies(statemachine libstatemachine)
+
+add_executable(statemachine_test StateMachineTests.cpp)
+add_dependencies(statemachine_test libstatemachine gtest)
 
 target_include_directories(statemachine_test SYSTEM PRIVATE ${GTEST_INCLUDE_DIRS})
-target_link_libraries(statemachine_test PRIVATE ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
-install(TARGETS statemachine DESTINATION bin)
-install(TARGETS statemachine_test DESTINATION bin)
+target_link_libraries(statemachine_test PRIVATE libstatemachine ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
+
+#install(TARGETS statemachine DESTINATION bin)
+#install(TARGETS statemachine_test DESTINATION bin)
