@@ -134,10 +134,10 @@ TEST_F(TestStateMachine, testTransition)
     EXPECT_EQ(garageDoorStateMachine.getCurrentState()->id, doorClosed->id);
     garageDoorEventQueue.addEvent(open_event);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     EXPECT_EQ(doorOpening->id, garageDoorStateMachine.getCurrentState()->id);
     garageDoorEventQueue.addEvent(topSensor_event);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     EXPECT_EQ(garageDoorStateMachine.getCurrentState()->id, doorOpen->id);
 
 
