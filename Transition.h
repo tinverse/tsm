@@ -1,10 +1,8 @@
 #pragma once
-#include "hash.h"
 
 #include <glog/logging.h>
 #include <iostream>
 #include <memory>
-#include <unordered_map>
 
 template <typename State, typename Event> class TransitionT
 {
