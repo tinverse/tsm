@@ -50,7 +50,7 @@ message(INFO ${CMAKE_MODULE_PATH} " " ${GLOG_FOUND} " " ${GLOG_INCLUDE_DIRS} " "
 message(INFO ${SM_INSTALL_DIR})
 message(INFO ${SM_INSTALL_DIR})
 
-add_library(libstatemachine StateMachine.cpp UserDefined.cpp)
+add_library(libstatemachine StateMachine.cpp)
 target_include_directories(libstatemachine SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
 
 

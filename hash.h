@@ -13,10 +13,10 @@
 #endif
 
 namespace std {
-template <typename T>
-struct hash {
-  size_t operator()(const T& s) const {
-    T s1 = s;
+template <>
+struct hash<StateEventPair> {
+  size_t operator()(const StateEventPair& s) const {
+    StateEventPair s1 = s;
     uint32_t len = sizeof(s1);
     const char* data = reinterpret_cast<const char*>(&s1);
     uint32_t hash = len, tmp;
