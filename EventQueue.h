@@ -26,38 +26,35 @@ public:
     {
         // Note use of while instead of if below
         // See http://stackoverflow.com/questions/15278343/c11-thread-safe-queue
+        LOG(INFO) << "Thread:" << std::this_thread::get_id()
+                                   << " nextEvent grabbing eventQueueLock";
+        std::unique_lock<std::mutex> lock(eventQueueLock);
+        LOG(INFO) << "Thread:" << std::this_thread::get_id()
+                               << " nextEvent grabbed eventQueueLock\n";
         while (empty())
         {
             // Wait until an event is available
             // There might be a bunch of threads blocked right here.
-            LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                                   << " grabbing eventLock";
-            std::unique_lock<std::mutex> lock(eventLock);
-            LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                                   << " grabbed eventLock\n";
             cvEventAvailable.wait(lock);
             LOG(INFO) << "Thread:" << std::this_thread::get_id()
                                    << " event Available\n";
         }
 
-        // Multiple threads can get to this point. However, only one thread can
-        // process the event
-        {
-            std::lock_guard<std::mutex> l(eventQueueLock);
             // OK. Now we can modify the event queue.
             const Event e = front();
+            LOG(INFO) << "Popping Event:" << e.id << "\n";
             pop();
             return e;
-        }
     }
 
     void addEvent(const Event& e)
     {
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                  << " grabbing eventQueueLock\n";
+                  << " addEvent grabbing eventQueueLock\n";
         std::lock_guard<std::mutex> lock(eventQueueLock);
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                  << " grabbed eventQueueLock\n";
+                  << " addEvent grabbed eventQueueLock\n";
+        LOG(INFO) << "Adding Event:" << e.id << "\n";
         push(e);
         cvEventAvailable.notify_all();
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
@@ -67,5 +64,4 @@ public:
 private:
     std::mutex eventQueueLock;
     std::condition_variable cvEventAvailable;
-    std::mutex eventLock;
 };

@@ -14,7 +14,6 @@ void StateMachine::start()
 
 void StateMachine::execute(void)
 {
-    LOG(INFO) << "interrupt:" << interrupt;
     while (!interrupt)
     {
         if (currentState_ == stopState_)
@@ -43,6 +42,8 @@ void StateMachine::execute(void)
 
             // Now execute the current state
             currentState_->execute();
+
+            if (currentState_ == stopState_) break;
         }
     }
 }
