@@ -42,7 +42,7 @@ set(GTEST_ROOT "${SM_INSTALL_DIR}" CACHE PATH "GTest Root Dir")
 set(GLOG_ROOT_DIR "${SM_INSTALL_DIR}" CACHE PATH "Glog Root Dir")
 set(GFLAGS_ROOT_DIR "${SM_INSTALL_DIR}" CACHE PATH "GFlags Root Dir")
 
-find_package(GFlags)
+find_package(Gflags)
 find_package(GTest)
 find_package(Glog)
 

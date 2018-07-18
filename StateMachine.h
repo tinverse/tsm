@@ -22,9 +22,11 @@ class StateTransitionTable : private TransitionTable
         TransitionTableElement;
 
 public:
-    void add(Transition t)
+    void add(std::shared_ptr<State> fromState, Event onEvent,
+            std::shared_ptr<State> toState)
     {
-        StateEventPair pair(t.fromState, t.onEvent);
+        Transition t{fromState, onEvent, toState};
+        StateEventPair pair(fromState, onEvent);
         TransitionTableElement e(pair, t);
         insert(e);
     }
@@ -39,13 +41,24 @@ public:
         }
         else
         {
+            print();
             std::ostringstream s;
-            s << "No Transition from State: " << fromState->id
+            s << "No Transition from State: " << fromState->name
               << " onEvent:" << onEvent.id << std::endl;
+
             throw std::logic_error(s.str());
         }
         return it->second;
     }
+
+    void print()
+    {
+        for (const auto& it: *this) {
+            LOG(INFO) << it.first.first->name << "," << it.first.second.id << ":" << it.second.toState->name << "\n" ;
+        }
+    }
+    size_t size() { return TransitionTable::size(); }
+
 };
 
 class StateMachine : public State
