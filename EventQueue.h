@@ -3,23 +3,25 @@
 #include <condition_variable>
 #include <iostream>
 #include <mutex>
-#include <queue>
+#include <deque>
 #include <thread>
 
 #include <glog/logging.h>
 
-using std::queue;
+using std::deque;
 
 // A thread safe event queue. Any thread can call addEvent if it has a pointer
 // to the event queue. The call to nextEvent is a blocking call
-template <typename Event> class EventQueue : private queue<Event>
+template <typename Event> class EventQueue : private deque<Event>
 {
+  friend class StateMachine;
 public:
-    using queue<Event>::empty;
-    using queue<Event>::front;
-    using queue<Event>::pop;
-    using queue<Event>::push;
-    using queue<Event>::size;
+    using deque<Event>::empty;
+    using deque<Event>::front;
+    using deque<Event>::pop_front;
+    using deque<Event>::push_back;
+    using deque<Event>::push_front;
+    using deque<Event>::size;
 
     // Block until you get an event
     const Event nextEvent()
@@ -43,7 +45,7 @@ public:
             // OK. Now we can modify the event queue.
             const Event e = front();
             LOG(INFO) << "Popping Event:" << e.id << "\n";
-            pop();
+            pop_front();
             return e;
     }
 
@@ -55,13 +57,20 @@ public:
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
                   << " addEvent grabbed eventQueueLock\n";
         LOG(INFO) << "Adding Event:" << e.id << "\n";
-        push(e);
+        push_back(e);
         cvEventAvailable.notify_all();
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
                   << " signaling event\n";
     }
 
 private:
+    void addFront(const Event& e)
+    {
+      std::lock_guard<std::mutex> lock(eventQueueLock);
+      push_front(e);
+      cvEventAvailable.notify_all();
+    }
+
     std::mutex eventQueueLock;
     std::condition_variable cvEventAvailable;
 };
