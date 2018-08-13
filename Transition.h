@@ -19,7 +19,7 @@ public:
 
     TransitionT(const TransitionT&) = default;
 
-    virtual void execute() { DLOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
+    virtual void doTransition() { fromState->OnExit(); DLOG(INFO) << __PRETTY_FUNCTION__ << std::endl; toState->OnEntry(); }
 
     std::shared_ptr<State> fromState;
     std::shared_ptr<State> toState;

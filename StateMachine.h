@@ -14,8 +14,8 @@
 typedef TransitionT<State, Event> Transition;
 typedef std::pair<std::shared_ptr<State>, Event> StateEventPair;
 #include "hash.h"
-typedef std::unordered_map<StateEventPair, Transition> TransitionTable;
 
+typedef std::unordered_map<StateEventPair, Transition> TransitionTable;
 class StateTransitionTable : private TransitionTable
 {
     typedef typename std::pair<StateEventPair, Transition>
@@ -31,27 +31,9 @@ public:
         insert(e);
     }
 
-    Transition& next(std::shared_ptr<State> fromState, Event onEvent)
-    {
-        StateEventPair pair(fromState, onEvent);
-        auto it = find(pair);
-        if (it != end())
-        {
-            return it->second;
-        }
-        else
-        {
-            print();
-            std::ostringstream s;
-            s << "No Transition from State: " << fromState->name
-              << " onEvent:" << onEvent.id << std::endl;
+    std::shared_ptr<Transition> next(std::shared_ptr<State> fromState, Event onEvent);
 
-            throw std::logic_error(s.str());
-        }
-        return it->second;
-    }
-
-    void print()
+     void print()
     {
         for (const auto& it: *this) {
             LOG(INFO) << it.first.first->name << "," << it.first.second.id << ":" << it.second.toState->name << "\n" ;
@@ -68,13 +50,15 @@ public:
     StateMachine(std::shared_ptr<State> startState,
                  std::shared_ptr<State> stopState,
                  EventQueue<Event>& eventQueue,
-                 StateTransitionTable table)
-        : interrupt(false)
-        , currentState_(startState)
-        , startState_(startState)
-        , stopState_(stopState)
-        , eventQueue_(eventQueue)
-        , table_(table)
+                 StateTransitionTable table,
+                 std::shared_ptr<StateMachine> parent=nullptr)
+              : interrupt(false)
+              , currentState_(startState)
+              , startState_(startState)
+              , stopState_(stopState)
+              , eventQueue_(eventQueue)
+              , table_(table)
+              , parent_(parent)
     {
 
         // initialize the state transition table.
@@ -84,10 +68,12 @@ public:
         // the constructor.
 
     }
+    virtual ~StateMachine() = default;
 
     std::shared_ptr<State> getCurrentState() { return currentState_;  }
     std::shared_ptr<State> getStartState() { return startState_;  }
     std::shared_ptr<State> getStoptate() { return startState_;  }
+    EventQueue<Event>& getEventQueue() { return eventQueue_;  }
     void start();
 
     void execute(void);
@@ -104,5 +90,9 @@ protected:
     std::shared_ptr<State> stopState_;
     EventQueue<Event>& eventQueue_;
     StateTransitionTable table_;
+    std::shared_ptr<StateMachine> parent_;
     std::thread smThread_;
+
+
 };
+

@@ -1,3 +1,14 @@
+Goals:
+    C++11 - no manual memory management, c++11 threads, stl where I can.
+    Experiment with glog
+    Ease of installation/ distribution - use cmake
+Issues:
+    Unit test fails on OSX, works on Linux
+    Now make it a HSM
+
+Code Review:
+    Can't the StateMachine manage the EventQueue?
+    
 A simple statemachine. Demonstrates use of stl to easily build up a state machine class.
 1. Install cmake (sudo apt install cmake)
 2. create a folder build within statemachine

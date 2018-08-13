@@ -75,7 +75,7 @@ TEST_F(TestEventQueue, testAddFrom100Threads)
     {
         auto e = eq_.front();
         ASSERT_TRUE(std::find(v.begin(), v.end(), e) != v.end());
-        eq_.pop();
+        eq_.pop_front();
     }
 }
 
