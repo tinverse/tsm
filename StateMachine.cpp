@@ -6,14 +6,14 @@
 #include "StateMachine.h"
 #include "Transition.h"
 
-std::shared_ptr<Transition> StateTransitionTable::next(std::shared_ptr<State> fromState, Event onEvent)
+Transition* StateTransitionTable::next(std::shared_ptr<State> fromState, Event onEvent)
 {
   // Check if event in HSM
   StateEventPair pair(fromState, onEvent);
   auto it = find(pair);
   if (it != end())
   {
-    return std::shared_ptr<Transition>(&it->second);
+    return &it->second;
   }
   else
   {
@@ -49,7 +49,7 @@ void StateMachine::execute(void)
 
             LOG(INFO) << "Current State:" << currentState_->id
                        << " Event:" << nextEvent.id << std::endl;
-            std::shared_ptr<Transition> t;
+            Transition* t;
             if( (t = table_.next(currentState_, nextEvent)) == nullptr) {
               if (parent_ != nullptr) {
                 parent_->getEventQueue().addFront(nextEvent);

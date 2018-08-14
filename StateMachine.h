@@ -25,13 +25,13 @@ public:
     void add(std::shared_ptr<State> fromState, Event onEvent,
             std::shared_ptr<State> toState)
     {
-        Transition t{fromState, onEvent, toState};
+      Transition t{fromState, onEvent, toState};
         StateEventPair pair(fromState, onEvent);
         TransitionTableElement e(pair, t);
         insert(e);
     }
 
-    std::shared_ptr<Transition> next(std::shared_ptr<State> fromState, Event onEvent);
+    Transition* next(std::shared_ptr<State> fromState, Event onEvent);
 
      void print()
     {
@@ -70,15 +70,15 @@ public:
     }
     virtual ~StateMachine() = default;
 
-    std::shared_ptr<State> getCurrentState() { return currentState_;  }
-    std::shared_ptr<State> getStartState() { return startState_;  }
-    std::shared_ptr<State> getStoptate() { return startState_;  }
+    auto getCurrentState() { return currentState_;  }
+    auto getStartState() { return startState_;  }
+    auto getStoptate() { return startState_;  }
     EventQueue<Event>& getEventQueue() { return eventQueue_;  }
     void start();
 
     void execute(void);
 
-    void stop() { interrupt = true; smThread_.join(); }
+    void stop() { interrupt = true; eventQueue_.stop(); smThread_.join(); }
 
     virtual void OnEntry() { startState_->execute(); }
     // Data
