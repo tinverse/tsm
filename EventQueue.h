@@ -23,6 +23,11 @@ public:
     using deque<Event>::push_front;
     using deque<Event>::size;
 
+    EventQueue()
+      : done_(false) {}
+
+    ~EventQueue() { stop(); }
+
     // Block until you get an event
     const Event nextEvent()
     {
@@ -33,20 +38,20 @@ public:
         std::unique_lock<std::mutex> lock(eventQueueLock);
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
                                << " nextEvent grabbed eventQueueLock\n";
-        while (empty())
-        {
-            // Wait until an event is available
-            // There might be a bunch of threads blocked right here.
-            cvEventAvailable.wait(lock);
-            LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                                   << " event Available\n";
+        // Wait until an event is available
+        // There might be a bunch of threads blocked right here.
+        cvEventAvailable.wait(lock, [this] {return (!this->empty() || this->done_);} );
+        LOG(INFO) << "Thread:" << std::this_thread::get_id()
+                                << " event Available\n";
+        if (done_) {
+          return Event(5);
+        } else {
+          // OK. Now we can modify the event queue.
+          const Event e = front();
+          LOG(INFO) << "Popping Event:" << e.id << "\n";
+          pop_front();
+          return e;
         }
-
-            // OK. Now we can modify the event queue.
-            const Event e = front();
-            LOG(INFO) << "Popping Event:" << e.id << "\n";
-            pop_front();
-            return e;
     }
 
     void addEvent(const Event& e)
@@ -63,6 +68,11 @@ public:
                   << " signaling event\n";
     }
 
+    void stop() {
+      done_ = true;
+      cvEventAvailable.notify_all();
+      // Log the events that are going to get dumped if the queue is not empty
+    }
 private:
     void addFront(const Event& e)
     {
@@ -73,4 +83,5 @@ private:
 
     std::mutex eventQueueLock;
     std::condition_variable cvEventAvailable;
+    bool done_;
 };

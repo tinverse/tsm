@@ -1,5 +1,5 @@
 #include <future>
-#include <glog/logging.h>
+#include "glog/logging.h"
 #include <gtest/gtest.h>
 #include <set>
 #include "Event.h"
@@ -100,10 +100,10 @@ TEST_F(TestStateMachine, testTransition)
     auto doorDummyFinal = std::make_shared<State>(40, "Door Final");
 
     // Events
-    Event click_event(0);
-    Event bottomSensor_event(1);
-    Event topSensor_event(2);
-    Event obstruct_event(3);
+    Event click_event(1);
+    Event bottomSensor_event(2);
+    Event topSensor_event(3);
+    Event obstruct_event(4);
 
     // TransitionTable
     StateTransitionTable garageDoorTransitions;
@@ -133,13 +133,11 @@ TEST_F(TestStateMachine, testTransition)
 
     EXPECT_EQ(garageDoorStateMachine.getCurrentState()->id, doorClosed->id);
     garageDoorEventQueue.addEvent(click_event);
-
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_EQ(doorOpening->id, garageDoorStateMachine.getCurrentState()->id);
     garageDoorEventQueue.addEvent(topSensor_event);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_EQ(doorOpen->id, garageDoorStateMachine.getCurrentState()->id);
-
     garageDoorStateMachine.stop();
 }
 

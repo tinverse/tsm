@@ -57,7 +57,7 @@ target_include_directories(libstatemachine SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} $
 add_executable(statemachine_test StateMachineTests.cpp)
 add_dependencies(statemachine_test libstatemachine gtest)
 
-target_include_directories(statemachine_test SYSTEM PRIVATE ${GTEST_INCLUDE_DIRS})
+target_include_directories(statemachine_test SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
 target_link_libraries(statemachine_test PRIVATE libstatemachine ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
 
 #install(TARGETS statemachine DESTINATION bin)

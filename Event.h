@@ -8,8 +8,8 @@ public:
         : id(0)
     {
     }
-    Event(uint32_t id)
-        : id(id)
+    Event(uint32_t id_)
+        : id(id_)
     {
     }
     virtual ~Event() {}
