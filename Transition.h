@@ -10,8 +10,8 @@ public:
     TransitionT(std::shared_ptr<State> fromState,
                 Event event,
                 std::shared_ptr<State> toState)
-        : fromState(fromState)
-        , toState(toState)
+        : fromState(std::move(fromState))
+        , toState(std::move(toState))
         , onEvent(event)
     {
     }

@@ -57,10 +57,10 @@ public:
         : interrupt(false)
         , currentState_(startState)
         , startState_(startState)
-        , stopState_(stopState)
+        , stopState_(std::move(stopState))
         , eventQueue_(eventQueue)
-        , table_(table)
-        , parent_(parent)
+        , table_(std::move(table))
+        , parent_(std::move(parent))
     {
 
         // initialize the state transition table.
@@ -69,7 +69,7 @@ public:
         // All States should be created by the time we exit
         // the constructor.
     }
-    virtual ~StateMachine() = default;
+    ~StateMachine() override = default;
 
     auto getCurrentState() { return currentState_; }
     auto getStartState() { return startState_; }
@@ -77,7 +77,7 @@ public:
     EventQueue<Event>& getEventQueue() { return eventQueue_; }
     void start();
 
-    void execute(void);
+    void execute(void) override;
 
     void stop()
     {
@@ -86,7 +86,7 @@ public:
         smThread_.join();
     }
 
-    virtual void OnEntry() { startState_->execute(); }
+    void OnEntry() override { startState_->execute(); }
     // Data
     std::atomic<bool> interrupt;
 

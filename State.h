@@ -18,7 +18,7 @@ public:
 
     State(uint32_t id, std::string stateName)
         : id(id)
-        , name(stateName)
+        , name(std::move(stateName))
     {
         LOG(INFO) << __PRETTY_FUNCTION__ << std::endl;
     }
