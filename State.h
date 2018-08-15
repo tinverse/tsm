@@ -1,8 +1,8 @@
 #pragma once
-#include <string>
 #include <inttypes.h>
 #include <iostream>
 #include <stdint.h>
+#include <string>
 
 #include <glog/logging.h>
 

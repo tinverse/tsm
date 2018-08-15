@@ -1,11 +1,11 @@
+#include "State.h"
 #include <future>
-#include "glog/logging.h"
 #include <gtest/gtest.h>
 #include <set>
 #include "Event.h"
 #include "EventQueue.h"
-#include "State.h"
 #include "StateMachine.h"
+#include "glog/logging.h"
 
 class TestState : public testing::Test
 {
@@ -85,7 +85,6 @@ TEST_F(TestEventQueue, testAddFrom100Threads)
 // detects an obstacle.
 class TestStateMachine : public testing::Test
 {
-
 };
 
 TEST_F(TestStateMachine, testTransition)
@@ -95,8 +94,10 @@ TEST_F(TestStateMachine, testTransition)
     auto doorOpening = std::make_shared<State>(15, "Door Opening");
     auto doorClosed  = std::make_shared<State>(20, "Door Closed");
     auto doorClosing = std::make_shared<State>(25, "Door Closing");
-    auto doorStoppedClosing = std::make_shared<State>(30, "Door Stopped Closing");
-    auto doorStoppedOpening = std::make_shared<State>(35, "Door Stopped Opening");
+    auto doorStoppedClosing =
+        std::make_shared<State>(30, "Door Stopped Closing");
+    auto doorStoppedOpening =
+        std::make_shared<State>(35, "Door Stopped Opening");
     auto doorDummyFinal = std::make_shared<State>(40, "Door Final");
 
     // Events
@@ -109,16 +110,16 @@ TEST_F(TestStateMachine, testTransition)
     StateTransitionTable garageDoorTransitions;
 
     // Add Transitions to the table
-    garageDoorTransitions.add(doorClosed,   click_event, doorOpening);
-    garageDoorTransitions.add(doorOpening,  topSensor_event, doorOpen);
-    garageDoorTransitions.add(doorOpen,     click_event, doorClosing);
-    garageDoorTransitions.add(doorClosing,  bottomSensor_event, doorClosed);
-    garageDoorTransitions.add(doorOpening,  click_event, doorStoppedOpening);
+    garageDoorTransitions.add(doorClosed, click_event, doorOpening);
+    garageDoorTransitions.add(doorOpening, topSensor_event, doorOpen);
+    garageDoorTransitions.add(doorOpen, click_event, doorClosing);
+    garageDoorTransitions.add(doorClosing, bottomSensor_event, doorClosed);
+    garageDoorTransitions.add(doorOpening, click_event, doorStoppedOpening);
     garageDoorTransitions.add(doorStoppedOpening, click_event, doorClosing);
-    garageDoorTransitions.add(doorClosing,  obstruct_event, doorStoppedClosing);
-    garageDoorTransitions.add(doorClosing,  click_event, doorStoppedClosing);
+    garageDoorTransitions.add(doorClosing, obstruct_event, doorStoppedClosing);
+    garageDoorTransitions.add(doorClosing, click_event, doorStoppedClosing);
     garageDoorTransitions.add(doorStoppedClosing, click_event, doorOpening);
-    garageDoorTransitions.add(doorClosed,   click_event, doorOpening);
+    garageDoorTransitions.add(doorClosed, click_event, doorOpening);
 
     LOG(INFO) << "*******Num Transitions:" << garageDoorTransitions.size();
     // Add the open event
@@ -127,8 +128,10 @@ TEST_F(TestStateMachine, testTransition)
     // The StateMachine
     // Starting State: doorClosed
     // Stop State: doorOpen
-    StateMachine garageDoorStateMachine(
-        doorClosed, doorDummyFinal, garageDoorEventQueue, garageDoorTransitions);
+    StateMachine garageDoorStateMachine(doorClosed,
+                                        doorDummyFinal,
+                                        garageDoorEventQueue,
+                                        garageDoorTransitions);
     garageDoorStateMachine.start();
 
     EXPECT_EQ(garageDoorStateMachine.getCurrentState()->id, doorClosed->id);
