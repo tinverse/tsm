@@ -6,30 +6,31 @@
 #include "StateMachine.h"
 #include "Transition.h"
 
-bool operator==(const StateEventPair& s1, const StateEventPair& s2) {
-  return (s1.first.get() == s2.first.get()) && (s1.second.id == s2.second.id);
-}
-
-Transition* StateTransitionTable::next(std::shared_ptr<State> fromState, Event onEvent)
+bool operator==(const StateEventPair& s1, const StateEventPair& s2)
 {
-  // Check if event in HSM
-  StateEventPair pair(fromState, onEvent);
-  auto it = find(pair);
-  if (it != end())
-  {
-    return &it->second;
-  }
-  else
-  {
-      print();
-      std::ostringstream s;
-      s << "No Transition:" << fromState->name
-        << "\t:" << onEvent.id << std::endl;
-      LOG(ERROR) << s.str();
-      return nullptr;
-  }
+    return (s1.first.get() == s2.first.get()) && (s1.second.id == s2.second.id);
 }
 
+Transition* StateTransitionTable::next(std::shared_ptr<State> fromState,
+                                       Event onEvent)
+{
+    // Check if event in HSM
+    StateEventPair pair(fromState, onEvent);
+    auto it = find(pair);
+    if (it != end())
+    {
+        return &it->second;
+    }
+    else
+    {
+        print();
+        std::ostringstream s;
+        s << "No Transition:" << fromState->name << "\t:" << onEvent.id
+          << std::endl;
+        LOG(ERROR) << s.str();
+        return nullptr;
+    }
+}
 
 void StateMachine::start()
 {
@@ -52,15 +53,19 @@ void StateMachine::execute(void)
             Event nextEvent = eventQueue_.nextEvent();
 
             LOG(INFO) << "Current State:" << currentState_->id
-                       << " Event:" << nextEvent.id << std::endl;
+                      << " Event:" << nextEvent.id << std::endl;
             Transition* t;
-            if( (t = table_.next(currentState_, nextEvent)) == nullptr) {
-              if (parent_ != nullptr) {
-                parent_->getEventQueue().addFront(nextEvent);
-              } else {
-                LOG(ERROR) << "Reached top level HSM. Cannot handle event";
-              }
-              continue;
+            if ((t = table_.next(currentState_, nextEvent)) == nullptr)
+            {
+                if (parent_ != nullptr)
+                {
+                    parent_->getEventQueue().addFront(nextEvent);
+                }
+                else
+                {
+                    LOG(ERROR) << "Reached top level HSM. Cannot handle event";
+                }
+                continue;
             }
 
             // Perform the transition
@@ -72,7 +77,8 @@ void StateMachine::execute(void)
             // Now execute the current state
             currentState_->execute();
 
-            if (currentState_ == stopState_) break;
+            if (currentState_ == stopState_)
+                break;
         }
     }
 }

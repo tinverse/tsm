@@ -1,9 +1,9 @@
 #pragma once
 
 #include <condition_variable>
+#include <deque>
 #include <iostream>
 #include <mutex>
-#include <deque>
 #include <thread>
 
 #include <glog/logging.h>
@@ -14,7 +14,8 @@ using std::deque;
 // to the event queue. The call to nextEvent is a blocking call
 template <typename Event> class EventQueue : private deque<Event>
 {
-  friend class StateMachine;
+    friend class StateMachine;
+
 public:
     using deque<Event>::empty;
     using deque<Event>::front;
@@ -24,7 +25,9 @@ public:
     using deque<Event>::size;
 
     EventQueue()
-      : done_(false) {}
+        : done_(false)
+    {
+    }
 
     ~EventQueue() { stop(); }
 
@@ -34,23 +37,27 @@ public:
         // Note use of while instead of if below
         // See http://stackoverflow.com/questions/15278343/c11-thread-safe-queue
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                                   << " nextEvent grabbing eventQueueLock";
+                  << " nextEvent grabbing eventQueueLock";
         std::unique_lock<std::mutex> lock(eventQueueLock);
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                               << " nextEvent grabbed eventQueueLock\n";
+                  << " nextEvent grabbed eventQueueLock\n";
         // Wait until an event is available
         // There might be a bunch of threads blocked right here.
-        cvEventAvailable.wait(lock, [this] {return (!this->empty() || this->done_);} );
+        cvEventAvailable.wait(
+            lock, [this] { return (!this->empty() || this->done_); });
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                                << " event Available\n";
-        if (done_) {
-          return Event(5);
-        } else {
-          // OK. Now we can modify the event queue.
-          const Event e = front();
-          LOG(INFO) << "Popping Event:" << e.id << "\n";
-          pop_front();
-          return e;
+                  << " event Available\n";
+        if (done_)
+        {
+            return Event(5);
+        }
+        else
+        {
+            // OK. Now we can modify the event queue.
+            const Event e = front();
+            LOG(INFO) << "Popping Event:" << e.id << "\n";
+            pop_front();
+            return e;
         }
     }
 
@@ -68,17 +75,19 @@ public:
                   << " signaling event\n";
     }
 
-    void stop() {
-      done_ = true;
-      cvEventAvailable.notify_all();
-      // Log the events that are going to get dumped if the queue is not empty
+    void stop()
+    {
+        done_ = true;
+        cvEventAvailable.notify_all();
+        // Log the events that are going to get dumped if the queue is not empty
     }
+
 private:
     void addFront(const Event& e)
     {
-      std::lock_guard<std::mutex> lock(eventQueueLock);
-      push_front(e);
-      cvEventAvailable.notify_all();
+        std::lock_guard<std::mutex> lock(eventQueueLock);
+        push_front(e);
+        cvEventAvailable.notify_all();
     }
 
     std::mutex eventQueueLock;

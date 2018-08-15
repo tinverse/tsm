@@ -1,8 +1,8 @@
 #pragma once
-#include <string>
 #include <inttypes.h>
 #include <iostream>
 #include <stdint.h>
+#include <string>
 
 #include <glog/logging.h>
 
@@ -34,5 +34,3 @@ public:
     virtual void OnEntry() { LOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
     virtual void OnExit() { LOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
 };
-
-

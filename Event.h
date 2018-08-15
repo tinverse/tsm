@@ -16,4 +16,3 @@ public:
     bool operator==(const Event& rhs) const { return this->id == rhs.id; }
     bool operator<(const Event& rhs) const { return this->id < rhs.id; }
 };
-
