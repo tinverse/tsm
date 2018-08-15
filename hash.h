@@ -12,7 +12,6 @@ template <> struct hash<StateEventPair>
         size_t id      = event.id;
         size_t hash_value =
             std::hash<int>{}(address) ^ (std::hash<size_t>{}(id) << 1);
-        LOG(ERROR) << statePtr->name << ":" << event.id << ":" << hash_value;
         return hash_value;
     }
 };
