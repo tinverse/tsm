@@ -1,18 +1,20 @@
-#include "State.h"
 #include <future>
 #include <gtest/gtest.h>
 #include <set>
+#include <utility>
+
+#include "State.h"
 #include "Event.h"
 #include "EventQueue.h"
 #include "StateMachine.h"
-#include "glog/logging.h"
+#include <glog/logging.h>
 
 class TestState : public testing::Test
 {
 public:
-    virtual ~TestState() {}
-    void SetUp() {}
-    void TearDown() {}
+    ~TestState() override = default;
+    void SetUp() override {}
+    void TearDown() override {}
 
 protected:
     State state_;
@@ -25,9 +27,9 @@ TEST_F(TestState, Call) { state_.execute(); }
 class TestEventQueue : public testing::Test
 {
 public:
-    virtual ~TestEventQueue() {}
-    void SetUp() {}
-    void TearDown() {}
+    ~TestEventQueue() override = default;
+    void SetUp() override {}
+    void TearDown() override {}
 
 protected:
     EventQueue<Event> eq_;
@@ -79,7 +81,7 @@ TEST_F(TestEventQueue, testAddFrom100Threads)
     }
 }
 
-// TODO: Test no end state
+// TODO(sriram): Test no end state
 // Model interruptions to workflow
 // For e.g. As door is opening or closing, one of the sensors
 // detects an obstacle.

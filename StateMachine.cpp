@@ -1,5 +1,6 @@
 #include <glog/logging.h>
 #include <iostream>
+#include <utility>
 
 #include "EventQueue.h"
 #include "State.h"
@@ -21,15 +22,15 @@ Transition* StateTransitionTable::next(std::shared_ptr<State> fromState,
     {
         return &it->second;
     }
-    else
-    {
+    
+    
         print();
         std::ostringstream s;
         s << "No Transition:" << fromState->name << "\t:" << onEvent.id
           << std::endl;
         LOG(ERROR) << s.str();
         return nullptr;
-    }
+    
 }
 
 void StateMachine::start()
@@ -37,7 +38,7 @@ void StateMachine::start()
     smThread_ = std::thread(&StateMachine::execute, this);
 }
 
-void StateMachine::execute(void)
+void StateMachine::execute()
 {
     while (!interrupt)
     {
@@ -77,8 +78,9 @@ void StateMachine::execute(void)
             // Now execute the current state
             currentState_->execute();
 
-            if (currentState_ == stopState_)
+            if (currentState_ == stopState_) {
                 break;
+}
         }
     }
 }
