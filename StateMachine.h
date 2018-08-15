@@ -15,6 +15,8 @@ typedef TransitionT<State, Event> Transition;
 typedef std::pair<std::shared_ptr<State>, Event> StateEventPair;
 #include "hash.h"
 
+
+
 typedef std::unordered_map<StateEventPair, Transition> TransitionTable;
 class StateTransitionTable : private TransitionTable
 {

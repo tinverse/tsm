@@ -6,6 +6,10 @@
 #include "StateMachine.h"
 #include "Transition.h"
 
+bool operator==(const StateEventPair& s1, const StateEventPair& s2) {
+  return (s1.first.get() == s2.first.get()) && (s1.second.id == s2.second.id);
+}
+
 Transition* StateTransitionTable::next(std::shared_ptr<State> fromState, Event onEvent)
 {
   // Check if event in HSM
@@ -19,8 +23,8 @@ Transition* StateTransitionTable::next(std::shared_ptr<State> fromState, Event o
   {
       print();
       std::ostringstream s;
-      s << "No Transition from State: " << fromState->name
-        << " onEvent:" << onEvent.id << std::endl;
+      s << "No Transition:" << fromState->name
+        << "\t:" << onEvent.id << std::endl;
       LOG(ERROR) << s.str();
       return nullptr;
   }
