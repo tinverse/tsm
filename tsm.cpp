@@ -4,7 +4,7 @@
 
 #include "EventQueue.h"
 #include "State.h"
-#include "StateMachine.h"
+#include "tsm.h"
 #include "Transition.h"
 
 bool operator==(const StateEventPair& s1, const StateEventPair& s2)
@@ -22,15 +22,15 @@ Transition* StateTransitionTable::next(std::shared_ptr<State> fromState,
     {
         return &it->second;
     }
-    
-    
+
+
         print();
         std::ostringstream s;
         s << "No Transition:" << fromState->name << "\t:" << onEvent.id
           << std::endl;
         LOG(ERROR) << s.str();
         return nullptr;
-    
+
 }
 
 void StateMachine::start()
