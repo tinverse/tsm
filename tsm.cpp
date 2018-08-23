@@ -4,7 +4,7 @@
 
 #include "EventQueue.h"
 #include "State.h"
-#include "StateMachine.h"
+#include "tsm.h"
 #include "Transition.h"
 
 bool operator==(const StateEventPair& s1, const StateEventPair& s2)

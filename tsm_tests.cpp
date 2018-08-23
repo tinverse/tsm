@@ -6,7 +6,7 @@
 #include "State.h"
 #include "Event.h"
 #include "EventQueue.h"
-#include "StateMachine.h"
+#include "tsm.h"
 #include <glog/logging.h>
 
 class TestState : public testing::Test
