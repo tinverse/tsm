@@ -6,31 +6,46 @@
 
 #include <glog/logging.h>
 
+#include "UniqueId.h"
+
 // Generate and maintain an internal id
-class State
+struct State
 {
 public:
-    State()
-        : id(0)
-    {
-        LOG(INFO) << __PRETTY_FUNCTION__ << std::endl;
-    }
+    State() = delete;
 
-    State(uint32_t id, std::string stateName)
-        : id(id)
+    State(std::string stateName)
+        : id(UniqueId::getId())
         , name(std::move(stateName))
     {
         LOG(INFO) << __PRETTY_FUNCTION__ << std::endl;
     }
 
+    State(State const & other)
+        :id(other.id),
+        name(other.name) {
+    }
+
+    State(State const && other)
+        : id(std::move(other.id)),
+        name(std::move(other.name)) { }
+
     virtual ~State() { LOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
 
-    // TODO: (sriram) make private
-    const uint32_t id;
-    const std::string name;
+    bool operator==(State const & rhs)
+    {
+        return this->id == rhs.id;
+    }
 
     // Methods
     virtual void execute() { LOG(WARNING) << this->name << std::endl; }
     virtual void OnEntry() { LOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
     virtual void OnExit() { LOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
+
+    const std::string name;
+private:
+    // TODO: (sriram) make private
+    const uint64_t id;
+
+
 };

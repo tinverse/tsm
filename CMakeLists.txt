@@ -22,7 +22,11 @@ find_package(Glog REQUIRED)
 message(INFO ${CMAKE_MODULE_PATH} " " ${GLOG_FOUND} " " ${GLOG_INCLUDE_DIRS} " " ${GLOG_LIBRARIES})
 message(INFO ${CMAKE_INSTALL_PREFIX})
 
-add_library(tsm tsm.cpp)
+add_library(tsm
+    tsm.cpp
+    UniqueId.cpp
+)
+
 target_include_directories(tsm SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
 
 

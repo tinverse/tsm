@@ -1,15 +1,14 @@
 #pragma once
 #include <cstdint>
+
+#include "UniqueId.h"
+
 class Event
 {
 public:
     uint32_t id;
     Event()
-        : id(0)
-    {
-    }
-    Event(uint32_t id_)
-        : id(id_)
+        : id(UniqueId::getId())
     {
     }
     virtual ~Event() = default;

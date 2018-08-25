@@ -1,14 +1,23 @@
 #pragma once
 
+#include <string>
 #include <condition_variable>
 #include <deque>
 #include <iostream>
 #include <mutex>
 #include <thread>
-
+#include <numeric>
 #include <glog/logging.h>
 
 using std::deque;
+
+struct EventQueueInterruptedException : public std::runtime_error {
+    explicit EventQueueInterruptedException(const std::string& what_arg)
+        : std::runtime_error(what_arg) {}
+    explicit EventQueueInterruptedException(const char* what_arg)
+        : std::runtime_error(what_arg) {}
+};
+
 
 // A thread safe event queue. Any thread can call addEvent if it has a pointer
 // to the event queue. The call to nextEvent is a blocking call
@@ -25,7 +34,7 @@ public:
     using deque<Event>::size;
 
     EventQueue()
-        : done_(false)
+        : interrupt_(false)
     {
     }
 
@@ -44,12 +53,12 @@ public:
         // Wait until an event is available
         // There might be a bunch of threads blocked right here.
         cvEventAvailable.wait(
-            lock, [this] { return (!this->empty() || this->done_); });
+            lock, [this] { return (!this->empty() || this->interrupt_); });
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
                   << " event Available\n";
-        if (done_)
+        if (interrupt_)
         {
-            return Event(5);
+            throw EventQueueInterruptedException("Bailing from Event Queue");
         }
         else
         {
@@ -77,7 +86,7 @@ public:
 
     void stop()
     {
-        done_ = true;
+        interrupt_ = true;
         cvEventAvailable.notify_all();
         // Log the events that are going to get dumped if the queue is not empty
     }
@@ -92,5 +101,5 @@ private:
 
     std::mutex eventQueueLock;
     std::condition_variable cvEventAvailable;
-    bool done_;
+    bool interrupt_;
 };
