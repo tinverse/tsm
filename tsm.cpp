@@ -35,32 +35,44 @@ Transition* StateTransitionTable::next(std::shared_ptr<State> fromState,
 
 void StateMachine::start()
 {
+    currentState_ = startState_;
+    currentStatePromise_.set_value(startState_);
     smThread_ = std::thread(&StateMachine::execute, this);
 }
 
 void StateMachine::execute()
 {
-    while (!interrupt)
+    while (!interrupt_)
     {
         if (currentState_ == stopState_)
         {
             LOG(INFO) << "StateMachine Done Exiting... " << std::endl;
-            interrupt = true;
+            interrupt_ = true;
             break;
         }
         else
         {
             LOG(INFO) << "Waiting for event";
-            Event nextEvent = eventQueue_.nextEvent();
 
-            LOG(INFO) << "Current State:" << currentState_->id
+            Event nextEvent;
+            try {
+                nextEvent = eventQueue_.nextEvent();
+            } catch(EventQueueInterruptedException const & e) {
+                if (!interrupt_) {
+                    throw e;
+                }
+                break;
+            }
+
+            LOG(INFO) << "Current State:" << currentState_->name
                       << " Event:" << nextEvent.id << std::endl;
             Transition* t;
             if ((t = table_.next(currentState_, nextEvent)) == nullptr)
             {
                 if (parent_ != nullptr)
                 {
-                    parent_->getEventQueue().addFront(nextEvent);
+                    currentStatePromise_.set_value(currentState_);
+                    parent_->addFront(nextEvent);
                 }
                 else
                 {
@@ -69,18 +81,16 @@ void StateMachine::execute()
                 continue;
             }
 
-            // Perform the transition
+
             t->doTransition();
 
             currentState_ = t->toState;
-            DLOG(INFO) << "Next State:" << currentState_->id << std::endl;
+            currentStatePromise_.set_value(currentState_);
 
-            // Now execute the current state
+            DLOG(INFO) << "Next State:" << currentState_->name << std::endl;
+
+            // Now execute (enter?) the current state
             currentState_->execute();
-
-            if (currentState_ == stopState_) {
-                break;
-}
         }
     }
 }

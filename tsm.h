@@ -10,6 +10,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <unordered_map>
+#include <future>
 
 typedef TransitionT<State, Event> Transition;
 typedef std::pair<std::shared_ptr<State>, Event> StateEventPair;
@@ -49,16 +50,17 @@ class StateMachine : public State
 {
 public:
     StateMachine() = delete;
-    StateMachine(std::shared_ptr<State> startState,
+
+    StateMachine(std::string name,
+            std::shared_ptr<State> startState,
                  std::shared_ptr<State> stopState,
-                 EventQueue<Event>& eventQueue,
                  StateTransitionTable table,
                  std::shared_ptr<StateMachine> parent = nullptr)
-        : interrupt(false)
-        , currentState_(startState)
+        : State(name)
+        , interrupt_(false)
+        , currentState_(nullptr)
         , startState_(startState)
         , stopState_(std::move(stopState))
-        , eventQueue_(eventQueue)
         , table_(std::move(table))
         , parent_(std::move(parent))
     {
@@ -71,31 +73,43 @@ public:
     }
     ~StateMachine() override = default;
 
-    auto getCurrentState() { return currentState_; }
+    auto getCurrentState() { return currentStatePromise_.get_future().get(); }
     auto getStartState() { return startState_; }
     auto getStoptate() { return startState_; }
-    EventQueue<Event>& getEventQueue() { return eventQueue_; }
+
+    void addEvent(Event const & e) {
+        invalidateCurrentState();
+        eventQueue_.addEvent(e);
+    }
+    void addFront(Event const & e) {
+        invalidateCurrentState();
+        eventQueue_.addFront(e);
+    }
     void start();
 
     void execute(void) override;
 
     void stop()
     {
-        interrupt = true;
+        interrupt_ = true;
         eventQueue_.stop();
         smThread_.join();
     }
 
     void OnEntry() override { startState_->execute(); }
-    // Data
-    std::atomic<bool> interrupt;
 
 protected:
+    std::atomic<bool> interrupt_;
+    std::promise< std::shared_ptr<State> > currentStatePromise_;
     std::shared_ptr<State> currentState_;
     std::shared_ptr<State> startState_;
     std::shared_ptr<State> stopState_;
-    EventQueue<Event>& eventQueue_;
+    EventQueue<Event> eventQueue_;
     StateTransitionTable table_;
     std::shared_ptr<StateMachine> parent_;
     std::thread smThread_;
+private:
+    void invalidateCurrentState() {
+        currentStatePromise_ = std::promise< std::shared_ptr<State> >();
+    }
 };
