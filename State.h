@@ -16,10 +16,7 @@ public:
 
     State(std::string stateName)
         : id(UniqueId::getId())
-        , name(std::move(stateName))
-    {
-        LOG(INFO) << __PRETTY_FUNCTION__ << std::endl;
-    }
+        , name(std::move(stateName)) { }
 
     State(State const & other)
         :id(other.id),
@@ -30,7 +27,7 @@ public:
         : id(std::move(other.id)),
         name(std::move(other.name)) { }
 
-    virtual ~State() { LOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
+    virtual ~State() = default;
 
     bool operator==(State const & rhs)
     {
@@ -38,9 +35,9 @@ public:
     }
 
     // Methods
-    virtual void execute() { LOG(WARNING) << this->name << std::endl; }
-    virtual void OnEntry() { LOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
-    virtual void OnExit() { LOG(INFO) << __PRETTY_FUNCTION__ << std::endl; }
+    virtual void execute() { LOG(INFO) << "Executing: " << this->name << std::endl; }
+    virtual void OnEntry() { DLOG(INFO) << "Entering: " << this->name << std::endl; }
+    virtual void OnExit() { DLOG(INFO) << "Exiting: "  << this->name << std::endl; }
 
     const std::string name;
 private:

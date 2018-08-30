@@ -22,7 +22,6 @@ public:
     virtual void doTransition()
     {
         fromState->OnExit();
-        DLOG(INFO) << __PRETTY_FUNCTION__ << std::endl;
         toState->OnEntry();
     }
 

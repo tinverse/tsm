@@ -24,7 +24,6 @@ struct EventQueueInterruptedException : public std::runtime_error {
 template <typename Event> class EventQueue : private deque<Event>
 {
     friend class StateMachine;
-
 public:
     using deque<Event>::empty;
     using deque<Event>::front;
@@ -35,7 +34,7 @@ public:
 
     EventQueue()
         : interrupt_(false)
-    {
+      {
     }
 
     ~EventQueue() { stop(); }
@@ -45,17 +44,11 @@ public:
     {
         // Note use of while instead of if below
         // See http://stackoverflow.com/questions/15278343/c11-thread-safe-queue
-        LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                  << " nextEvent grabbing eventQueueLock";
         std::unique_lock<std::mutex> lock(eventQueueLock);
-        LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                  << " nextEvent grabbed eventQueueLock\n";
         // Wait until an event is available
         // There might be a bunch of threads blocked right here.
         cvEventAvailable.wait(
             lock, [this] { return (!this->empty() || this->interrupt_); });
-        LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                  << " event Available\n";
         if (interrupt_)
         {
             throw EventQueueInterruptedException("Bailing from Event Queue");
@@ -64,7 +57,8 @@ public:
         {
             // OK. Now we can modify the event queue.
             const Event e = front();
-            LOG(INFO) << "Popping Event:" << e.id << "\n";
+            LOG(INFO) << "Thread:" << std::this_thread::get_id()
+                << " Popping Event:" << e.id;
             pop_front();
             return e;
         }
@@ -72,16 +66,11 @@ public:
 
     void addEvent(const Event& e)
     {
-        LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                  << " addEvent grabbing eventQueueLock\n";
         std::lock_guard<std::mutex> lock(eventQueueLock);
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                  << " addEvent grabbed eventQueueLock\n";
-        LOG(INFO) << "Adding Event:" << e.id << "\n";
+            << " Adding Event:" << e.id << "\n";
         push_back(e);
         cvEventAvailable.notify_all();
-        LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                  << " signaling event\n";
     }
 
     void stop()

@@ -1,3 +1,7 @@
+(setq indent-tabs-mode nil)
+(setq tab-width 4)
+(defvaralias 'c-basic-offset 'tab-width)
+
 (use-package rtags
   :config
   (rtags-enable-standard-keybindings)
@@ -5,6 +9,7 @@
   (rtags-diagnostics)
   (setq rtags-completions-enabled t)
   (rtags-start-process-unless-running))
+
 (use-package cmake-ide
   :config
   (cmake-ide-setup))
