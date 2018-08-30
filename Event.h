@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include "UniqueId.h"
+namespace tsm {
 
 class Event
 {
@@ -14,3 +15,5 @@ class Event
     bool operator==(const Event& rhs) const { return this->id == rhs.id; }
     bool operator<(const Event& rhs) const { return this->id < rhs.id; }
 };
+
+} // namespace tsm

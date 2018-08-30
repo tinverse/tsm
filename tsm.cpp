@@ -7,6 +7,10 @@
 #include "Transition.h"
 #include "tsm.h"
 
+using namespace tsm;
+
+std::mutex tsm::g_lockCurrentState;
+
 bool
 operator==(const StateEventPair& s1, const StateEventPair& s2)
 {
@@ -23,7 +27,7 @@ StateTransitionTable::next(std::shared_ptr<State> fromState, Event onEvent)
         return &it->second;
     }
 
-    print();
+    // print();
     std::ostringstream s;
     s << "No Transition:" << fromState->name << "\t:" << onEvent.id
       << std::endl;
@@ -34,20 +38,23 @@ StateTransitionTable::next(std::shared_ptr<State> fromState, Event onEvent)
 void
 StateMachine::start()
 {
+    LOG(INFO) << "starting: " << name;
     currentState_ = startState_;
     currentStatePromise_.set_value(currentState_);
     // Only start a separate thread if you are the base Hsm
     if (!parent_) {
         smThread_ = std::thread(&StateMachine::execute, this);
     }
+
+    LOG(INFO) << "started: " << name;
 }
 
 void
 StateMachine::stop()
 {
     // Stopping a HSM means stopping all of its sub HSMs
+    LOG(INFO) << "stopping: " << name;
     for (auto& hsm : table_.getHsmSet()) {
-        LOG(INFO) << "stopping:" << hsm->name;
         hsm->stop();
     }
 
@@ -57,6 +64,7 @@ StateMachine::stop()
         eventQueue_.stop();
         smThread_.join();
     }
+    LOG(INFO) << "stopped: " << name;
 }
 
 void
@@ -93,7 +101,7 @@ StateMachine::execute()
                     LOG(ERROR) << "Reached top level HSM. Cannot handle event";
                 }
                 // TODO (sriram): Maybe set to error state
-                currentStatePromise_.set_value(currentState_);
+                g_lockCurrentState.unlock();
                 continue;
             }
 
@@ -102,14 +110,22 @@ StateMachine::execute()
             t->doTransition();
 
             currentState_ = t->toState;
-            currentStatePromise_.set_value(currentState_);
+            g_lockCurrentState.unlock();
 
-            DLOG(INFO) << "Next State:" << currentState_->name << std::endl;
+            LOG(INFO) << "Next State:" << currentState_->name << std::endl;
 
             // Now execute the current state
             currentState_->execute();
         }
     }
+}
+
+std::shared_ptr<State> const&
+StateMachine::getCurrentState() const
+{
+    LOG(INFO) << "GetState : " << this->name;
+    std::lock_guard<std::mutex> lock(g_lockCurrentState);
+    return currentState_;
 }
 
 void

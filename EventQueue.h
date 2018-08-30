@@ -11,6 +11,10 @@
 
 using std::deque;
 
+namespace tsm {
+
+extern std::mutex g_lockCurrentState;
+
 struct EventQueueInterruptedException : public std::runtime_error
 {
     explicit EventQueueInterruptedException(const std::string& what_arg)
@@ -45,11 +49,7 @@ class EventQueue : private deque<Event>
     // Block until you get an event
     const Event nextEvent()
     {
-        // Note use of while instead of if below
-        // See http://stackoverflow.com/questions/15278343/c11-thread-safe-queue
         std::unique_lock<std::mutex> lock(eventQueueLock);
-        // Wait until an event is available
-        // There might be a bunch of threads blocked right here.
         cvEventAvailable.wait(
           lock, [this] { return (!this->empty() || this->interrupt_); });
         if (interrupt_) {
@@ -70,6 +70,7 @@ class EventQueue : private deque<Event>
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
                   << " Adding Event:" << e.id << "\n";
         push_back(e);
+        g_lockCurrentState.lock();
         cvEventAvailable.notify_all();
     }
 
@@ -92,3 +93,5 @@ class EventQueue : private deque<Event>
     std::condition_variable cvEventAvailable;
     bool interrupt_;
 };
+
+} // namespace tsm

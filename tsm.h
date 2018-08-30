@@ -4,6 +4,7 @@
 #include "EventQueue.h"
 #include "State.h"
 #include "Transition.h"
+#include "hash.h"
 
 #include <atomic>
 #include <future>
@@ -13,12 +14,9 @@
 #include <stdexcept>
 #include <unordered_map>
 
+namespace tsm {
+
 typedef TransitionT<State, Event> Transition;
-
-typedef std::pair<std::shared_ptr<State>, Event> StateEventPair;
-
-#include "hash.h"
-
 typedef std::unordered_map<StateEventPair, Transition> TransitionTable;
 
 // Forward declaration
@@ -26,7 +24,7 @@ class StateMachine;
 
 class StateTransitionTable : private TransitionTable
 {
-    typedef typename std::pair<StateEventPair, Transition>
+    typedef typename ::std::pair<StateEventPair, Transition>
       TransitionTableElement;
 
   public:
@@ -46,7 +44,6 @@ class StateTransitionTable : private TransitionTable
     std::set<std::shared_ptr<StateMachine>> hsmSet_;
 };
 
-#include <iostream>
 class StateMachine : public State
 {
   public:
@@ -79,13 +76,7 @@ class StateMachine : public State
 
     virtual ~StateMachine() override = default;
 
-    auto getCurrentState()
-    {
-        if (!eventQueue_.empty()) {
-            invalidateCurrentState();
-        }
-        return currentStatePromise_.get_future().get();
-    }
+    std::shared_ptr<State> const& getCurrentState() const;
 
     void addFront(Event const& e)
     {
@@ -113,7 +104,7 @@ class StateMachine : public State
 
     void setParent(StateMachine* parent) { parent_ = parent; }
 
-    auto getParent() const { return parent_; }
+    auto& getParent() const { return parent_; }
 
     auto& getTable() const { return table_; }
 
@@ -131,6 +122,8 @@ class StateMachine : public State
   private:
     void invalidateCurrentState()
     {
+
+        LOG(INFO) << "Invalidate State : " << this->name << std::endl;
         currentStatePromise_ = std::promise<std::shared_ptr<State>>();
     }
 
@@ -138,3 +131,5 @@ class StateMachine : public State
 
     void determineParent();
 };
+
+} // namespace tsm
