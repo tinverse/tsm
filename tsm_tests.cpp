@@ -3,9 +3,9 @@
 #include <set>
 #include <utility>
 
-#include "State.h"
 #include "Event.h"
 #include "EventQueue.h"
+#include "State.h"
 #include "tsm.h"
 #include <glog/logging.h>
 
@@ -57,15 +57,17 @@ TEST_F(TestEventQueue, testAddFrom100Threads)
 
     std::vector<Event> v;
     const int NEVENTS = 100;
-    for (int i = 0; i < NEVENTS; i++)
+    v.reserve(NEVENTS);
+for (int i = 0; i < NEVENTS; i++)
     {
-        v.push_back(Event());
+        v.emplace_back();
     }
 
     std::vector<std::thread> vt;
-    for (auto event : v)
+    vt.reserve(v.size());
+for (auto event : v)
     {
-        vt.push_back(std::thread(&EventQueue<Event>::addEvent, &eq_, event));
+        vt.emplace_back(&EventQueue<Event>::addEvent, &eq_, event);
     }
 
     for (auto& t : vt)
@@ -110,6 +112,9 @@ TEST_F(TestStateMachine, testGarageDoor)
     Event topSensor_event;
     Event obstruct_event;
 
+    // Event Queue
+    EventQueue<Event> eventQueue;
+
     // TransitionTable
     StateTransitionTable garageDoorTransitions;
 
@@ -130,16 +135,18 @@ TEST_F(TestStateMachine, testGarageDoor)
     // The StateMachine
     // Starting State: doorClosed
     // Stop State: doorOpen
-    StateMachine sm("Garage Door HSM", doorClosed, doorDummyFinal, garageDoorTransitions);
-    sm.start();
+    std::shared_ptr<StateMachine> sm =
+        std::make_shared<StateMachine>("Garage Door SM", doorClosed, doorDummyFinal,
+            eventQueue, garageDoorTransitions);
+    sm->start();
     LOG(INFO) << "Returned from start" << std::endl;
-    EXPECT_EQ(sm.getCurrentState(), doorClosed);
+    EXPECT_EQ(sm->getCurrentState(), doorClosed);
     LOG(INFO) << "Calling addEvent" << std::endl;
-    sm.addEvent(click_event);
-    EXPECT_EQ(doorOpening, sm.getCurrentState());
-    sm.addEvent(topSensor_event);
-    EXPECT_EQ(doorOpen, sm.getCurrentState());
-    sm.stop();
+    eventQueue.addEvent(click_event);
+    EXPECT_EQ(doorOpening, sm->getCurrentState());
+    eventQueue.addEvent(topSensor_event);
+    EXPECT_EQ(doorOpen, sm->getCurrentState());
+    sm->stop();
 }
 
 TEST_F(TestStateMachine, testCdPlayer)
@@ -160,6 +167,10 @@ TEST_F(TestStateMachine, testCdPlayer)
     Event pause;
     Event end_pause;
 
+
+    // Event Queue
+    EventQueue<Event> eventQueue;
+
     // TransitionTable
     StateTransitionTable cdPlayerTransitions;
 
@@ -184,44 +195,66 @@ TEST_F(TestStateMachine, testCdPlayer)
 
     // The StateMachine
     // Starting State: Empty
-    StateMachine sm("CD Player HSM", Empty, Final, cdPlayerTransitions);
-    sm.start();
+    std::shared_ptr<StateMachine> sm =
+        std::make_shared<StateMachine>("CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
+    sm->start();
 
-    sm.addEvent(open_close);
-    ASSERT_EQ(sm.getCurrentState(), Open);
+    eventQueue.addEvent(open_close);
+    ASSERT_EQ(sm->getCurrentState(), Open);
 
-    sm.addEvent(open_close);
-    ASSERT_EQ(sm.getCurrentState(), Empty);
+    eventQueue.addEvent(open_close);
+    ASSERT_EQ(sm->getCurrentState(), Empty);
 
-    sm.addEvent(cd_detected);
-    ASSERT_EQ(sm.getCurrentState(), Stopped);
+    eventQueue.addEvent(cd_detected);
+    ASSERT_EQ(sm->getCurrentState(), Stopped);
 
-    sm.addEvent(play);
-    ASSERT_EQ(sm.getCurrentState(), Playing);
+    eventQueue.addEvent(play);
+    ASSERT_EQ(sm->getCurrentState(), Playing);
 
-    sm.addEvent(pause);
-    ASSERT_EQ(sm.getCurrentState(), Paused);
+    eventQueue.addEvent(pause);
+    ASSERT_EQ(sm->getCurrentState(), Paused);
 
-    sm.addEvent(stop);
-    ASSERT_EQ(sm.getCurrentState(), Stopped);
+    eventQueue.addEvent(stop);
+    ASSERT_EQ(sm->getCurrentState(), Stopped);
 
 
-    sm.addEvent(stop);
-    ASSERT_EQ(sm.getCurrentState(), Stopped);
+    eventQueue.addEvent(stop);
+    ASSERT_EQ(sm->getCurrentState(), Stopped);
 
-    sm.stop();
+    sm->stop();
 }
 
 TEST_F(TestStateMachine, testCdPlayerHSM)
 {
+    //Playing HSM
+    //States
+    auto Song1    = std::make_shared<State>("Playing HSM -> Song1");
+    auto Song2    = std::make_shared<State>("Playing HSM -> Song2");
+    auto Song3    = std::make_shared<State>("Playing HSM -> Song3");
+    auto FinalPlay= std::make_shared<State>("Playing Final State");
+    //Events
+    Event next_song;
+    Event prev_song;
+
+
+    // Event Queue
+    EventQueue<Event> eventQueue;
+
+    // Transition Table
+    StateTransitionTable playTransitions;
+    playTransitions.add(Song1, next_song, Song2);
+    playTransitions.add(Song2, next_song, Song3);
+    playTransitions.add(Song3, prev_song, Song2);
+    playTransitions.add(Song2, prev_song, Song1);
+
     // States
     auto Stopped    = std::make_shared<State>("Player Stopped");
-    auto Playing    = std::make_shared<State>("Player Playing");
+    auto Playing    = std::make_shared<StateMachine>("Playing HSM", Song1,
+            FinalPlay, eventQueue, playTransitions);
     auto Paused     = std::make_shared<State>("Player Paused");
     auto Empty      = std::make_shared<State>("Player Empty");
     auto Open       = std::make_shared<State>("Player Open");
     auto Final       = std::make_shared<State>("Player Final");
-
 
     // Events
     Event play;
@@ -255,33 +288,27 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
 
     // The StateMachine
     // Starting State: Empty
-    StateMachine sm("CD Player HSM", Empty, Final, cdPlayerTransitions);
-    sm.start();
+    std::shared_ptr<StateMachine> sm =
+        std::make_shared<StateMachine>("CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
 
-    sm.addEvent(open_close);
-    ASSERT_EQ(sm.getCurrentState(), Open);
+    ASSERT_EQ(Playing->getParent(), sm.get());
 
-    sm.addEvent(open_close);
-    ASSERT_EQ(sm.getCurrentState(), Empty);
+    sm->start();
 
-    sm.addEvent(cd_detected);
-    ASSERT_EQ(sm.getCurrentState(), Stopped);
+    eventQueue.addEvent(cd_detected);
+    ASSERT_EQ(sm->getCurrentState(), Stopped);
 
-    sm.addEvent(play);
-    ASSERT_EQ(sm.getCurrentState(), Playing);
+    eventQueue.addEvent(play);
+    ASSERT_EQ(sm->getCurrentState(), Playing);
+     ASSERT_EQ(Playing->getCurrentState(), Song1);
 
-    sm.addEvent(pause);
-    ASSERT_EQ(sm.getCurrentState(), Paused);
+    eventQueue.addEvent(next_song);
+    ASSERT_EQ(sm->getCurrentState(), Playing);
+    ASSERT_EQ(Playing->getCurrentState(), Song2);
 
-    sm.addEvent(stop);
-    ASSERT_EQ(sm.getCurrentState(), Stopped);
-
-
-    sm.addEvent(stop);
-    ASSERT_EQ(sm.getCurrentState(), Stopped);
-
-    sm.stop();
+    sm->stop();
 }
+
 // Boost HSM record player example
 
 int main(int argc, char* argv[])
