@@ -8,6 +8,8 @@
 
 #include "UniqueId.h"
 
+namespace tsm {
+
 // Generate and maintain an internal id
 struct State
 {
@@ -53,3 +55,5 @@ struct State
     // TODO: (sriram) make private
     const uint64_t id;
 };
+
+} // namespace tsm

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <memory>
 
+namespace tsm {
+
 template<typename State, typename Event>
 class TransitionT
 {
@@ -29,3 +31,5 @@ class TransitionT
     std::shared_ptr<State> toState;
     Event onEvent;
 };
+
+} // namespace tsm
