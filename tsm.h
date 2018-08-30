@@ -6,11 +6,11 @@
 #include "Transition.h"
 
 #include <atomic>
+#include <future>
 #include <memory>
+#include <set>
 #include <sstream>
 #include <stdexcept>
-#include <future>
-#include <set>
 #include <unordered_map>
 
 typedef TransitionT<State, Event> Transition;
@@ -27,9 +27,9 @@ class StateMachine;
 class StateTransitionTable : private TransitionTable
 {
     typedef typename std::pair<StateEventPair, Transition>
-        TransitionTableElement;
+      TransitionTableElement;
 
-public:
+  public:
     void add(std::shared_ptr<State> fromState,
              Event onEvent,
              std::shared_ptr<State> toState);
@@ -42,29 +42,29 @@ public:
 
     auto& getHsmSet() { return hsmSet_; }
 
-private:
-    std::set< std::shared_ptr<StateMachine> > hsmSet_;
+  private:
+    std::set<std::shared_ptr<StateMachine>> hsmSet_;
 };
 
 #include <iostream>
 class StateMachine : public State
 {
-public:
+  public:
     StateMachine() = delete;
 
     StateMachine(std::string name,
-            std::shared_ptr<State> startState,
+                 std::shared_ptr<State> startState,
                  std::shared_ptr<State> stopState,
                  EventQueue<Event>& eventQueue,
                  StateTransitionTable table)
-        : State(name)
-        , interrupt_(false)
-        , currentState_(nullptr)
-        , startState_(startState)
-        , stopState_(std::move(stopState))
-        , eventQueue_(eventQueue)
-        , table_(std::move(table))
-        , parent_(nullptr)
+      : State(name)
+      , interrupt_(false)
+      , currentState_(nullptr)
+      , startState_(startState)
+      , stopState_(std::move(stopState))
+      , eventQueue_(eventQueue)
+      , table_(std::move(table))
+      , parent_(nullptr)
     {
 
         // initialize the state transition table.
@@ -74,43 +74,52 @@ public:
         // the constructor.
 
         // In-order traverse all states. If HSM found, set its parent
-      determineParent();
-
+        determineParent();
     }
 
     virtual ~StateMachine() override = default;
 
-    auto getCurrentState() {
-        if(!eventQueue_.empty()) {
+    auto getCurrentState()
+    {
+        if (!eventQueue_.empty()) {
             invalidateCurrentState();
         }
         return currentStatePromise_.get_future().get();
     }
 
-    void addFront(Event const & e) {
+    void addFront(Event const& e)
+    {
         invalidateCurrentState();
         eventQueue_.addFront(e);
     }
 
     void start();
 
-    void OnEntry() override { DLOG(INFO) << "Entering: " << this->name << std::endl; start(); }
+    void OnEntry() override
+    {
+        DLOG(INFO) << "Entering: " << this->name << std::endl;
+        start();
+    }
 
     void execute() override;
 
-    void OnExit() override { DLOG(INFO) << "Exiting: " << this->name << std::endl; stop(); }
+    void OnExit() override
+    {
+        DLOG(INFO) << "Exiting: " << this->name << std::endl;
+        stop();
+    }
 
     void stop();
 
-    void setParent(StateMachine * parent) { parent_ = parent; }
+    void setParent(StateMachine* parent) { parent_ = parent; }
 
     auto getParent() const { return parent_; }
 
     auto& getTable() const { return table_; }
 
-protected:
+  protected:
     std::atomic<bool> interrupt_;
-    std::promise< std::shared_ptr<State> > currentStatePromise_;
+    std::promise<std::shared_ptr<State>> currentStatePromise_;
     std::shared_ptr<State> currentState_;
     std::shared_ptr<State> startState_;
     std::shared_ptr<State> stopState_;
@@ -119,15 +128,13 @@ protected:
     StateMachine* parent_;
     std::thread smThread_;
 
-private:
-    void invalidateCurrentState() {
-        currentStatePromise_ = std::promise< std::shared_ptr<State> >();
+  private:
+    void invalidateCurrentState()
+    {
+        currentStatePromise_ = std::promise<std::shared_ptr<State>>();
     }
 
-    auto getHsmSet() {
-      return table_.getHsmSet();
-    }
+    auto getHsmSet() { return table_.getHsmSet(); }
 
     void determineParent();
-
 };

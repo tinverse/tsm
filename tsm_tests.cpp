@@ -11,29 +11,36 @@
 
 class TestState : public testing::Test
 {
-public:
+  public:
     TestState()
-        : state_("Dummy") {}
+      : state_("Dummy")
+    {}
     ~TestState() override = default;
     void SetUp() override {}
     void TearDown() override {}
 
-protected:
+  protected:
     State state_;
 };
 
-TEST_F(TestState, Construct) { DLOG(INFO) << "Test" << std::endl; }
+TEST_F(TestState, Construct)
+{
+    DLOG(INFO) << "Test" << std::endl;
+}
 
-TEST_F(TestState, Call) { state_.execute(); }
+TEST_F(TestState, Call)
+{
+    state_.execute();
+}
 
 class TestEventQueue : public testing::Test
 {
-public:
+  public:
     ~TestEventQueue() override = default;
     void SetUp() override {}
     void TearDown() override {}
 
-protected:
+  protected:
     EventQueue<Event> eq_;
     Event e1, e2, e3;
 };
@@ -58,27 +65,23 @@ TEST_F(TestEventQueue, testAddFrom100Threads)
     std::vector<Event> v;
     const int NEVENTS = 100;
     v.reserve(NEVENTS);
-for (int i = 0; i < NEVENTS; i++)
-    {
+    for (int i = 0; i < NEVENTS; i++) {
         v.emplace_back();
     }
 
     std::vector<std::thread> vt;
     vt.reserve(v.size());
-for (auto event : v)
-    {
+    for (auto event : v) {
         vt.emplace_back(&EventQueue<Event>::addEvent, &eq_, event);
     }
 
-    for (auto& t : vt)
-    {
+    for (auto& t : vt) {
         t.join();
     }
 
     EXPECT_EQ(eq_.size(), NEVENTS);
 
-    while (!eq_.empty())
-    {
+    while (!eq_.empty()) {
         auto e = eq_.front();
         ASSERT_TRUE(std::find(v.begin(), v.end(), e) != v.end());
         eq_.pop_front();
@@ -90,20 +93,17 @@ for (auto event : v)
 // For e.g. As door is opening or closing, one of the sensors
 // detects an obstacle.
 class TestStateMachine : public testing::Test
-{
-};
+{};
 
 TEST_F(TestStateMachine, testGarageDoor)
 {
     // States
-    auto doorOpen    = std::make_shared<State>("Door Open");
+    auto doorOpen = std::make_shared<State>("Door Open");
     auto doorOpening = std::make_shared<State>("Door Opening");
-    auto doorClosed  = std::make_shared<State>("Door Closed");
+    auto doorClosed = std::make_shared<State>("Door Closed");
     auto doorClosing = std::make_shared<State>("Door Closing");
-    auto doorStoppedClosing =
-        std::make_shared<State>("Door Stopped Closing");
-    auto doorStoppedOpening =
-        std::make_shared<State>("Door Stopped Opening");
+    auto doorStoppedClosing = std::make_shared<State>("Door Stopped Closing");
+    auto doorStoppedOpening = std::make_shared<State>("Door Stopped Opening");
     auto doorDummyFinal = std::make_shared<State>("Door Final");
 
     // Events
@@ -136,8 +136,11 @@ TEST_F(TestStateMachine, testGarageDoor)
     // Starting State: doorClosed
     // Stop State: doorOpen
     std::shared_ptr<StateMachine> sm =
-        std::make_shared<StateMachine>("Garage Door SM", doorClosed, doorDummyFinal,
-            eventQueue, garageDoorTransitions);
+      std::make_shared<StateMachine>("Garage Door SM",
+                                     doorClosed,
+                                     doorDummyFinal,
+                                     eventQueue,
+                                     garageDoorTransitions);
     sm->start();
     LOG(INFO) << "Returned from start" << std::endl;
     EXPECT_EQ(sm->getCurrentState(), doorClosed);
@@ -152,12 +155,12 @@ TEST_F(TestStateMachine, testGarageDoor)
 TEST_F(TestStateMachine, testCdPlayer)
 {
     // States
-    auto Stopped    = std::make_shared<State>("Player Stopped");
-    auto Playing    = std::make_shared<State>("Player Playing");
-    auto Paused     = std::make_shared<State>("Player Paused");
-    auto Empty      = std::make_shared<State>("Player Empty");
-    auto Open       = std::make_shared<State>("Player Open");
-    auto Final       = std::make_shared<State>("Player Final");
+    auto Stopped = std::make_shared<State>("Player Stopped");
+    auto Playing = std::make_shared<State>("Player Playing");
+    auto Paused = std::make_shared<State>("Player Paused");
+    auto Empty = std::make_shared<State>("Player Empty");
+    auto Open = std::make_shared<State>("Player Open");
+    auto Final = std::make_shared<State>("Player Final");
 
     // Events
     Event play;
@@ -166,7 +169,6 @@ TEST_F(TestStateMachine, testCdPlayer)
     Event cd_detected;
     Event pause;
     Event end_pause;
-
 
     // Event Queue
     EventQueue<Event> eventQueue;
@@ -178,25 +180,25 @@ TEST_F(TestStateMachine, testCdPlayer)
     cdPlayerTransitions.add(Stopped, play, Playing);
     cdPlayerTransitions.add(Stopped, open_close, Open);
     cdPlayerTransitions.add(Stopped, stop, Stopped);
-   //-------------------------------------------------
+    //-------------------------------------------------
     cdPlayerTransitions.add(Open, open_close, Empty);
-   //-------------------------------------------------
+    //-------------------------------------------------
     cdPlayerTransitions.add(Empty, open_close, Open);
     cdPlayerTransitions.add(Empty, cd_detected, Stopped);
     cdPlayerTransitions.add(Empty, cd_detected, Playing);
-   //-------------------------------------------------
+    //-------------------------------------------------
     cdPlayerTransitions.add(Playing, stop, Stopped);
     cdPlayerTransitions.add(Playing, pause, Paused);
     cdPlayerTransitions.add(Playing, open_close, Open);
-   //-------------------------------------------------
+    //-------------------------------------------------
     cdPlayerTransitions.add(Paused, end_pause, Playing);
     cdPlayerTransitions.add(Paused, stop, Stopped);
     cdPlayerTransitions.add(Paused, open_close, Open);
 
     // The StateMachine
     // Starting State: Empty
-    std::shared_ptr<StateMachine> sm =
-        std::make_shared<StateMachine>("CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
+    std::shared_ptr<StateMachine> sm = std::make_shared<StateMachine>(
+      "CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
     sm->start();
 
     eventQueue.addEvent(open_close);
@@ -217,7 +219,6 @@ TEST_F(TestStateMachine, testCdPlayer)
     eventQueue.addEvent(stop);
     ASSERT_EQ(sm->getCurrentState(), Stopped);
 
-
     eventQueue.addEvent(stop);
     ASSERT_EQ(sm->getCurrentState(), Stopped);
 
@@ -226,16 +227,15 @@ TEST_F(TestStateMachine, testCdPlayer)
 
 TEST_F(TestStateMachine, testCdPlayerHSM)
 {
-    //Playing HSM
-    //States
-    auto Song1    = std::make_shared<State>("Playing HSM -> Song1");
-    auto Song2    = std::make_shared<State>("Playing HSM -> Song2");
-    auto Song3    = std::make_shared<State>("Playing HSM -> Song3");
-    auto FinalPlay= std::make_shared<State>("Playing Final State");
-    //Events
+    // Playing HSM
+    // States
+    auto Song1 = std::make_shared<State>("Playing HSM -> Song1");
+    auto Song2 = std::make_shared<State>("Playing HSM -> Song2");
+    auto Song3 = std::make_shared<State>("Playing HSM -> Song3");
+    auto FinalPlay = std::make_shared<State>("Playing Final State");
+    // Events
     Event next_song;
     Event prev_song;
-
 
     // Event Queue
     EventQueue<Event> eventQueue;
@@ -248,13 +248,13 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
     playTransitions.add(Song2, prev_song, Song1);
 
     // States
-    auto Stopped    = std::make_shared<State>("Player Stopped");
-    auto Playing    = std::make_shared<StateMachine>("Playing HSM", Song1,
-            FinalPlay, eventQueue, playTransitions);
-    auto Paused     = std::make_shared<State>("Player Paused");
-    auto Empty      = std::make_shared<State>("Player Empty");
-    auto Open       = std::make_shared<State>("Player Open");
-    auto Final       = std::make_shared<State>("Player Final");
+    auto Stopped = std::make_shared<State>("Player Stopped");
+    auto Playing = std::make_shared<StateMachine>(
+      "Playing HSM", Song1, FinalPlay, eventQueue, playTransitions);
+    auto Paused = std::make_shared<State>("Player Paused");
+    auto Empty = std::make_shared<State>("Player Empty");
+    auto Open = std::make_shared<State>("Player Open");
+    auto Final = std::make_shared<State>("Player Final");
 
     // Events
     Event play;
@@ -271,25 +271,25 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
     cdPlayerTransitions.add(Stopped, play, Playing);
     cdPlayerTransitions.add(Stopped, open_close, Open);
     cdPlayerTransitions.add(Stopped, stop, Stopped);
-   //-------------------------------------------------
+    //-------------------------------------------------
     cdPlayerTransitions.add(Open, open_close, Empty);
-   //-------------------------------------------------
+    //-------------------------------------------------
     cdPlayerTransitions.add(Empty, open_close, Open);
     cdPlayerTransitions.add(Empty, cd_detected, Stopped);
     cdPlayerTransitions.add(Empty, cd_detected, Playing);
-   //-------------------------------------------------
+    //-------------------------------------------------
     cdPlayerTransitions.add(Playing, stop, Stopped);
     cdPlayerTransitions.add(Playing, pause, Paused);
     cdPlayerTransitions.add(Playing, open_close, Open);
-   //-------------------------------------------------
+    //-------------------------------------------------
     cdPlayerTransitions.add(Paused, end_pause, Playing);
     cdPlayerTransitions.add(Paused, stop, Stopped);
     cdPlayerTransitions.add(Paused, open_close, Open);
 
     // The StateMachine
     // Starting State: Empty
-    std::shared_ptr<StateMachine> sm =
-        std::make_shared<StateMachine>("CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
+    std::shared_ptr<StateMachine> sm = std::make_shared<StateMachine>(
+      "CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
 
     ASSERT_EQ(Playing->getParent(), sm.get());
 
@@ -300,7 +300,7 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
 
     eventQueue.addEvent(play);
     ASSERT_EQ(sm->getCurrentState(), Playing);
-     ASSERT_EQ(Playing->getCurrentState(), Song1);
+    ASSERT_EQ(Playing->getCurrentState(), Song1);
 
     eventQueue.addEvent(next_song);
     ASSERT_EQ(sm->getCurrentState(), Playing);
@@ -311,7 +311,8 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
 
 // Boost HSM record player example
 
-int main(int argc, char* argv[])
+int
+main(int argc, char* argv[])
 {
     google::InitGoogleLogging(argv[0]);
     google::InstallFailureSignalHandler();
