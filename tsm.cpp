@@ -9,8 +9,6 @@
 
 using namespace tsm;
 
-std::mutex tsm::g_lockCurrentState;
-
 bool
 operator==(const StateEventPair& s1, const StateEventPair& s2)
 {
@@ -40,7 +38,6 @@ StateMachine::start()
 {
     LOG(INFO) << "starting: " << name;
     currentState_ = startState_;
-    currentStatePromise_.set_value(currentState_);
     // Only start a separate thread if you are the base Hsm
     if (!parent_) {
         smThread_ = std::thread(&StateMachine::execute, this);
@@ -96,12 +93,11 @@ StateMachine::execute()
             Transition* t = table_.next(currentState_, nextEvent);
             if (!t) {
                 if (parent_) {
-                    parent_->addFront(nextEvent);
+                    eventQueue_.addFront(nextEvent);
                 } else {
                     LOG(ERROR) << "Reached top level HSM. Cannot handle event";
                 }
                 // TODO (sriram): Maybe set to error state
-                g_lockCurrentState.unlock();
                 continue;
             }
 
@@ -110,7 +106,6 @@ StateMachine::execute()
             t->doTransition();
 
             currentState_ = t->toState;
-            g_lockCurrentState.unlock();
 
             LOG(INFO) << "Next State:" << currentState_->name << std::endl;
 
@@ -124,7 +119,6 @@ std::shared_ptr<State> const&
 StateMachine::getCurrentState() const
 {
     LOG(INFO) << "GetState : " << this->name;
-    std::lock_guard<std::mutex> lock(g_lockCurrentState);
     return currentState_;
 }
 

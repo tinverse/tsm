@@ -76,13 +76,7 @@ class StateMachine : public State
 
     virtual ~StateMachine() override = default;
 
-    std::shared_ptr<State> const& getCurrentState() const;
-
-    void addFront(Event const& e)
-    {
-        invalidateCurrentState();
-        eventQueue_.addFront(e);
-    }
+    virtual std::shared_ptr<State> const& getCurrentState() const;
 
     void start();
 
@@ -110,7 +104,6 @@ class StateMachine : public State
 
   protected:
     std::atomic<bool> interrupt_;
-    std::promise<std::shared_ptr<State>> currentStatePromise_;
     std::shared_ptr<State> currentState_;
     std::shared_ptr<State> startState_;
     std::shared_ptr<State> stopState_;
@@ -120,13 +113,6 @@ class StateMachine : public State
     std::thread smThread_;
 
   private:
-    void invalidateCurrentState()
-    {
-
-        LOG(INFO) << "Invalidate State : " << this->name << std::endl;
-        currentStatePromise_ = std::promise<std::shared_ptr<State>>();
-    }
-
     auto getHsmSet() { return table_.getHsmSet(); }
 
     void determineParent();

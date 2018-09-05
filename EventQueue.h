@@ -13,8 +13,6 @@ using std::deque;
 
 namespace tsm {
 
-extern std::mutex g_lockCurrentState;
-
 struct EventQueueInterruptedException : public std::runtime_error
 {
     explicit EventQueueInterruptedException(const std::string& what_arg)
@@ -70,7 +68,6 @@ class EventQueue : private deque<Event>
         LOG(INFO) << "Thread:" << std::this_thread::get_id()
                   << " Adding Event:" << e.id << "\n";
         push_back(e);
-        g_lockCurrentState.lock();
         cvEventAvailable.notify_all();
     }
 

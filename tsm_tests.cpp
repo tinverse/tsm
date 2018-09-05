@@ -11,7 +11,25 @@
 
 using namespace tsm;
 
-extern std::mutex tsm::g_lockCurrentState;
+class StateMachineTest : public StateMachine
+{
+  public:
+    StateMachineTest() = delete;
+    StateMachineTest(std::string name,
+                     std::shared_ptr<State> startState,
+                     std::shared_ptr<State> stopState,
+                     EventQueue<Event>& eventQueue,
+                     StateTransitionTable table)
+      : StateMachine(name, startState, stopState, eventQueue, table)
+    {}
+
+    std::shared_ptr<State> const& getCurrentState() const override
+    {
+        std::this_thread::yield();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        return currentState_;
+    }
+};
 
 class TestState : public testing::Test
 {
@@ -47,47 +65,44 @@ class TestEventQueue : public testing::Test
     Event e1, e2, e3;
 };
 
-TEST_F(TestEventQueue, DISABLED_testSingleEvent)
+TEST_F(TestEventQueue, testSingleEvent)
 {
     auto f1 = std::async(&EventQueue<Event>::nextEvent, &eq_);
 
     std::thread t1(&EventQueue<Event>::addEvent, &eq_, e1);
 
     // Use the same threads to retrieve events
-    Event actualEvent1 = f1.get(); //, e2 = f2.get(), e3=f3.get();
-    t1.join();                     // t2.join(); t3.join();
-    // std::printf("Event1:%d Event2:%d Event3:%d", e1.id, e2.id, e3.id);
-    // std::printf("Event1:%d", e1.id);
+    Event actualEvent1 = f1.get();
+    t1.join();
     EXPECT_EQ(actualEvent1.id, e1.id);
 }
 
-TEST_F(TestEventQueue, DISABLED_testAddFrom100Threads)
+TEST_F(TestEventQueue, testAddFrom100Threads)
 {
-
+    EventQueue<Event> eq_;
     std::vector<Event> v;
     const int NEVENTS = 100;
     v.reserve(NEVENTS);
+
     for (int i = 0; i < NEVENTS; i++) {
         v.emplace_back();
     }
 
-    std::vector<std::thread> vt;
-    vt.reserve(v.size());
+    std::vector<std::thread> vtProduce;
+    std::vector<std::future<const Event>> vtConsume;
+
     for (auto event : v) {
-        vt.emplace_back(&EventQueue<Event>::addEvent, &eq_, event);
-        std::cout << "Event: " << event.id << std::endl;
+        vtConsume.push_back(std::async(&EventQueue<Event>::nextEvent, &eq_));
+        vtProduce.emplace_back(&EventQueue<Event>::addEvent, &eq_, event);
     }
 
-    for (auto& t : vt) {
-        t.join();
-    }
-
-    EXPECT_EQ(eq_.size(), NEVENTS);
-
-    while (!eq_.empty()) {
-        auto e = eq_.front();
+    for (auto&& future : vtConsume) {
+        const Event e = future.get();
         ASSERT_TRUE(std::find(v.begin(), v.end(), e) != v.end());
-        eq_.pop_front();
+    }
+
+    for (auto&& t : vtProduce) {
+        t.join();
     }
 }
 
@@ -138,16 +153,14 @@ TEST_F(TestStateMachine, testGarageDoor)
     // The StateMachine
     // Starting State: doorClosed
     // Stop State: doorOpen
-    std::shared_ptr<StateMachine> sm =
-      std::make_shared<StateMachine>("Garage Door SM",
-                                     doorClosed,
-                                     doorDummyFinal,
-                                     eventQueue,
-                                     garageDoorTransitions);
+    std::shared_ptr<StateMachineTest> sm =
+      std::make_shared<StateMachineTest>("Garage Door SM",
+                                         doorClosed,
+                                         doorDummyFinal,
+                                         eventQueue,
+                                         garageDoorTransitions);
     sm->start();
-    LOG(INFO) << "Returned from start" << std::endl;
     EXPECT_EQ(sm->getCurrentState(), doorClosed);
-    LOG(INFO) << "Calling addEvent" << std::endl;
     eventQueue.addEvent(click_event);
     EXPECT_EQ(doorOpening, sm->getCurrentState());
     eventQueue.addEvent(topSensor_event);
@@ -200,7 +213,7 @@ TEST_F(TestStateMachine, testCdPlayer)
 
     // The StateMachine
     // Starting State: Empty
-    std::shared_ptr<StateMachine> sm = std::make_shared<StateMachine>(
+    std::shared_ptr<StateMachineTest> sm = std::make_shared<StateMachineTest>(
       "CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
     sm->start();
 
@@ -218,9 +231,6 @@ TEST_F(TestStateMachine, testCdPlayer)
 
     eventQueue.addEvent(pause);
     ASSERT_EQ(sm->getCurrentState(), Paused);
-
-    eventQueue.addEvent(stop);
-    ASSERT_EQ(sm->getCurrentState(), Stopped);
 
     eventQueue.addEvent(stop);
     ASSERT_EQ(sm->getCurrentState(), Stopped);
@@ -252,7 +262,7 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
 
     // States
     auto Stopped = std::make_shared<State>("Player Stopped");
-    auto Playing = std::make_shared<StateMachine>(
+    auto Playing = std::make_shared<StateMachineTest>(
       "Playing HSM", Song1, FinalPlay, eventQueue, playTransitions);
     auto Paused = std::make_shared<State>("Player Paused");
     auto Empty = std::make_shared<State>("Player Empty");
@@ -291,7 +301,7 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
 
     // The StateMachine
     // Starting State: Empty
-    std::shared_ptr<StateMachine> sm = std::make_shared<StateMachine>(
+    auto sm = std::make_shared<StateMachineTest>(
       "CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
 
     ASSERT_EQ(Playing->getParent(), sm.get());
@@ -306,8 +316,8 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
     ASSERT_EQ(Playing->getCurrentState(), Song1);
 
     eventQueue.addEvent(next_song);
+    ASSERT_EQ(sm->getCurrentState(), Playing);
     ASSERT_EQ(Playing->getCurrentState(), Song2);
-    // ASSERT_EQ(sm->getCurrentState(), Playing);
 
     eventQueue.addEvent(pause);
     sm->stop();
