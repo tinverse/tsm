@@ -8,12 +8,14 @@ if(NOT USE_GIT_PROTOCOL)
 endif()
 
 ExternalProject_Add(Glog
+    DEPENDS Gflags
     GIT_REPOSITORY ${git_protocol}://github.com/google/glog.git
     GIT_TAG v${Glog_VERSION}
     CMAKE_GENERATOR ${CMAKE_GENERATOR}
     UPDATE_COMMAND ""
     CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DGflags_NAMESPACE=google
+        -DWITH_GFLAGS=ON
+        -DGFLAGS_NAMESPACE=google
         -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
     )
 

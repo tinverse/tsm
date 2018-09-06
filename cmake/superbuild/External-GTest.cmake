@@ -9,6 +9,7 @@ endif()
 
 # Build Static Libs for GTest as that is recommended
 ExternalProject_Add(GTest
+    DEPENDS Glog
     GIT_REPOSITORY ${git_protocol}://github.com/google/googletest.git
     GIT_TAG release-${GTest_VERSION}
     CMAKE_GENERATOR ${CMAKE_GENERATOR}
@@ -16,7 +17,7 @@ ExternalProject_Add(GTest
     CMAKE_ARGS
         -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_DEPENDENCIES_DIR}
         -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-        -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
+        -DBUILD_SHARED_LIBS:BOOL=OFF
         -DBUILD_GTEST:BOOL=ON
         -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
         -DBUILD_GMOCK:BOOL=ON

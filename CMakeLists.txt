@@ -1,39 +1,42 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(tsm VERSION 0.1.0)
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+LIST(APPEND CMAKE_MODULE_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/superbuild")
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall" CACHE STRING "CXX Flags")
-set_directory_properties(PROPERTIES EP_BASE "${PROJECT_SOURCE_DIR}/../external-build")
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/ThirdParty/${CMAKE_SYSTEM_NAME} CACHE PATH "ThirdParty stuff")
 
-set(CMAKE_FIND_ROOT_PATH ${CMAKE_INSTALL_PREFIX})
+if (NOT INSTALL_DIR)
+    set(INSTALL_DIR ${PROJECT_BINARY_DIR}/${CMAKE_SYSTEM_NAME} CACHE PATH "Install Dir")
+endif(NOT INSTALL_DIR)
+
+if (BUILD_DEPENDENCIES)
+    include(dependencies)
+    set_directory_properties(PROPERTIES EP_BASE ${INSTALL_DIR})
+    set(CMAKE_INSTALL_PREFIX ${INSTALL_DIR} CACHE PATH "ThirdParty stuff")
+else (BUILD_DEPENDENCIES)
+    set(CMAKE_FIND_ROOT_PATH ${INSTALL_DIR} CACHE PATH "")
+    find_package(Gflags REQUIRED)
+    find_package(GTest REQUIRED)
+    find_package(Glog REQUIRED)
+
+    message(STATUS "Module path:" ${CMAKE_MODULE_PATH})
+    message(STATUS "GLog:" ${GLOG_FOUND} " " ${GLOG_INCLUDE_DIRS} " " ${GLOG_LIBRARIES})
+    message(STATUS "GTest:" ${GTEST_FOUND} " " ${GTEST_INCLUDE_DIRS} " " ${GTEST_LIBRARIES})
+    message(STATUS ${CMAKE_INSTALL_PREFIX})
+
+    add_library(tsm
+        tsm.cpp
+        UniqueId.cpp
+    )
+
+    target_include_directories(tsm SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
+    target_link_libraries(tsm PRIVATE ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES})
 
 
-set(GTEST_ROOT "${CMAKE_INSTALL_PREFIX}" CACHE PATH "GTest Root Dir")
-set(GLOG_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Glog Root Dir")
-set(GFLAGS_ROOT_DIR "${CMAKE_INSTALL_PREFIX}" CACHE PATH "GFlags Root Dir")
+    add_executable(tsm_test tsm_tests.cpp)
 
-find_package(Gflags REQUIRED)
-find_package(GTest REQUIRED)
-find_package(Glog REQUIRED)
-
-message(INFO ${CMAKE_MODULE_PATH} " " ${GLOG_FOUND} " " ${GLOG_INCLUDE_DIRS} " " ${GLOG_LIBRARIES})
-message(INFO ${CMAKE_INSTALL_PREFIX})
-
-add_library(tsm
-    tsm.cpp
-    UniqueId.cpp
-)
-
-target_include_directories(tsm SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
-
-
-add_executable(tsm_test tsm_tests.cpp)
-
-target_include_directories(tsm_test SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
-target_link_libraries(tsm_test PRIVATE tsm ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
-
-#install(TARGETS tsm DESTINATION bin)
-#install(TARGETS tsm_test DESTINATION bin)
+    target_include_directories(tsm_test SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
+    target_link_libraries(tsm_test PRIVATE tsm ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
+endif(BUILD_DEPENDENCIES)
