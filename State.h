@@ -1,16 +1,14 @@
 #pragma once
+#include <glog/logging.h>
 #include <inttypes.h>
 #include <iostream>
 #include <stdint.h>
 #include <string>
 
-#include <glog/logging.h>
-
 #include "UniqueId.h"
 
 namespace tsm {
 
-// Generate and maintain an internal id
 struct State
 {
   public:
@@ -52,7 +50,6 @@ struct State
     const std::string name;
 
   private:
-    // TODO: (sriram) make private
     const uint64_t id;
 };
 

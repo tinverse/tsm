@@ -11,8 +11,9 @@
 #include <memory>
 #include <set>
 #include <sstream>
-#include <stdexcept>
 #include <unordered_map>
+
+using std::shared_ptr;
 
 namespace tsm {
 
@@ -28,11 +29,11 @@ class StateTransitionTable : private TransitionTable
       TransitionTableElement;
 
   public:
-    void add(std::shared_ptr<State> fromState,
+    void add(shared_ptr<State> fromState,
              Event onEvent,
-             std::shared_ptr<State> toState);
+             shared_ptr<State> toState);
 
-    Transition* next(std::shared_ptr<State> fromState, Event onEvent);
+    Transition* next(shared_ptr<State> fromState, Event onEvent);
 
     void print();
 
@@ -41,7 +42,7 @@ class StateTransitionTable : private TransitionTable
     auto& getHsmSet() { return hsmSet_; }
 
   private:
-    std::set<std::shared_ptr<StateMachine>> hsmSet_;
+    std::set<shared_ptr<StateMachine>> hsmSet_;
 };
 
 class StateMachine : public State
@@ -50,8 +51,8 @@ class StateMachine : public State
     StateMachine() = delete;
 
     StateMachine(std::string name,
-                 std::shared_ptr<State> startState,
-                 std::shared_ptr<State> stopState,
+                 shared_ptr<State> startState,
+                 shared_ptr<State> stopState,
                  EventQueue<Event>& eventQueue,
                  StateTransitionTable table)
       : State(name)
@@ -64,25 +65,24 @@ class StateMachine : public State
       , parent_(nullptr)
     {
 
-        // initialize the state transition table.
-        // This could be hard coded in this constructor or
-        // better still, read from an input file.
-        // All States should be created by the time we exit
-        // the constructor.
-
         // In-order traverse all states. If HSM found, set its parent
         determineParent();
     }
 
     virtual ~StateMachine() override = default;
 
-    virtual std::shared_ptr<State> const& getCurrentState() const;
+    virtual shared_ptr<State> const& getCurrentState() const;
 
     void start();
 
     void OnEntry() override
     {
-        DLOG(INFO) << "Entering: " << this->name << std::endl;
+        DLOG(INFO) << "Entering: " << this->name;
+        // Stopping a HSM means stopping all of its sub HSMs
+        for (auto& hsm : table_.getHsmSet()) {
+            hsm->OnEntry();
+        }
+
         start();
     }
 
@@ -90,7 +90,11 @@ class StateMachine : public State
 
     void OnExit() override
     {
-        DLOG(INFO) << "Exiting: " << this->name << std::endl;
+        // Stopping a HSM means stopping all of its sub HSMs
+        LOG(INFO) << "Exiting: " << name;
+        for (auto& hsm : table_.getHsmSet()) {
+            hsm->OnExit();
+        }
         stop();
     }
 
@@ -104,9 +108,9 @@ class StateMachine : public State
 
   protected:
     std::atomic<bool> interrupt_;
-    std::shared_ptr<State> currentState_;
-    std::shared_ptr<State> startState_;
-    std::shared_ptr<State> stopState_;
+    shared_ptr<State> currentState_;
+    shared_ptr<State> startState_;
+    shared_ptr<State> stopState_;
     EventQueue<Event>& eventQueue_;
     StateTransitionTable table_;
     StateMachine* parent_;

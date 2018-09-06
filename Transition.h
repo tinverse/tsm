@@ -1,8 +1,10 @@
 #pragma once
 
 #include <glog/logging.h>
-#include <iostream>
 #include <memory>
+
+using std::shared_ptr;
+using std::move;
 
 namespace tsm {
 
@@ -10,11 +12,11 @@ template<typename State, typename Event>
 class TransitionT
 {
   public:
-    TransitionT(std::shared_ptr<State> fromState,
+    TransitionT(shared_ptr<State> fromState,
                 Event event,
-                std::shared_ptr<State> toState)
-      : fromState(std::move(fromState))
-      , toState(std::move(toState))
+                shared_ptr<State> toState)
+      : fromState(move(fromState))
+      , toState(move(toState))
       , onEvent(event)
     {}
     virtual ~TransitionT() = default;
@@ -27,8 +29,8 @@ class TransitionT
         toState->OnEntry();
     }
 
-    std::shared_ptr<State> fromState;
-    std::shared_ptr<State> toState;
+    shared_ptr<State> fromState;
+    shared_ptr<State> toState;
     Event onEvent;
 };
 

@@ -1,5 +1,5 @@
 #include "UniqueId.h"
 
-using namespace tsm;
+using tsm::UniqueId;
 
 std::uint64_t UniqueId::id_ = 0;

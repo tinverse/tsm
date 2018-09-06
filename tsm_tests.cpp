@@ -9,7 +9,14 @@
 #include "tsm.h"
 #include <glog/logging.h>
 
-using namespace tsm;
+using tsm::State;
+using tsm::Event;
+using tsm::Transition;
+using tsm::StateTransitionTable;
+using tsm::StateMachine;
+using tsm::StateEventPair;
+using tsm::EventQueue;
+
 
 class StateMachineTest : public StateMachine
 {
@@ -25,8 +32,7 @@ class StateMachineTest : public StateMachine
 
     std::shared_ptr<State> const& getCurrentState() const override
     {
-        std::this_thread::yield();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
         return currentState_;
     }
 };
@@ -147,8 +153,6 @@ TEST_F(TestStateMachine, testGarageDoor)
     garageDoorTransitions.add(doorClosing, click_event, doorStoppedClosing);
     garageDoorTransitions.add(doorStoppedClosing, click_event, doorOpening);
     garageDoorTransitions.add(doorClosed, click_event, doorOpening);
-
-    LOG(INFO) << "*******Num Transitions:" << garageDoorTransitions.size();
 
     // The StateMachine
     // Starting State: doorClosed
@@ -320,6 +324,12 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
     ASSERT_EQ(Playing->getCurrentState(), Song2);
 
     eventQueue.addEvent(pause);
+    ASSERT_EQ(sm->getCurrentState(), Paused);
+    ASSERT_EQ(Playing->getCurrentState(), Song2);
+
+    eventQueue.addEvent(end_pause);
+    ASSERT_EQ(sm->getCurrentState(), Playing);
+
     sm->stop();
 }
 
