@@ -7,7 +7,14 @@
 #include "Transition.h"
 #include "tsm.h"
 
-using namespace tsm;
+using tsm::State;
+using tsm::Event;
+using tsm::Transition;
+using tsm::StateTransitionTable;
+using tsm::StateMachine;
+using tsm::StateEventPair;
+
+using std::shared_ptr;
 
 bool
 operator==(const StateEventPair& s1, const StateEventPair& s2)
@@ -16,7 +23,7 @@ operator==(const StateEventPair& s1, const StateEventPair& s2)
 }
 
 Transition*
-StateTransitionTable::next(std::shared_ptr<State> fromState, Event onEvent)
+StateTransitionTable::next(shared_ptr<State> fromState, Event onEvent)
 {
     // Check if event in HSM
     StateEventPair pair(fromState, onEvent);
@@ -27,8 +34,7 @@ StateTransitionTable::next(std::shared_ptr<State> fromState, Event onEvent)
 
     // print();
     std::ostringstream s;
-    s << "No Transition:" << fromState->name << "\t:" << onEvent.id
-      << std::endl;
+    s << "No Transition:" << fromState->name << "\tonEvent:" << onEvent.id;
     LOG(ERROR) << s.str();
     return nullptr;
 }
@@ -69,7 +75,7 @@ StateMachine::execute()
 {
     while (!interrupt_) {
         if (currentState_ == stopState_) {
-            LOG(INFO) << "StateMachine Done Exiting... " << std::endl;
+            LOG(INFO) << "StateMachine Done Exiting... ";
             interrupt_ = true;
             break;
         } else {
@@ -88,12 +94,13 @@ StateMachine::execute()
             }
 
             LOG(INFO) << "Current State:" << currentState_->name
-                      << " Event:" << nextEvent.id << std::endl;
+                      << " Event:" << nextEvent.id;
 
             Transition* t = table_.next(currentState_, nextEvent);
             if (!t) {
                 if (parent_) {
                     eventQueue_.addFront(nextEvent);
+                    break;
                 } else {
                     LOG(ERROR) << "Reached top level HSM. Cannot handle event";
                 }
@@ -107,7 +114,7 @@ StateMachine::execute()
 
             currentState_ = t->toState;
 
-            LOG(INFO) << "Next State:" << currentState_->name << std::endl;
+            LOG(INFO) << "Next State:" << currentState_->name;
 
             // Now execute the current state
             currentState_->execute();
@@ -115,7 +122,7 @@ StateMachine::execute()
     }
 }
 
-std::shared_ptr<State> const&
+shared_ptr<State> const&
 StateMachine::getCurrentState() const
 {
     LOG(INFO) << "GetState : " << this->name;
@@ -132,9 +139,9 @@ StateMachine::determineParent()
 }
 
 void
-StateTransitionTable::add(std::shared_ptr<State> fromState,
+StateTransitionTable::add(shared_ptr<State> fromState,
                           Event onEvent,
-                          std::shared_ptr<State> toState)
+                          shared_ptr<State> toState)
 {
     Transition t{ fromState, onEvent, toState };
     StateEventPair pair(fromState, onEvent);
