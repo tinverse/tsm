@@ -18,14 +18,18 @@ using std::shared_ptr;
 namespace tsm {
 
 typedef TransitionT<State, Event> Transition;
-typedef std::unordered_map<StateEventPair, Transition> TransitionTable;
+
+// typedef TransitionA<State, Event, Action> TransitionWithAction;
+
+typedef std::unordered_map<StateEventPair, shared_ptr<Transition>>
+  TransitionTable;
 
 // Forward declaration
-class StateMachine;
+struct StateMachine;
 
-class StateTransitionTable : private TransitionTable
+struct StateTransitionTable : private TransitionTable
 {
-    typedef typename ::std::pair<StateEventPair, Transition>
+    typedef typename ::std::pair<StateEventPair, shared_ptr<Transition>>
       TransitionTableElement;
 
   public:
@@ -33,7 +37,27 @@ class StateTransitionTable : private TransitionTable
              Event onEvent,
              shared_ptr<State> toState);
 
-    Transition* next(shared_ptr<State> fromState, Event onEvent);
+    template<typename Action>
+    void add(shared_ptr<State> fromState,
+             Event onEvent,
+             shared_ptr<State> toState,
+             Action action)
+    {
+        shared_ptr<Transition> t =
+          std::make_shared<TransitionWithAction<State, Event, Action>>(
+            fromState, onEvent, toState, action);
+        StateEventPair pair(fromState, onEvent);
+        TransitionTableElement e(pair, t);
+        insert(e);
+
+        // If HSM, add to hsm set.
+        auto hsm = std::dynamic_pointer_cast<StateMachine>(fromState);
+        if (hsm != nullptr) {
+            hsmSet_.insert(hsm);
+        }
+    }
+
+    shared_ptr<Transition> next(shared_ptr<State> fromState, Event onEvent);
 
     void print();
 
@@ -45,7 +69,7 @@ class StateTransitionTable : private TransitionTable
     std::set<shared_ptr<StateMachine>> hsmSet_;
 };
 
-class StateMachine : public State
+struct StateMachine : public State
 {
   public:
     StateMachine() = delete;
@@ -64,7 +88,6 @@ class StateMachine : public State
       , table_(std::move(table))
       , parent_(nullptr)
     {
-
         // In-order traverse all states. If HSM found, set its parent
         determineParent();
     }
