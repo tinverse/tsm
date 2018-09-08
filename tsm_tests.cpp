@@ -9,14 +9,13 @@
 #include "tsm.h"
 #include <glog/logging.h>
 
-using tsm::State;
 using tsm::Event;
-using tsm::Transition;
-using tsm::StateTransitionTable;
-using tsm::StateMachine;
-using tsm::StateEventPair;
 using tsm::EventQueue;
-
+using tsm::State;
+using tsm::StateEventPair;
+using tsm::StateMachine;
+using tsm::StateTransitionTable;
+using tsm::Transition;
 
 class StateMachineTest : public StateMachine
 {
@@ -35,6 +34,11 @@ class StateMachineTest : public StateMachine
         std::this_thread::sleep_for(std::chrono::milliseconds(2));
         return currentState_;
     }
+};
+
+struct CdPlayer
+{
+    void play(void) { LOG(ERROR) << __PRETTY_FUNCTION__; }
 };
 
 class TestState : public testing::Test
@@ -182,6 +186,9 @@ TEST_F(TestStateMachine, testCdPlayer)
     auto Open = std::make_shared<State>("Player Open");
     auto Final = std::make_shared<State>("Player Final");
 
+    // The CdPlayer
+    CdPlayer player;
+
     // Events
     Event play;
     Event open_close;
@@ -211,7 +218,12 @@ TEST_F(TestStateMachine, testCdPlayer)
     cdPlayerTransitions.add(Playing, pause, Paused);
     cdPlayerTransitions.add(Playing, open_close, Open);
     //-------------------------------------------------
-    cdPlayerTransitions.add(Paused, end_pause, Playing);
+
+    auto f_play = std::bind(&CdPlayer::play, &player);
+
+    cdPlayerTransitions.add<decltype(f_play)>(
+      Paused, end_pause, Playing, f_play);
+
     cdPlayerTransitions.add(Paused, stop, Stopped);
     cdPlayerTransitions.add(Paused, open_close, Open);
 
@@ -235,6 +247,9 @@ TEST_F(TestStateMachine, testCdPlayer)
 
     eventQueue.addEvent(pause);
     ASSERT_EQ(sm->getCurrentState(), Paused);
+
+    eventQueue.addEvent(end_pause);
+    ASSERT_EQ(sm->getCurrentState(), Playing);
 
     eventQueue.addEvent(stop);
     ASSERT_EQ(sm->getCurrentState(), Stopped);
