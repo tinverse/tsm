@@ -11,8 +11,8 @@ using tsm::Event;
 using tsm::State;
 using tsm::StateEventPair;
 using tsm::StateMachine;
-using tsm::StateTransitionTable;
-using tsm::Transition;
+
+using Transition = tsm::StateMachine::Transition;
 
 using std::shared_ptr;
 
@@ -23,7 +23,8 @@ operator==(const StateEventPair& s1, const StateEventPair& s2)
 }
 
 shared_ptr<Transition>
-StateTransitionTable::next(shared_ptr<State> fromState, Event onEvent)
+StateMachine::StateTransitionTable::next(shared_ptr<State> fromState,
+                                         Event onEvent)
 {
     // Check if event in HSM
     StateEventPair pair(fromState, onEvent);
@@ -57,7 +58,7 @@ StateMachine::stop()
 {
     // Stopping a HSM means stopping all of its sub HSMs
     LOG(INFO) << "stopping: " << name;
-    for (auto& hsm : table_.getHsmSet()) {
+    for (auto& hsm : hsmSet_) {
         hsm->stop();
     }
 
@@ -130,34 +131,35 @@ StateMachine::getCurrentState() const
 }
 
 void
-StateMachine::determineParent()
-{
-    for (auto& hsm : table_.getHsmSet()) {
-        hsm->setParent(this);
-        hsm->determineParent();
-    }
-}
-
-void
-StateTransitionTable::add(shared_ptr<State> fromState,
-                          Event onEvent,
-                          shared_ptr<State> toState)
+StateMachine::add(shared_ptr<State> fromState,
+                  Event onEvent,
+                  shared_ptr<State> toState)
 {
     shared_ptr<Transition> t =
       std::make_shared<Transition>(fromState, onEvent, toState);
+
+    addTransition(fromState, onEvent, t);
+}
+
+void
+StateMachine::addTransition(shared_ptr<State> fromState,
+                            Event onEvent,
+                            shared_ptr<Transition> t)
+{
     StateEventPair pair(fromState, onEvent);
     TransitionTableElement e(pair, t);
-    insert(e);
+    table_.insert(e);
 
     // If HSM, add to hsm set.
     auto hsm = std::dynamic_pointer_cast<StateMachine>(fromState);
-    if (hsm != nullptr) {
+    if (hsm && !(hsm->getParent())) {
+        hsm->setParent(this);
         hsmSet_.insert(hsm);
     }
 }
 
 void
-StateTransitionTable::print()
+StateMachine::StateTransitionTable::print()
 {
     for (const auto& it : *this) {
         LOG(INFO) << it.first.first->name << "," << it.first.second.id << ":"
