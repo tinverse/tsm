@@ -12,10 +12,7 @@
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::State;
-using tsm::StateEventPair;
 using tsm::StateMachine;
-using tsm::StateTransitionTable;
-using tsm::Transition;
 
 class StateMachineTest : public StateMachine
 {
@@ -24,9 +21,8 @@ class StateMachineTest : public StateMachine
     StateMachineTest(std::string name,
                      std::shared_ptr<State> startState,
                      std::shared_ptr<State> stopState,
-                     EventQueue<Event>& eventQueue,
-                     StateTransitionTable table)
-      : StateMachine(name, startState, stopState, eventQueue, table)
+                     EventQueue<Event>& eventQueue)
+      : StateMachine(name, startState, stopState, eventQueue)
     {}
 
     std::shared_ptr<State> const& getCurrentState() const override
@@ -143,30 +139,24 @@ TEST_F(TestStateMachine, testGarageDoor)
     // Event Queue
     EventQueue<Event> eventQueue;
 
-    // TransitionTable
-    StateTransitionTable garageDoorTransitions;
-
-    // Add Transitions to the table
-    garageDoorTransitions.add(doorClosed, click_event, doorOpening);
-    garageDoorTransitions.add(doorOpening, topSensor_event, doorOpen);
-    garageDoorTransitions.add(doorOpen, click_event, doorClosing);
-    garageDoorTransitions.add(doorClosing, bottomSensor_event, doorClosed);
-    garageDoorTransitions.add(doorOpening, click_event, doorStoppedOpening);
-    garageDoorTransitions.add(doorStoppedOpening, click_event, doorClosing);
-    garageDoorTransitions.add(doorClosing, obstruct_event, doorStoppedClosing);
-    garageDoorTransitions.add(doorClosing, click_event, doorStoppedClosing);
-    garageDoorTransitions.add(doorStoppedClosing, click_event, doorOpening);
-    garageDoorTransitions.add(doorClosed, click_event, doorOpening);
-
     // The StateMachine
     // Starting State: doorClosed
     // Stop State: doorOpen
-    std::shared_ptr<StateMachineTest> sm =
-      std::make_shared<StateMachineTest>("Garage Door SM",
-                                         doorClosed,
-                                         doorDummyFinal,
-                                         eventQueue,
-                                         garageDoorTransitions);
+    std::shared_ptr<StateMachineTest> sm = std::make_shared<StateMachineTest>(
+      "Garage Door SM", doorClosed, doorDummyFinal, eventQueue);
+
+    // TransitionTable
+    sm->add(doorClosed, click_event, doorOpening);
+    sm->add(doorOpening, topSensor_event, doorOpen);
+    sm->add(doorOpen, click_event, doorClosing);
+    sm->add(doorClosing, bottomSensor_event, doorClosed);
+    sm->add(doorOpening, click_event, doorStoppedOpening);
+    sm->add(doorStoppedOpening, click_event, doorClosing);
+    sm->add(doorClosing, obstruct_event, doorStoppedClosing);
+    sm->add(doorClosing, click_event, doorStoppedClosing);
+    sm->add(doorStoppedClosing, click_event, doorOpening);
+    sm->add(doorClosed, click_event, doorOpening);
+
     sm->start();
     EXPECT_EQ(sm->getCurrentState(), doorClosed);
     eventQueue.addEvent(click_event);
@@ -200,37 +190,34 @@ TEST_F(TestStateMachine, testCdPlayer)
     // Event Queue
     EventQueue<Event> eventQueue;
 
-    // TransitionTable
-    StateTransitionTable cdPlayerTransitions;
+    // The StateMachine
+    // Starting State: Empty
+    std::shared_ptr<StateMachineTest> sm = std::make_shared<StateMachineTest>(
+      "CD Player HSM", Empty, Final, eventQueue);
 
-    // Add Transitions to the table
-    cdPlayerTransitions.add(Stopped, play, Playing);
-    cdPlayerTransitions.add(Stopped, open_close, Open);
-    cdPlayerTransitions.add(Stopped, stop, Stopped);
+    // TransitionTable
+    sm->add(Stopped, play, Playing);
+    sm->add(Stopped, open_close, Open);
+    sm->add(Stopped, stop, Stopped);
     //-------------------------------------------------
-    cdPlayerTransitions.add(Open, open_close, Empty);
+    sm->add(Open, open_close, Empty);
     //-------------------------------------------------
-    cdPlayerTransitions.add(Empty, open_close, Open);
-    cdPlayerTransitions.add(Empty, cd_detected, Stopped);
-    cdPlayerTransitions.add(Empty, cd_detected, Playing);
+    sm->add(Empty, open_close, Open);
+    sm->add(Empty, cd_detected, Stopped);
+    sm->add(Empty, cd_detected, Playing);
     //-------------------------------------------------
-    cdPlayerTransitions.add(Playing, stop, Stopped);
-    cdPlayerTransitions.add(Playing, pause, Paused);
-    cdPlayerTransitions.add(Playing, open_close, Open);
+    sm->add(Playing, stop, Stopped);
+    sm->add(Playing, pause, Paused);
+    sm->add(Playing, open_close, Open);
     //-------------------------------------------------
 
     auto f_play = std::bind(&CdPlayer::play, &player);
 
-    cdPlayerTransitions.add<decltype(f_play)>(
-      Paused, end_pause, Playing, f_play);
+    sm->add<decltype(f_play)>(Paused, end_pause, Playing, f_play);
 
-    cdPlayerTransitions.add(Paused, stop, Stopped);
-    cdPlayerTransitions.add(Paused, open_close, Open);
+    sm->add(Paused, stop, Stopped);
+    sm->add(Paused, open_close, Open);
 
-    // The StateMachine
-    // Starting State: Empty
-    std::shared_ptr<StateMachineTest> sm = std::make_shared<StateMachineTest>(
-      "CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
     sm->start();
 
     eventQueue.addEvent(open_close);
@@ -259,30 +246,34 @@ TEST_F(TestStateMachine, testCdPlayer)
 
 TEST_F(TestStateMachine, testCdPlayerHSM)
 {
-    // Playing HSM
-    // States
-    auto Song1 = std::make_shared<State>("Playing HSM -> Song1");
-    auto Song2 = std::make_shared<State>("Playing HSM -> Song2");
-    auto Song3 = std::make_shared<State>("Playing HSM -> Song3");
-    auto FinalPlay = std::make_shared<State>("Playing Final State");
-    // Events
-    Event next_song;
-    Event prev_song;
-
     // Event Queue
     EventQueue<Event> eventQueue;
 
-    // Transition Table
-    StateTransitionTable playTransitions;
-    playTransitions.add(Song1, next_song, Song2);
-    playTransitions.add(Song2, next_song, Song3);
-    playTransitions.add(Song3, prev_song, Song2);
-    playTransitions.add(Song2, prev_song, Song1);
-
+    // CdPlayer HSM
     // States
     auto Stopped = std::make_shared<State>("Player Stopped");
-    auto Playing = std::make_shared<StateMachineTest>(
-      "Playing HSM", Song1, FinalPlay, eventQueue, playTransitions);
+
+    // clang-format off
+        // Playing HSM (nested)
+        // States
+        auto Song1 = std::make_shared<State>("Playing HSM -> Song1");
+        auto Song2 = std::make_shared<State>("Playing HSM -> Song2");
+        auto Song3 = std::make_shared<State>("Playing HSM -> Song3");
+        auto FinalPlay = std::make_shared<State>("Playing Final State");
+        // Events
+        Event next_song;
+        Event prev_song;
+
+        auto Playing = std::make_shared<StateMachineTest>(
+          "Playing HSM", Song1, FinalPlay, eventQueue);
+
+        // Transition Table
+        Playing->add(Song1, next_song, Song2);
+        Playing->add(Song2, next_song, Song3);
+        Playing->add(Song3, prev_song, Song2);
+        Playing->add(Song2, prev_song, Song1);
+    // clang-format on
+
     auto Paused = std::make_shared<State>("Player Paused");
     auto Empty = std::make_shared<State>("Player Empty");
     auto Open = std::make_shared<State>("Player Open");
@@ -296,32 +287,29 @@ TEST_F(TestStateMachine, testCdPlayerHSM)
     Event pause;
     Event end_pause;
 
-    // TransitionTable
-    StateTransitionTable cdPlayerTransitions;
-
-    // Add Transitions to the table
-    cdPlayerTransitions.add(Stopped, play, Playing);
-    cdPlayerTransitions.add(Stopped, open_close, Open);
-    cdPlayerTransitions.add(Stopped, stop, Stopped);
-    //-------------------------------------------------
-    cdPlayerTransitions.add(Open, open_close, Empty);
-    //-------------------------------------------------
-    cdPlayerTransitions.add(Empty, open_close, Open);
-    cdPlayerTransitions.add(Empty, cd_detected, Stopped);
-    cdPlayerTransitions.add(Empty, cd_detected, Playing);
-    //-------------------------------------------------
-    cdPlayerTransitions.add(Playing, stop, Stopped);
-    cdPlayerTransitions.add(Playing, pause, Paused);
-    cdPlayerTransitions.add(Playing, open_close, Open);
-    //-------------------------------------------------
-    cdPlayerTransitions.add(Paused, end_pause, Playing);
-    cdPlayerTransitions.add(Paused, stop, Stopped);
-    cdPlayerTransitions.add(Paused, open_close, Open);
-
     // The StateMachine
     // Starting State: Empty
     auto sm = std::make_shared<StateMachineTest>(
-      "CD Player HSM", Empty, Final, eventQueue, cdPlayerTransitions);
+      "CD Player HSM", Empty, Final, eventQueue);
+
+    // TransitionTable
+    sm->add(Stopped, play, Playing);
+    sm->add(Stopped, open_close, Open);
+    sm->add(Stopped, stop, Stopped);
+    //-------------------------------------------------
+    sm->add(Open, open_close, Empty);
+    //-------------------------------------------------
+    sm->add(Empty, open_close, Open);
+    sm->add(Empty, cd_detected, Stopped);
+    sm->add(Empty, cd_detected, Playing);
+    //-------------------------------------------------
+    sm->add(Playing, stop, Stopped);
+    sm->add(Playing, pause, Paused);
+    sm->add(Playing, open_close, Open);
+    //-------------------------------------------------
+    sm->add(Paused, end_pause, Playing);
+    sm->add(Paused, stop, Stopped);
+    sm->add(Paused, open_close, Open);
 
     ASSERT_EQ(Playing->getParent(), sm.get());
 
