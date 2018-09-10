@@ -16,6 +16,7 @@
 using std::shared_ptr;
 
 namespace tsm {
+
 struct StateMachine : public State
 {
     typedef TransitionT<State, Event> Transition;
@@ -73,6 +74,7 @@ struct StateMachine : public State
             fromState, onEvent, toState, action);
         addTransition(fromState, onEvent, t);
     }
+
     virtual shared_ptr<State> const& getCurrentState() const;
 
     void start();
