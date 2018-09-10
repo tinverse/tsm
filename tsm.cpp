@@ -41,10 +41,10 @@ StateMachine::StateTransitionTable::next(shared_ptr<State> fromState,
 }
 
 void
-StateMachine::start()
+StateMachine::startHSM()
 {
     LOG(INFO) << "starting: " << name;
-    currentState_ = startState_;
+    currentState_ = getStartState();
     // Only start a separate thread if you are the base Hsm
     if (!parent_) {
         smThread_ = std::thread(&StateMachine::execute, this);
@@ -54,12 +54,12 @@ StateMachine::start()
 }
 
 void
-StateMachine::stop()
+StateMachine::stopHSM()
 {
     // Stopping a HSM means stopping all of its sub HSMs
     LOG(INFO) << "stopping: " << name;
     for (auto& hsm : hsmSet_) {
-        hsm->stop();
+        hsm->stopHSM();
     }
 
     interrupt_ = true;
@@ -75,7 +75,7 @@ void
 StateMachine::execute()
 {
     while (!interrupt_) {
-        if (currentState_ == stopState_) {
+        if (currentState_ == getStopState()) {
             LOG(INFO) << "StateMachine Done Exiting... ";
             interrupt_ = true;
             break;

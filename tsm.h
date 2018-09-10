@@ -55,6 +55,10 @@ struct StateMachine : public State
       , parent_(nullptr)
     {}
 
+    StateMachine(std::string name, EventQueue<Event>& eventQueue)
+      : StateMachine(name, nullptr, nullptr, eventQueue)
+    {}
+
     virtual ~StateMachine() override = default;
 
     auto& getParent() const { return parent_; }
@@ -75,9 +79,13 @@ struct StateMachine : public State
         addTransition(fromState, onEvent, t);
     }
 
+    virtual shared_ptr<State> getStartState() const { return startState_; }
+
     virtual shared_ptr<State> const& getCurrentState() const;
 
-    void start();
+    virtual shared_ptr<State> getStopState() const { return stopState_; }
+
+    void startHSM();
 
     void OnEntry() override
     {
@@ -87,7 +95,7 @@ struct StateMachine : public State
             hsm->OnEntry();
         }
 
-        start();
+        startHSM();
     }
 
     void execute() override;
@@ -99,10 +107,10 @@ struct StateMachine : public State
         for (auto& hsm : hsmSet_) {
             hsm->OnExit();
         }
-        stop();
+        stopHSM();
     }
 
-    void stop();
+    void stopHSM();
 
     void setParent(StateMachine* parent) { parent_ = parent; }
 
