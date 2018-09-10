@@ -50,7 +50,7 @@ struct TransitionWithAction : public TransitionT<State, Event>
     {
         LOG(INFO) << __PRETTY_FUNCTION__;
         this->fromState->OnExit();
-        action();
+        action(this->onEvent);
         this->toState->OnEntry();
     }
     Action action;
