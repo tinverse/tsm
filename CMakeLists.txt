@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(tsm VERSION 0.1.0)
-LIST(APPEND CMAKE_MODULE_PATH 
+LIST(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/superbuild")
 if (NOT CMAKE_CXX_STANDARD)
@@ -28,7 +28,6 @@ else (BUILD_DEPENDENCIES)
     message(STATUS ${CMAKE_INSTALL_PREFIX})
 
     add_library(tsm
-        tsm.cpp
         UniqueId.cpp
     )
 
