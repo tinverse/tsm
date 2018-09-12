@@ -28,7 +28,6 @@ struct EventQueueInterruptedException : public std::runtime_error
 template<typename Event>
 class EventQueue : private deque<Event>
 {
-    friend class StateMachine;
 
   public:
     using deque<Event>::empty;
@@ -78,7 +77,6 @@ class EventQueue : private deque<Event>
         // Log the events that are going to get dumped if the queue is not empty
     }
 
-  private:
     void addFront(const Event& e)
     {
         std::lock_guard<std::mutex> lock(eventQueueLock);
@@ -86,6 +84,7 @@ class EventQueue : private deque<Event>
         cvEventAvailable.notify_all();
     }
 
+  private:
     std::mutex eventQueueLock;
     std::condition_variable cvEventAvailable;
     bool interrupt_;
