@@ -28,7 +28,6 @@ else (BUILD_DEPENDENCIES)
     message(STATUS ${CMAKE_INSTALL_PREFIX})
 
     add_library(tsm
-        tsm.cpp
         UniqueId.cpp
     )
 
