@@ -23,17 +23,18 @@ struct StateMachine : public State
 {
     using ActionFn = void (DerivedHSM::*)(void);
     using GuardFn = bool (DerivedHSM::*)(void);
-
-    typedef TransitionT<State, Event, ActionFn, GuardFn> Transition;
-
-    typedef std::unordered_map<StateEventPair, shared_ptr<Transition>>
-      TransitionTable;
+    using Transition = TransitionT<State, Event, ActionFn, GuardFn>;
+    using TransitionTable =
+      std::unordered_map<StateEventPair, shared_ptr<Transition>>;
+    using TransitionTableElement =
+      std::pair<StateEventPair, shared_ptr<Transition>>;
 
     struct StateTransitionTable : private TransitionTable
     {
         using TransitionTable::end;
         using TransitionTable::find;
         using TransitionTable::insert;
+        using TransitionTable::size;
 
       public:
         shared_ptr<Transition> next(shared_ptr<State> fromState, Event onEvent)
@@ -45,11 +46,8 @@ struct StateMachine : public State
                 return it->second;
             }
 
-            // print();
-            std::ostringstream s;
-            s << "No Transition:" << fromState->name
-              << "\tonEvent:" << onEvent.id;
-            LOG(ERROR) << s.str();
+            LOG(ERROR) << "No Transition:" << fromState->name
+                       << "\tonEvent:" << onEvent.id;
             return nullptr;
         }
 
@@ -60,12 +58,7 @@ struct StateMachine : public State
                           << ":" << it.second->toState->name << "\n";
             }
         }
-
-        size_t size() { return TransitionTable::size(); }
     };
-
-    typedef typename ::std::pair<StateEventPair, shared_ptr<Transition>>
-      TransitionTableElement;
 
   public:
     StateMachine() = delete;
@@ -102,6 +95,7 @@ struct StateMachine : public State
         shared_ptr<Transition> t = std::make_shared<Transition>(
           fromState, onEvent, toState, action, guard);
         addTransition(fromState, onEvent, t);
+        eventSet_.insert(onEvent);
     }
 
     virtual shared_ptr<State> getStartState() const { return startState_; }
@@ -116,29 +110,30 @@ struct StateMachine : public State
 
     void OnExit() override
     {
+        // TODO (sriram): This really depends on exit/history policy. Sometimes
+        // you want to retain state information when you exit a subhsm for
+        // certain events. Maybe adding a currenEvent_ variable would allow
+        // DerivedHSMs to override OnExit appropriately.
         currentState_ = nullptr;
-        // Stopping a HSM means stopping all of its sub HSMs
-        stopHSM();
-        LOG(INFO) << "Exiting: " << name;
-    }
 
-    auto& getTable() const { return table_; }
+        stopHSM();
+        DLOG(INFO) << "Exiting: " << name;
+    }
 
     void startHSM()
     {
-        LOG(INFO) << "starting: " << name;
+        DLOG(INFO) << "starting: " << name;
         currentState_ = getStartState();
         // Only start a separate thread if you are the base Hsm
-        // Potential issue: An HSM with parent improperly set to null
         if (!parent_) {
             smThread_ = std::thread(&StateMachine::execute, this);
         }
-        LOG(INFO) << "started: " << name;
+        DLOG(INFO) << "started: " << name;
     }
 
     void stopHSM()
     {
-        LOG(INFO) << "stopping: " << name;
+        DLOG(INFO) << "stopping: " << name;
 
         interrupt_ = true;
 
@@ -146,18 +141,18 @@ struct StateMachine : public State
             eventQueue_.stop();
             smThread_.join();
         }
-        LOG(INFO) << "stopped: " << name;
+        DLOG(INFO) << "stopped: " << name;
     }
 
     void execute() override
     {
         while (!interrupt_) {
             if (currentState_ == getStopState()) {
-                LOG(INFO) << this->name << " Done Exiting... ";
+                DLOG(INFO) << this->name << " Done Exiting... ";
                 interrupt_ = true;
                 break;
             } else {
-                LOG(INFO) << this->name << ": Waiting for event";
+                DLOG(INFO) << this->name << ": Waiting for event";
 
                 Event nextEvent;
                 try {
@@ -193,10 +188,10 @@ struct StateMachine : public State
 
                 ActionFn action = nullptr;
                 if (!(t->guard) || result) {
-                    action = t->template doTransition<DerivedHSM>();
+                    action = t->doTransition();
                     currentState_ = t->toState;
 
-                    LOG(INFO) << "Next State:" << currentState_->name;
+                    DLOG(INFO) << "Next State:" << currentState_->name;
                     if (action) {
                         (static_cast<DerivedHSM*>(this)->*action)();
                     }
@@ -212,11 +207,14 @@ struct StateMachine : public State
 
     virtual shared_ptr<State> const& getCurrentState() const
     {
-        LOG(INFO) << "GetState : " << this->name;
+        DLOG(INFO) << "GetState : " << this->name;
         return currentState_;
     }
 
+    auto& getEvents() const { return eventSet_; }
     State* getParent() const { return parent_; }
+    void setParent(State* parent) { parent_ = parent; }
+    auto& getTable() const { return table_; }
 
   protected:
     std::atomic<bool> interrupt_;
@@ -237,6 +235,84 @@ struct StateMachine : public State
         TransitionTableElement e(pair, t);
         table_.insert(e);
     }
+    std::set<Event> eventSet_;
+};
+
+template<typename DerivedHSM1, typename DerivedHSM2>
+struct OrthogonalHSM
+  : public StateMachine<OrthogonalHSM<DerivedHSM1, DerivedHSM2>>
+{
+    using type = OrthogonalHSM<DerivedHSM1, DerivedHSM2>;
+    using base_type = StateMachine<type>;
+
+    OrthogonalHSM(std::string name,
+                  EventQueue<Event>& eventQueue,
+                  shared_ptr<StateMachine<DerivedHSM1>> hsm1,
+                  shared_ptr<StateMachine<DerivedHSM2>> hsm2,
+                  State* parent = nullptr)
+      : base_type(name, nullptr, nullptr, eventQueue, parent)
+      , hsm1_(hsm1)
+      , hsm2_(hsm2)
+    {
+        hsm1_->setParent(this);
+        hsm2_->setParent(this);
+    }
+
+    void OnEntry() override
+    {
+        DLOG(INFO) << "Entering: " << this->name;
+        hsm1_->OnEntry();
+        hsm2_->OnEntry();
+        base_type::OnEntry();
+    }
+
+    void OnExit() override
+    {
+        // TODO(sriram): hsm1->currentState_ = nullptr; etc.
+
+        // Stopping a HSM means stopping all of its sub HSMs
+        hsm1_->OnExit();
+        hsm2_->OnExit();
+        base_type::OnExit();
+    }
+
+    void execute() override
+    {
+        while (!base_type::interrupt_) {
+            hsm1_->execute();
+            hsm2_->execute();
+            Event nextEvent;
+            try {
+                nextEvent = base_type::eventQueue_.nextEvent();
+            } catch (EventQueueInterruptedException const& e) {
+                if (!base_type::interrupt_) {
+                    throw e;
+                }
+                LOG(WARNING)
+                  << this->name << ": Exiting event loop on interrupt";
+                break;
+            }
+            auto const& hsm1Events = hsm1_->getEvents();
+            if (hsm1Events.find(nextEvent) != hsm1Events.end()) {
+                base_type::eventQueue_.addFront(nextEvent);
+                continue;
+            } else {
+                if (base_type::parent_) {
+                    base_type::eventQueue_.addFront(nextEvent);
+                    break;
+                } else {
+                    LOG(ERROR) << "Reached top level HSM. Cannot handle event";
+                    continue;
+                }
+            }
+        }
+    }
+
+    auto& getHsm1() const { return hsm1_; }
+    auto& getHsm2() const { return hsm2_; }
+
+    shared_ptr<StateMachine<DerivedHSM1>> hsm1_;
+    shared_ptr<StateMachine<DerivedHSM2>> hsm2_;
 };
 
 } // namespace tsm

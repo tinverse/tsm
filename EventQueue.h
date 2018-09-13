@@ -52,10 +52,9 @@ class EventQueue : private deque<Event>
         if (interrupt_) {
             throw EventQueueInterruptedException("Bailing from Event Queue");
         } else {
-            // OK. Now we can modify the event queue.
             const Event e = front();
-            LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                      << " Popping Event:" << e.id;
+            DLOG(INFO) << "Thread:" << std::this_thread::get_id()
+                       << " Popping Event:" << e.id;
             pop_front();
             return e;
         }
@@ -64,8 +63,8 @@ class EventQueue : private deque<Event>
     void addEvent(const Event& e)
     {
         std::lock_guard<std::mutex> lock(eventQueueLock);
-        LOG(INFO) << "Thread:" << std::this_thread::get_id()
-                  << " Adding Event:" << e.id << "\n";
+        DLOG(INFO) << "Thread:" << std::this_thread::get_id()
+                   << " Adding Event:" << e.id << "\n";
         push_back(e);
         cvEventAvailable.notify_all();
     }
