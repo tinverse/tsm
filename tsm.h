@@ -147,60 +147,62 @@ struct StateMachine : public State
     void execute() override
     {
         while (!interrupt_) {
+            DLOG(INFO) << this->name << ": Waiting for event";
+            Event nextEvent;
+            try {
+                // This is a blocking wait
+                nextEvent = eventQueue_.nextEvent();
+            } catch (EventQueueInterruptedException const& e) {
+                if (!interrupt_) {
+                    throw e;
+                }
+                LOG(WARNING)
+                  << this->name << ": Exiting event loop on interrupt";
+                break;
+            }
+
+            LOG(INFO) << "Current State:" << currentState_->name
+                      << " Event:" << nextEvent.id;
+
+            shared_ptr<Transition> t = table_.next(currentState_, nextEvent);
+
+            if (!t) {
+                // If transition does not exist, pass event to parent HSM
+                if (parent_) {
+                    eventQueue_.addFront(nextEvent);
+                    break;
+                } else {
+                    LOG(ERROR) << "Reached top level HSM. Cannot handle event";
+                    continue;
+                }
+            }
+
+            // Evaluate guard if it exists
+            bool result =
+              t->guard && (static_cast<DerivedHSM*>(this)->*(t->guard))();
+
+            ActionFn action = nullptr;
+            if (!(t->guard) || result) {
+                // Perform entry and exit actions in the doTransition function.
+                // If just an internal transition, Entry and exit actions are
+                // not performed
+                action = t->doTransition();
+                currentState_ = t->toState;
+
+                DLOG(INFO) << "Next State:" << currentState_->name;
+                if (action) {
+                    (static_cast<DerivedHSM*>(this)->*action)();
+                }
+
+                // Now execute the current state
+                currentState_->execute();
+            } else {
+                LOG(INFO) << "Guard prevented transition";
+            }
+
             if (currentState_ == getStopState()) {
                 DLOG(INFO) << this->name << " Done Exiting... ";
                 interrupt_ = true;
-                break;
-            } else {
-                DLOG(INFO) << this->name << ": Waiting for event";
-
-                Event nextEvent;
-                try {
-                    nextEvent = eventQueue_.nextEvent();
-                } catch (EventQueueInterruptedException const& e) {
-                    if (!interrupt_) {
-                        throw e;
-                    }
-                    LOG(WARNING)
-                      << this->name << ": Exiting event loop on interrupt";
-                    break;
-                }
-
-                LOG(INFO) << "Current State:" << currentState_->name
-                          << " Event:" << nextEvent.id;
-
-                shared_ptr<Transition> t =
-                  table_.next(currentState_, nextEvent);
-
-                if (!t) {
-                    if (parent_) {
-                        eventQueue_.addFront(nextEvent);
-                        break;
-                    } else {
-                        LOG(ERROR)
-                          << "Reached top level HSM. Cannot handle event";
-                        continue;
-                    }
-                }
-
-                bool result =
-                  t->guard && (static_cast<DerivedHSM*>(this)->*(t->guard))();
-
-                ActionFn action = nullptr;
-                if (!(t->guard) || result) {
-                    action = t->doTransition();
-                    currentState_ = t->toState;
-
-                    DLOG(INFO) << "Next State:" << currentState_->name;
-                    if (action) {
-                        (static_cast<DerivedHSM*>(this)->*action)();
-                    }
-
-                    // Now execute the current state
-                    currentState_->execute();
-                } else {
-                    LOG(INFO) << "Guard prevented transition";
-                }
             }
         }
     }

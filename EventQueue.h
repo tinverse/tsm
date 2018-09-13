@@ -28,7 +28,6 @@ struct EventQueueInterruptedException : public std::runtime_error
 template<typename Event>
 class EventQueue : private deque<Event>
 {
-
   public:
     using deque<Event>::empty;
     using deque<Event>::front;
@@ -46,8 +45,8 @@ class EventQueue : private deque<Event>
     // Block until you get an event
     const Event nextEvent()
     {
-        std::unique_lock<std::mutex> lock(eventQueueLock);
-        cvEventAvailable.wait(
+        std::unique_lock<std::mutex> lock(eventQueueMutex_);
+        cvEventAvailable_.wait(
           lock, [this] { return (!this->empty() || this->interrupt_); });
         if (interrupt_) {
             throw EventQueueInterruptedException("Bailing from Event Queue");
@@ -62,30 +61,34 @@ class EventQueue : private deque<Event>
 
     void addEvent(const Event& e)
     {
-        std::lock_guard<std::mutex> lock(eventQueueLock);
+        std::lock_guard<std::mutex> lock(eventQueueMutex_);
         DLOG(INFO) << "Thread:" << std::this_thread::get_id()
                    << " Adding Event:" << e.id << "\n";
         push_back(e);
-        cvEventAvailable.notify_all();
+        cvEventAvailable_.notify_all();
     }
 
     void stop()
     {
         interrupt_ = true;
-        cvEventAvailable.notify_all();
+        cvEventAvailable_.notify_all();
         // Log the events that are going to get dumped if the queue is not empty
     }
 
     void addFront(const Event& e)
     {
-        std::lock_guard<std::mutex> lock(eventQueueLock);
+        std::lock_guard<std::mutex> lock(eventQueueMutex_);
         push_front(e);
-        cvEventAvailable.notify_all();
+        cvEventAvailable_.notify_all();
     }
 
+    auto& getConditionVariable() { return cvEventAvailable_; }
+
+    auto& getEventQueueMutex() { return eventQueueMutex_; }
+
   private:
-    std::mutex eventQueueLock;
-    std::condition_variable cvEventAvailable;
+    std::mutex eventQueueMutex_;
+    std::condition_variable cvEventAvailable_;
     bool interrupt_;
 };
 

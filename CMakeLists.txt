@@ -12,6 +12,18 @@ if (NOT INSTALL_DIR)
     set(INSTALL_DIR ${PROJECT_BINARY_DIR}/${CMAKE_SYSTEM_NAME} CACHE PATH "Install Dir")
 endif(NOT INSTALL_DIR)
 
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT 
+        OR CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" 
+        OR CMAKE_INSTALL_PREFIX MATCHES "^C:/Program Files")
+
+    set(CMAKE_INSTALL_PREFIX ${INSTALL_DIR}
+      CACHE PATH "CMake Install Prefix"
+      FORCE)
+endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
+        OR CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" 
+        OR CMAKE_INSTALL_PREFIX MATCHES "^C:/Program Files")
+
+
 if (BUILD_DEPENDENCIES)
     include(dependencies)
     set_directory_properties(PROPERTIES EP_BASE ${INSTALL_DIR})
@@ -35,8 +47,13 @@ else (BUILD_DEPENDENCIES)
     target_link_libraries(tsm PRIVATE ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES})
 
 
-    add_executable(tsm_test tsm_tests.cpp)
+    add_executable(tsm_test
+      tsm_tests.cpp
+      test/GarageDoorSM.cpp
+      test/CdPlayerHSM.cpp
+      test/OrthogonalCdPlayerHSM.cpp
+      )
 
-    target_include_directories(tsm_test SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
+    target_include_directories(tsm_test PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/test SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
     target_link_libraries(tsm_test PRIVATE tsm ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
 endif(BUILD_DEPENDENCIES)
