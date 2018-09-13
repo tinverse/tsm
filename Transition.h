@@ -25,10 +25,8 @@ struct TransitionT
 
     virtual ~TransitionT() = default;
 
-    template<typename DerivedHSM>
-    ActionFn doTransition()
+    virtual ActionFn doTransition()
     {
-        LOG(INFO) << __PRETTY_FUNCTION__;
         this->fromState->OnExit();
         this->toState->OnEntry();
         return action;
@@ -39,6 +37,27 @@ struct TransitionT
     shared_ptr<State> toState;
     ActionFn action;
     GuardFn guard;
+};
+
+template<typename State, typename Event, typename ActionFn, typename GuardFn>
+struct InternalTransitionT : public TransitionT<State, Event, ActionFn, GuardFn>
+{
+    InternalTransitionT(shared_ptr<State> fromState,
+                        Event event,
+                        shared_ptr<State> toState,
+                        ActionFn action,
+                        GuardFn guard)
+      : TransitionT<State, Event, ActionFn, GuardFn>(fromState,
+                                                     event,
+                                                     fromState,
+                                                     action,
+                                                     guard)
+    {}
+
+    ActionFn doTransition() override
+    {
+        return TransitionT<State, Event, ActionFn, GuardFn>::action;
+    }
 };
 
 } // namespace tsm

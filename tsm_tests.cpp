@@ -11,6 +11,7 @@
 
 using tsm::Event;
 using tsm::EventQueue;
+using tsm::OrthogonalHSM;
 using tsm::State;
 using tsm::StateMachine;
 
@@ -295,6 +296,39 @@ struct CdPlayerHSM : public StateMachineTest<CdPlayerHSM<ControllerType>>
     ControllerType controller_;
 };
 
+struct ErrorHSM : public StateMachineTest<ErrorHSM>
+{
+    ErrorHSM() = delete;
+
+    ErrorHSM(std::string name,
+             EventQueue<Event>& eventQueue,
+             State* parent = nullptr)
+      : StateMachineTest<ErrorHSM>(name, eventQueue, parent)
+      , AllOk(std::make_shared<State>("All Ok"))
+      , ErrorMode(std::make_shared<State>("Error Mode"))
+    {
+        add(AllOk, error, ErrorMode);
+        // Potentially transition to a recovery HSM
+        add(ErrorMode, recover, AllOk, &ErrorHSM::recovery);
+    }
+
+    // States
+    shared_ptr<State> AllOk;
+    shared_ptr<State> ErrorMode;
+
+    // Events
+    Event error;
+    Event recover;
+
+    // Actions
+    void recovery() { LOG(INFO) << "Recovering from Error:"; }
+
+    shared_ptr<State> getStartState() const override { return AllOk; }
+};
+
+using OrthogonalCdPlayerHSM =
+  OrthogonalHSM<CdPlayerHSM<CdPlayerController>, ErrorHSM>;
+
 // TODO(sriram): Test no end state
 // Model interruptions to workflow
 // For e.g. As door is opening or closing, one of the sensors
@@ -347,6 +381,81 @@ TEST_F(TestCdPlayerHSM, testTransitions)
     ASSERT_EQ(Playing->getCurrentState(), nullptr);
 
     sm->stopHSM();
+}
+
+struct TestOrthogonalCdPlayerHSM : public testing::Test
+{
+    TestOrthogonalCdPlayerHSM()
+      : testing::Test()
+      , sm(std::make_shared<OrthogonalCdPlayerHSM>(
+          "CD Player Orthogonal HSM",
+          eventQueue,
+          std::make_shared<CdPlayerHSM<CdPlayerController>>("CD Player HSM",
+                                                            eventQueue),
+          std::make_shared<ErrorHSM>("Error HSM", eventQueue)))
+    {}
+
+    // The StateMachine
+    // Starting State: Empty
+    shared_ptr<OrthogonalCdPlayerHSM> sm;
+
+    // Event Queue
+    EventQueue<Event> eventQueue;
+};
+
+TEST_F(TestOrthogonalCdPlayerHSM, testTransitions)
+{
+
+    auto cdPlayerHSM =
+      std::static_pointer_cast<CdPlayerHSM<CdPlayerController>>(sm->getHsm1());
+
+    auto& Playing = cdPlayerHSM->Playing;
+
+    auto errorHSM = std::static_pointer_cast<ErrorHSM>(sm->getHsm2());
+
+    ASSERT_EQ(Playing->getParent(), cdPlayerHSM.get());
+    ASSERT_EQ(sm.get(), cdPlayerHSM->getParent());
+    ASSERT_EQ(sm.get(), errorHSM->getParent());
+
+    sm->OnEntry();
+
+    ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
+
+    eventQueue.addEvent(cdPlayerHSM->cd_detected);
+    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
+
+    eventQueue.addEvent(cdPlayerHSM->play);
+    ASSERT_EQ(cdPlayerHSM->getCurrentState(), Playing);
+
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
+
+    eventQueue.addEvent(Playing->next_song);
+    ASSERT_EQ(cdPlayerHSM->getCurrentState(), Playing);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
+
+    eventQueue.addEvent(cdPlayerHSM->pause);
+    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Paused);
+    ASSERT_EQ(Playing->getCurrentState(), nullptr);
+
+    eventQueue.addEvent(cdPlayerHSM->end_pause);
+    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Playing);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
+
+    eventQueue.addEvent(cdPlayerHSM->stop);
+    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
+    ASSERT_EQ(Playing->getCurrentState(), nullptr);
+
+    // same as TestCdPlayerHSM::testTransitions upto this point
+
+    eventQueue.addEvent(errorHSM->error);
+    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
+    ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->ErrorMode);
+
+    eventQueue.addEvent(errorHSM->recover);
+    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
+    ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
+
+    sm->OnExit();
 }
 
 int
