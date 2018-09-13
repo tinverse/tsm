@@ -1,13 +1,15 @@
 #include <future>
+#include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <set>
 #include <utility>
 
+#include "CdPlayerHSM.h"
 #include "Event.h"
 #include "EventQueue.h"
 #include "State.h"
+#include "StateMachineTest.h"
 #include "tsm.h"
-#include <glog/logging.h>
 
 using tsm::Event;
 using tsm::EventQueue;
@@ -15,25 +17,9 @@ using tsm::OrthogonalHSM;
 using tsm::State;
 using tsm::StateMachine;
 
-template<typename DerivedHSM>
-struct StateMachineTest : public StateMachine<DerivedHSM>
-{
-    StateMachineTest() = delete;
-
-    StateMachineTest(std::string name,
-                     EventQueue<Event>& eventQueue,
-                     State* parent = nullptr)
-      : StateMachine<DerivedHSM>(name, eventQueue, parent)
-    {}
-
-    virtual ~StateMachineTest() = default;
-
-    std::shared_ptr<State> const& getCurrentState() const override
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
-        return StateMachine<DerivedHSM>::currentState_;
-    }
-};
+using tsmtest::CdPlayerController;
+using tsmtest::CdPlayerHSM;
+using tsmtest::StateMachineTest;
 
 class TestState : public testing::Test
 {
@@ -52,11 +38,7 @@ class TestState : public testing::Test
 TEST_F(TestState, Construct)
 {
     DLOG(INFO) << "Test" << std::endl;
-}
-
-TEST_F(TestState, Call)
-{
-    state_.execute();
+    EXPECT_EQ(state_.name, "Dummy");
 }
 
 class TestEventQueue : public testing::Test
@@ -66,7 +48,7 @@ class TestEventQueue : public testing::Test
 
   protected:
     EventQueue<Event> eq_;
-    Event e1, e2, e3;
+    Event e1;
 };
 
 TEST_F(TestEventQueue, testSingleEvent)
@@ -108,354 +90,6 @@ TEST_F(TestEventQueue, testAddFrom100Threads)
     for (auto&& t : vtProduce) {
         t.join();
     }
-}
-
-struct TestStateMachine : public ::testing::Test
-{};
-
-struct GarageDoorSM : public StateMachineTest<GarageDoorSM>
-{
-    GarageDoorSM() = delete;
-
-    GarageDoorSM(std::string name, EventQueue<Event>& eventQueue)
-      : StateMachineTest<GarageDoorSM>(name, eventQueue)
-      , doorOpen(std::make_shared<State>("Door Open"))
-      , doorOpening(std::make_shared<State>("Door Opening"))
-      , doorClosed(std::make_shared<State>("Door Closed"))
-      , doorClosing(std::make_shared<State>("Door Closing"))
-      , doorStoppedClosing(std::make_shared<State>("Door Stopped Closing"))
-      , doorStoppedOpening(std::make_shared<State>("Door Stopped Opening"))
-    {
-        // TransitionTable
-        add(doorClosed, click_event, doorOpening);
-        add(doorOpening, topSensor_event, doorOpen);
-        add(doorOpen, click_event, doorClosing);
-        add(doorClosing, bottomSensor_event, doorClosed);
-        add(doorOpening, click_event, doorStoppedOpening);
-        add(doorStoppedOpening, click_event, doorClosing);
-        add(doorClosing, obstruct_event, doorStoppedClosing);
-        add(doorClosing, click_event, doorStoppedClosing);
-        add(doorStoppedClosing, click_event, doorOpening);
-        add(doorClosed, click_event, doorOpening);
-    }
-
-    virtual ~GarageDoorSM() = default;
-
-    shared_ptr<State> getStartState() const override { return doorClosed; }
-
-    // States
-    shared_ptr<State> doorOpen;
-    shared_ptr<State> doorOpening;
-    shared_ptr<State> doorClosed;
-    shared_ptr<State> doorClosing;
-    shared_ptr<State> doorStoppedClosing;
-    shared_ptr<State> doorStoppedOpening;
-
-    // Events
-    Event click_event;
-    Event bottomSensor_event;
-    Event topSensor_event;
-    Event obstruct_event;
-};
-
-TEST_F(TestStateMachine, testGarageDoor)
-{
-    // Event Queue
-    EventQueue<Event> eventQueue;
-
-    // The StateMachine
-    // Starting State: doorClosed
-    // Stop State: doorOpen
-    std::shared_ptr<GarageDoorSM> sm =
-      std::make_shared<GarageDoorSM>("Garage Door SM", eventQueue);
-
-    sm->startHSM();
-    EXPECT_EQ(sm->getCurrentState(), sm->doorClosed);
-    eventQueue.addEvent(sm->click_event);
-    EXPECT_EQ(sm->doorOpening, sm->getCurrentState());
-    eventQueue.addEvent(sm->topSensor_event);
-    EXPECT_EQ(sm->doorOpen, sm->getCurrentState());
-    sm->stopHSM();
-}
-
-struct CdPlayerController
-{
-    // Actions
-    void playSong(std::string const& songName)
-    {
-        LOG(ERROR) << "Playing song: " << songName;
-    }
-};
-
-template<typename ControllerType>
-struct CdPlayerHSM : public StateMachineTest<CdPlayerHSM<ControllerType>>
-{
-    using StateMachine<CdPlayerHSM>::add;
-
-    // Playing HSM
-    struct PlayingHSM : public StateMachineTest<PlayingHSM>
-    {
-        using StateMachine<PlayingHSM>::add;
-
-        PlayingHSM() = delete;
-        PlayingHSM(std::string name,
-                   EventQueue<Event>& eventQueue,
-                   State* parent = nullptr)
-          : StateMachineTest<PlayingHSM>(name, eventQueue, parent)
-          , Song1(std::make_shared<State>("Playing HSM -> Song1"))
-          , Song2(std::make_shared<State>("Playing HSM -> Song2"))
-          , Song3(std::make_shared<State>("Playing HSM -> Song3"))
-        {
-
-            // Transition Table for Playing HSM
-            // add(nullptr, null_event, Song1, &PlayingHSM::PlaySong);
-            add(Song1,
-                next_song,
-                Song2,
-                &PlayingHSM::PlaySong,
-                &PlayingHSM::PlaySongGuard);
-            add(Song3, prev_song, Song2);
-            add(Song2, prev_song, Song1);
-        }
-
-        shared_ptr<State> getStartState() const override { return Song1; }
-
-        // States
-        shared_ptr<State> Song1;
-        shared_ptr<State> Song2;
-        shared_ptr<State> Song3;
-
-        // Events
-        Event null_event;
-        Event next_song;
-        Event prev_song;
-
-        // Actions
-        void PlaySong() { LOG(INFO) << "Play Song"; }
-        bool PlaySongGuard()
-        {
-            LOG(INFO) << "Play Song Guard";
-            return true;
-        }
-    };
-
-    CdPlayerHSM() = delete;
-
-    CdPlayerHSM(std::string name,
-                EventQueue<Event>& eventQueue,
-                State* parent = nullptr)
-      : StateMachineTest<CdPlayerHSM>(name, eventQueue, parent)
-      , Stopped(std::make_shared<State>("Player Stopped"))
-      , Playing(std::make_shared<PlayingHSM>("Playing HSM", eventQueue, this))
-      , Paused(std::make_shared<State>("Player Paused"))
-      , Empty(std::make_shared<State>("Player Empty"))
-      , Open(std::make_shared<State>("Player Open"))
-    {
-        // TransitionTable for GarageDoor HSM
-        add(Stopped, play, Playing);
-        add(Stopped, open_close, Open);
-        add(Stopped, stop, Stopped);
-        //-------------------------------------------------
-        add(Open, open_close, Empty);
-        //-------------------------------------------------
-        add(Empty, open_close, Open);
-        add(Empty, cd_detected, Stopped);
-        add(Empty, cd_detected, Playing);
-        //-------------------------------------------------
-        add(Playing, stop, Stopped);
-        add(Playing, pause, Paused);
-        add(Playing, open_close, Open);
-        //-------------------------------------------------
-        add(Paused, end_pause, Playing);
-        add(Paused, stop, Stopped);
-        add(Paused, open_close, Open);
-    }
-
-    virtual ~CdPlayerHSM() = default;
-
-    shared_ptr<State> getStartState() const override { return Empty; }
-
-    // CdPlayer HSM
-    // States
-    shared_ptr<State> Stopped;
-
-    shared_ptr<PlayingHSM> Playing;
-
-    shared_ptr<State> Paused;
-    shared_ptr<State> Empty;
-    shared_ptr<State> Open;
-
-    // Events
-    Event play;
-    Event open_close;
-    Event stop;
-    Event cd_detected;
-    Event pause;
-    Event end_pause;
-
-    ControllerType controller_;
-};
-
-struct ErrorHSM : public StateMachineTest<ErrorHSM>
-{
-    ErrorHSM() = delete;
-
-    ErrorHSM(std::string name,
-             EventQueue<Event>& eventQueue,
-             State* parent = nullptr)
-      : StateMachineTest<ErrorHSM>(name, eventQueue, parent)
-      , AllOk(std::make_shared<State>("All Ok"))
-      , ErrorMode(std::make_shared<State>("Error Mode"))
-    {
-        add(AllOk, error, ErrorMode);
-        // Potentially transition to a recovery HSM
-        add(ErrorMode, recover, AllOk, &ErrorHSM::recovery);
-    }
-
-    // States
-    shared_ptr<State> AllOk;
-    shared_ptr<State> ErrorMode;
-
-    // Events
-    Event error;
-    Event recover;
-
-    // Actions
-    void recovery() { LOG(INFO) << "Recovering from Error:"; }
-
-    shared_ptr<State> getStartState() const override { return AllOk; }
-};
-
-using OrthogonalCdPlayerHSM =
-  OrthogonalHSM<CdPlayerHSM<CdPlayerController>, ErrorHSM>;
-
-// TODO(sriram): Test no end state
-// Model interruptions to workflow
-// For e.g. As door is opening or closing, one of the sensors
-// detects an obstacle.
-struct TestCdPlayerHSM : public testing::Test
-{
-    TestCdPlayerHSM()
-      : testing::Test()
-      , sm(std::make_shared<CdPlayerHSM<CdPlayerController>>("CD Player HSM",
-                                                             eventQueue))
-    {}
-    // The StateMachine
-    // Starting State: Empty
-    shared_ptr<CdPlayerHSM<CdPlayerController>> sm;
-
-    // Event Queue
-    EventQueue<Event> eventQueue;
-};
-
-TEST_F(TestCdPlayerHSM, testTransitions)
-{
-    auto& Playing = sm->Playing;
-
-    ASSERT_EQ(Playing->getParent(), sm.get());
-
-    sm->startHSM();
-
-    eventQueue.addEvent(sm->cd_detected);
-    ASSERT_EQ(sm->getCurrentState(), sm->Stopped);
-
-    eventQueue.addEvent(sm->play);
-    ASSERT_EQ(sm->getCurrentState(), Playing);
-
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
-
-    eventQueue.addEvent(Playing->next_song);
-    ASSERT_EQ(sm->getCurrentState(), Playing);
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
-
-    eventQueue.addEvent(sm->pause);
-    ASSERT_EQ(sm->getCurrentState(), sm->Paused);
-    ASSERT_EQ(Playing->getCurrentState(), nullptr);
-
-    eventQueue.addEvent(sm->end_pause);
-    ASSERT_EQ(sm->getCurrentState(), sm->Playing);
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
-
-    eventQueue.addEvent(sm->stop);
-    ASSERT_EQ(sm->getCurrentState(), sm->Stopped);
-    ASSERT_EQ(Playing->getCurrentState(), nullptr);
-
-    sm->stopHSM();
-}
-
-struct TestOrthogonalCdPlayerHSM : public testing::Test
-{
-    TestOrthogonalCdPlayerHSM()
-      : testing::Test()
-      , sm(std::make_shared<OrthogonalCdPlayerHSM>(
-          "CD Player Orthogonal HSM",
-          eventQueue,
-          std::make_shared<CdPlayerHSM<CdPlayerController>>("CD Player HSM",
-                                                            eventQueue),
-          std::make_shared<ErrorHSM>("Error HSM", eventQueue)))
-    {}
-
-    // The StateMachine
-    // Starting State: Empty
-    shared_ptr<OrthogonalCdPlayerHSM> sm;
-
-    // Event Queue
-    EventQueue<Event> eventQueue;
-};
-
-TEST_F(TestOrthogonalCdPlayerHSM, testTransitions)
-{
-
-    auto cdPlayerHSM =
-      std::static_pointer_cast<CdPlayerHSM<CdPlayerController>>(sm->getHsm1());
-
-    auto& Playing = cdPlayerHSM->Playing;
-
-    auto errorHSM = std::static_pointer_cast<ErrorHSM>(sm->getHsm2());
-
-    ASSERT_EQ(Playing->getParent(), cdPlayerHSM.get());
-    ASSERT_EQ(sm.get(), cdPlayerHSM->getParent());
-    ASSERT_EQ(sm.get(), errorHSM->getParent());
-
-    sm->OnEntry();
-
-    ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
-
-    eventQueue.addEvent(cdPlayerHSM->cd_detected);
-    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
-
-    eventQueue.addEvent(cdPlayerHSM->play);
-    ASSERT_EQ(cdPlayerHSM->getCurrentState(), Playing);
-
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
-
-    eventQueue.addEvent(Playing->next_song);
-    ASSERT_EQ(cdPlayerHSM->getCurrentState(), Playing);
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
-
-    eventQueue.addEvent(cdPlayerHSM->pause);
-    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Paused);
-    ASSERT_EQ(Playing->getCurrentState(), nullptr);
-
-    eventQueue.addEvent(cdPlayerHSM->end_pause);
-    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Playing);
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
-
-    eventQueue.addEvent(cdPlayerHSM->stop);
-    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
-    ASSERT_EQ(Playing->getCurrentState(), nullptr);
-
-    // same as TestCdPlayerHSM::testTransitions upto this point
-
-    eventQueue.addEvent(errorHSM->error);
-    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
-    ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->ErrorMode);
-
-    eventQueue.addEvent(errorHSM->recover);
-    ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
-    ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
-
-    sm->OnExit();
 }
 
 int

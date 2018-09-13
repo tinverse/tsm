@@ -4,10 +4,22 @@ project( tsm-Superbuild )
 LIST(APPEND CMAKE_MODULE_PATH
     "${PROJECT_SOURCE_DIR}")
 
-
 if (NOT DEFINED INSTALL_DIR)
   message(FATAL_ERROR " You must pass a variable INSTALL_DIR for the libs, i.e. with -DINSTALL_DIR=/install/path (avoid '~')")
 endif()
+
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
+        OR CMAKE_INSTALL_PREFIX STREQUAL "/usr/local"
+        OR CMAKE_INSTALL_PREFIX MATCHES "^C:/Program Files")
+
+    set(CMAKE_INSTALL_PREFIX ${INSTALL_DIR}
+      CACHE PATH "CMake Install Prefix"
+      FORCE)
+endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
+        OR CMAKE_INSTALL_PREFIX STREQUAL "/usr/local"
+        OR CMAKE_INSTALL_PREFIX MATCHES "^C:/Program Files")
+
 
 include(dependencies)
 
