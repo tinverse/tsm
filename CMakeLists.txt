@@ -46,7 +46,6 @@ else (BUILD_DEPENDENCIES)
     target_include_directories(tsm SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
     target_link_libraries(tsm PRIVATE ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES})
 
-
     add_executable(tsm_test
       tsm_tests.cpp
       test/GarageDoorSM.cpp
@@ -54,6 +53,14 @@ else (BUILD_DEPENDENCIES)
       test/OrthogonalCdPlayerHSM.cpp
       )
 
-    target_include_directories(tsm_test PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/test SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
-    target_link_libraries(tsm_test PRIVATE tsm ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
+    target_include_directories(tsm_test
+      PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/test
+      SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS}
+      )
+
+    target_link_libraries(tsm_test
+      PRIVATE tsm ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
+
+    include(GoogleTest)
+    gtest_discover_tests(tsm_test TEST_PREFIX new:)
 endif(BUILD_DEPENDENCIES)
