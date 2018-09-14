@@ -1,5 +1,5 @@
 ### Goals:
-    * Production ready Hierarchical State machine (Unit tests and other contributions welcome). 
+    * Hierarchical State machine (Unit tests and other contributions welcome). 
     * Thread safe event queue. 
     * C++14 - no manual memory management, C++ std libraries only.
     * Ease of installation/ distribution.
