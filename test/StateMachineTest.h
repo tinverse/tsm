@@ -14,6 +14,9 @@ namespace tsmtest {
 template<typename DerivedHSM>
 struct StateMachineTest : public StateMachine<DerivedHSM>
 {
+    using type = StateMachineTest;
+    using base_type = StateMachineTest<DerivedHSM>;
+
     StateMachineTest() = delete;
 
     StateMachineTest(std::string name,
@@ -24,11 +27,10 @@ struct StateMachineTest : public StateMachine<DerivedHSM>
 
     virtual ~StateMachineTest() = default;
 
-    std::shared_ptr<State> const getCurrentState() const override
+    void processEvent(Event nextEvent)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3));
-        std::this_thread::yield();
-        return StateMachine<DerivedHSM>::currentState_;
+        State* state = base_type::dispatch(this);
+        state->execute(nextEvent);
     }
 };
 } // namespace tsmtest

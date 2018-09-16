@@ -67,10 +67,11 @@ struct State
     virtual std::shared_ptr<State> const getCurrentState() const
     {
         throw MethodNotImplementedException(
-          "The State::getCurrentState method is not implemented. You "
-          "probably meant to call "
+          "The State::getCurrentState method is not implemented - by design. "
+          "You should invoke "
           "StateMachine<DerivedHSM>::getCurrentState");
     }
+
     const std::string name;
 
   private:

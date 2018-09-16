@@ -150,10 +150,6 @@ struct StateMachine : public State
     {
         while (!interrupt_) {
             Event nextEvent;
-            if (eventQueue_.empty()) {
-                // LOG(WARNING) << "Event Queue is Empty.";
-                // return;
-            }
             try {
                 // This is a blocking wait
                 nextEvent = eventQueue_.nextEvent();
@@ -168,12 +164,12 @@ struct StateMachine : public State
 
             // go down the HSM hierarchy to handle the event as that is the
             // "most active state"
-            getDeepestHSM(this)->execute(nextEvent);
+            dispatch(this)->execute(nextEvent);
         }
     };
 
     // traverse the hsm hierarchy down.
-    State* getDeepestHSM(State* state) const
+    State* dispatch(State* state) const
     {
         State* parent = state;
         State* kid = parent->getCurrentState().get();
@@ -182,69 +178,6 @@ struct StateMachine : public State
             kid = kid->getCurrentState().get();
         }
         return parent;
-    }
-
-    void execute() override
-    {
-        while (!interrupt_) {
-            DLOG(INFO) << this->name << ": Waiting for event";
-            Event nextEvent;
-            try {
-                // This is a blocking wait
-                nextEvent = eventQueue_.nextEvent();
-            } catch (EventQueueInterruptedException const& e) {
-                if (!interrupt_) {
-                    throw e;
-                }
-                LOG(WARNING)
-                  << this->name << ": Exiting event loop on interrupt";
-                break;
-            }
-
-            LOG(INFO) << "Current State:" << currentState_->name
-                      << " Event:" << nextEvent.id;
-
-            shared_ptr<Transition> t = table_.next(currentState_, nextEvent);
-
-            if (!t) {
-                // If transition does not exist, pass event to parent HSM
-                if (parent_) {
-                    eventQueue_.addFront(nextEvent);
-                    break;
-                } else {
-                    LOG(ERROR) << "Reached top level HSM. Cannot handle event";
-                    continue;
-                }
-            }
-
-            // Evaluate guard if it exists
-            bool result =
-              t->guard && (static_cast<DerivedHSM*>(this)->*(t->guard))();
-
-            ActionFn action = nullptr;
-            if (!(t->guard) || result) {
-                // Perform entry and exit actions in the doTransition function.
-                // If just an internal transition, Entry and exit actions are
-                // not performed
-                action = t->doTransition();
-                currentState_ = t->toState;
-
-                DLOG(INFO) << "Next State:" << currentState_->name;
-                if (action) {
-                    (static_cast<DerivedHSM*>(this)->*action)();
-                }
-
-                // Now execute the current state
-                currentState_->execute();
-            } else {
-                LOG(INFO) << "Guard prevented transition";
-            }
-
-            if (currentState_ == getStopState()) {
-                DLOG(INFO) << this->name << " Done Exiting... ";
-                interrupt_ = true;
-            }
-        }
     }
 
     void execute(Event const& nextEvent) override
@@ -258,9 +191,9 @@ struct StateMachine : public State
         if (!t) {
             // If transition does not exist, pass event to parent HSM
             if (parent_) {
-                // eventQueue_.addFront(nextEvent);
-                // TODO(sriram) : should call OnExit? UML spec says yes
-                // OnExit();
+                // TODO(sriram) : should call OnExit? UML spec seems to say yes
+                // invoking OnExit() here will not work for Orthogonal state
+                // machines
                 parent_->execute(nextEvent);
             } else {
                 LOG(ERROR) << "Reached top level HSM. Cannot handle event";
@@ -365,38 +298,6 @@ struct OrthogonalHSM
         hsm1_->OnExit();
         hsm2_->OnExit();
         base_type::OnExit();
-    }
-
-    void execute() override
-    {
-        while (!base_type::interrupt_) {
-            hsm1_->execute();
-            hsm2_->execute();
-            Event nextEvent;
-            try {
-                nextEvent = base_type::eventQueue_.nextEvent();
-            } catch (EventQueueInterruptedException const& e) {
-                if (!base_type::interrupt_) {
-                    throw e;
-                }
-                LOG(WARNING)
-                  << this->name << ": Exiting event loop on interrupt";
-                break;
-            }
-            auto const& hsm1Events = hsm1_->getEvents();
-            if (hsm1Events.find(nextEvent) != hsm1Events.end()) {
-                base_type::eventQueue_.addFront(nextEvent);
-                continue;
-            } else {
-                if (base_type::parent_) {
-                    base_type::eventQueue_.addFront(nextEvent);
-                    break;
-                } else {
-                    LOG(ERROR) << "Reached top level HSM. Cannot handle event";
-                    continue;
-                }
-            }
-        }
     }
 
     void execute(Event const& nextEvent) override
