@@ -24,7 +24,7 @@ struct StateMachineTest : public StateMachine<DerivedHSM>
 
     virtual ~StateMachineTest() = default;
 
-    std::shared_ptr<State> const& getCurrentState() const override
+    std::shared_ptr<State> const getCurrentState() const override
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(3));
         std::this_thread::yield();

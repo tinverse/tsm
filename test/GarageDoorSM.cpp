@@ -20,10 +20,15 @@ struct TestGarageDoorSM : public ::testing::Test
 TEST_F(TestGarageDoorSM, testGarageDoor)
 {
     sm->OnEntry();
-    EXPECT_EQ(sm->getCurrentState(), sm->doorClosed);
+    ASSERT_EQ(sm->getCurrentState(), sm->doorClosed)
+      << " CurrentState: " << sm->getCurrentState()->name;
     eventQueue.addEvent(sm->click_event);
-    EXPECT_EQ(sm->doorOpening, sm->getCurrentState());
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    ASSERT_EQ(sm->doorOpening, sm->getCurrentState())
+      << " CurrentState: " << sm->getCurrentState()->name;
     eventQueue.addEvent(sm->topSensor_event);
-    EXPECT_EQ(sm->doorOpen, sm->getCurrentState());
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    ASSERT_EQ(sm->doorOpen, sm->getCurrentState())
+      << " CurrentState: " << sm->getCurrentState()->name;
     sm->OnExit();
 }

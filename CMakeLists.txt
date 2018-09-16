@@ -29,6 +29,18 @@ if (BUILD_DEPENDENCIES)
     set_directory_properties(PROPERTIES EP_BASE ${INSTALL_DIR})
     set(CMAKE_INSTALL_PREFIX ${INSTALL_DIR} CACHE PATH "ThirdParty stuff")
 else (BUILD_DEPENDENCIES)
+
+    if(MSVC)
+      # Force to always compile with W4
+      if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+        string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+      else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+      endif()
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-long-long -pedantic")
+    endif()
+
     set(CMAKE_FIND_ROOT_PATH ${INSTALL_DIR} CACHE PATH "")
     find_package(Gflags REQUIRED)
     find_package(GTest REQUIRED)

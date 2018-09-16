@@ -52,36 +52,44 @@ TEST_F(TestOrthogonalCdPlayerHSM, testTransitions)
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
 
     eventQueue.addEvent(cdPlayerHSM->cd_detected);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
 
     eventQueue.addEvent(cdPlayerHSM->play);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), Playing);
 
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
 
     eventQueue.addEvent(Playing->next_song);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), Playing);
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     eventQueue.addEvent(cdPlayerHSM->pause);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Paused);
     ASSERT_EQ(Playing->getCurrentState(), nullptr);
 
     eventQueue.addEvent(cdPlayerHSM->end_pause);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Playing);
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
 
     eventQueue.addEvent(cdPlayerHSM->stop);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
     ASSERT_EQ(Playing->getCurrentState(), nullptr);
 
     // same as TestCdPlayerHSM::testTransitions upto this point
 
     eventQueue.addEvent(errorHSM->error);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->ErrorMode);
 
     eventQueue.addEvent(errorHSM->recover);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
 
