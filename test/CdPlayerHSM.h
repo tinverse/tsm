@@ -25,12 +25,12 @@ struct CdPlayerController
 // hardware details etc. with the CdPlayerHSM delegating all actions to the
 // controller.
 template<typename ControllerType>
-struct CdPlayerHSM : public StateMachineTest<CdPlayerHSM<ControllerType>>
+struct CdPlayerHSM : public StateMachine<CdPlayerHSM<ControllerType>>
 {
     using StateMachine<CdPlayerHSM>::add;
 
     // Playing HSM
-    struct PlayingHSM : public StateMachineTest<PlayingHSM>
+    struct PlayingHSM : public StateMachine<PlayingHSM>
     {
         using StateMachine<PlayingHSM>::add;
 
@@ -38,7 +38,7 @@ struct CdPlayerHSM : public StateMachineTest<CdPlayerHSM<ControllerType>>
         PlayingHSM(std::string name,
                    EventQueue<Event>& eventQueue,
                    State* parent = nullptr)
-          : StateMachineTest<PlayingHSM>(name, eventQueue, parent)
+          : StateMachine<PlayingHSM>(name, eventQueue, parent)
           , Song1(std::make_shared<State>("Playing HSM -> Song1"))
           , Song2(std::make_shared<State>("Playing HSM -> Song2"))
           , Song3(std::make_shared<State>("Playing HSM -> Song3"))
@@ -81,7 +81,7 @@ struct CdPlayerHSM : public StateMachineTest<CdPlayerHSM<ControllerType>>
     CdPlayerHSM(std::string name,
                 EventQueue<Event>& eventQueue,
                 State* parent = nullptr)
-      : StateMachineTest<CdPlayerHSM>(name, eventQueue, parent)
+      : StateMachine<CdPlayerHSM>(name, eventQueue, parent)
       , Stopped(std::make_shared<State>("Player Stopped"))
       , Playing(std::make_shared<PlayingHSM>("Playing HSM", eventQueue, this))
       , Paused(std::make_shared<State>("Player Paused"))
@@ -133,14 +133,14 @@ struct CdPlayerHSM : public StateMachineTest<CdPlayerHSM<ControllerType>>
     ControllerType controller_;
 };
 
-struct ErrorHSM : public StateMachineTest<ErrorHSM>
+struct ErrorHSM : public StateMachine<ErrorHSM>
 {
     ErrorHSM() = delete;
 
     ErrorHSM(std::string name,
              EventQueue<Event>& eventQueue,
              State* parent = nullptr)
-      : StateMachineTest<ErrorHSM>(name, eventQueue, parent)
+      : StateMachine<ErrorHSM>(name, eventQueue, parent)
       , AllOk(std::make_shared<State>("All Ok"))
       , ErrorMode(std::make_shared<State>("Error Mode"))
     {

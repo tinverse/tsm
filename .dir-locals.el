@@ -1,18 +1,22 @@
-(setq indent-tabs-mode nil)
-(setq tab-width 4)
-(defvaralias 'c-basic-offset 'tab-width)
-
-(use-package rtags
-  :config
-  (rtags-enable-standard-keybindings)
-  (setq rtags-autostart-diagnostics t)
-  (rtags-diagnostics)
-  (setq rtags-completions-enabled t)
-  (rtags-start-process-unless-running))
-
-(use-package cmake-ide
-  :config
-  (cmake-ide-setup))
+                                        ; -*- mode: Lisp -*-
 (setq cmake-ide-build-dir '"build/")
 
-((c++-mode (helm-make-build-dir . "build/")))
+(c++-mode . ((helm-make-build-dir . "build/")
+             (helm-make-arguments . "-j4")
+              (indent-tabs-mode . nil)
+              (tab-width . 4)
+              (c-basic-offset . 'tab-width)))
+
+(cmake-mode . ((cmake-ide-project-dir . "./")
+         (cmake-ide-build-dir . "build/")
+         (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_DEPENDENCIES=OFF")))
+
+(nil . ((projectile-project-name . "tsm")
+                    (projectile-project-run-cmd . "ctest")
+                    (projectile-project-test-cmd . "ctest")))
+
+(nil . ((helm-ctest-build-dir . "build/")
+        (helm-make-build-dir . "build/")
+        (helm-make-arguments . "-j4")))
+
+(nil . ((desktop-save-mode 1)))

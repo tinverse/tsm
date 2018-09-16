@@ -3,15 +3,13 @@
 
 #include "StateMachineTest.h"
 
-using tsmtest::StateMachineTest;
-
 namespace tsmtest {
-struct GarageDoorSM : public StateMachineTest<GarageDoorSM>
+struct GarageDoorSM : public StateMachine<GarageDoorSM>
 {
     GarageDoorSM() = delete;
 
     GarageDoorSM(std::string name, EventQueue<Event>& eventQueue)
-      : StateMachineTest<GarageDoorSM>(name, eventQueue)
+      : StateMachine<GarageDoorSM>(name, eventQueue)
       , doorOpen(std::make_shared<State>("Door Open"))
       , doorOpening(std::make_shared<State>("Door Opening"))
       , doorClosed(std::make_shared<State>("Door Closed"))

@@ -31,26 +31,32 @@ TEST_F(TestCdPlayerHSM, testTransitions)
     sm->OnEntry();
 
     eventQueue.addEvent(sm->cd_detected);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(sm->getCurrentState(), sm->Stopped);
 
     eventQueue.addEvent(sm->play);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(sm->getCurrentState(), Playing);
 
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
 
     eventQueue.addEvent(Playing->next_song);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(sm->getCurrentState(), Playing);
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     eventQueue.addEvent(sm->pause);
+    std::this_thread::sleep_for(std::chrono::milliseconds(3));
     ASSERT_EQ(sm->getCurrentState(), sm->Paused);
     ASSERT_EQ(Playing->getCurrentState(), nullptr);
 
     eventQueue.addEvent(sm->end_pause);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(sm->getCurrentState(), sm->Playing);
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
 
     eventQueue.addEvent(sm->stop);
+    std::this_thread::sleep_for(std::chrono::milliseconds(3));
     ASSERT_EQ(sm->getCurrentState(), sm->Stopped);
     ASSERT_EQ(Playing->getCurrentState(), nullptr);
 
