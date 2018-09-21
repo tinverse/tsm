@@ -13,6 +13,20 @@ using std::deque;
 
 namespace tsm {
 
+struct dummy_mutex
+{
+    dummy_mutex() = default;
+    ~dummy_mutex() = default;
+
+    dummy_mutex(dummy_mutex&) = delete;
+    dummy_mutex(dummy_mutex const&) = delete;
+    dummy_mutex(dummy_mutex&&) = delete;
+
+    void lock() {}
+    void unlock() {}
+    bool try_lock() { return true; }
+};
+
 struct EventQueueInterruptedException : public std::runtime_error
 {
     explicit EventQueueInterruptedException(const std::string& what_arg)
@@ -25,8 +39,8 @@ struct EventQueueInterruptedException : public std::runtime_error
 
 // A thread safe event queue. Any thread can call addEvent if it has a pointer
 // to the event queue. The call to nextEvent is a blocking call
-template<typename Event>
-class EventQueue : private deque<Event>
+template<typename Event, typename LockType>
+class EventQueueT : private deque<Event>
 {
   public:
     using deque<Event>::empty;
@@ -36,16 +50,16 @@ class EventQueue : private deque<Event>
     using deque<Event>::push_front;
     using deque<Event>::size;
 
-    EventQueue()
+    EventQueueT()
       : interrupt_(false)
     {}
 
-    ~EventQueue() { stop(); }
+    ~EventQueueT() { stop(); }
 
     // Block until you get an event
     const Event nextEvent()
     {
-        std::unique_lock<std::mutex> lock(eventQueueMutex_);
+        std::unique_lock<LockType> lock(eventQueueMutex_);
         cvEventAvailable_.wait(
           lock, [this] { return (!this->empty() || this->interrupt_); });
         if (interrupt_) {
@@ -61,7 +75,7 @@ class EventQueue : private deque<Event>
 
     void addEvent(const Event& e)
     {
-        std::lock_guard<std::mutex> lock(eventQueueMutex_);
+        std::lock_guard<LockType> lock(eventQueueMutex_);
         DLOG(INFO) << "Thread:" << std::this_thread::get_id()
                    << " Adding Event:" << e.id << "\n";
         push_back(e);
@@ -77,19 +91,21 @@ class EventQueue : private deque<Event>
 
     void addFront(const Event& e)
     {
-        std::lock_guard<std::mutex> lock(eventQueueMutex_);
+        std::lock_guard<LockType> lock(eventQueueMutex_);
         push_front(e);
         cvEventAvailable_.notify_all();
     }
 
-    auto& getConditionVariable() { return cvEventAvailable_; }
-
-    auto& getEventQueueMutex() { return eventQueueMutex_; }
-
   private:
-    std::mutex eventQueueMutex_;
-    std::condition_variable cvEventAvailable_;
+    LockType eventQueueMutex_;
+    std::condition_variable_any cvEventAvailable_;
     bool interrupt_;
 };
+
+template<typename Event>
+using SimpleEventQueue = EventQueueT<Event, dummy_mutex>;
+
+template<typename Event>
+using EventQueue = EventQueueT<Event, std::mutex>;
 
 } // namespace tsm

@@ -1,7 +1,16 @@
+#include "tsm.h"
+
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#include "StateMachineTest.h"
+using tsm::Event;
+using tsm::EventQueue;
+using tsm::ParentThreadExecutionPolicy;
+using tsm::SeparateThreadExecutionPolicy;
+using tsm::State;
+using tsm::StateMachine;
+using tsm::StateMachineDef;
+using tsm::StateMachineWithExecutionPolicy;
 
 namespace tsmtest {
 
@@ -22,35 +31,32 @@ struct CdPlayerController
 // The ControllerType is not strictly required. It doesn't have to be templated
 // as well. I think about it as the "context" associated with the state machine.
 // This way the CdPlayerController can encapsulate stuff like mp3 encodings,
-// hardware details etc. with the CdPlayerHSM delegating all actions to the
+// hardware details etc. with the CdPlayerDef delegating all actions to the
 // controller.
 template<typename ControllerType>
-struct CdPlayerHSM : public StateMachine<CdPlayerHSM<ControllerType>>
+struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
 {
-    using StateMachine<CdPlayerHSM>::add;
+    using StateMachineDef<CdPlayerDef>::add;
 
     // Playing HSM
-    struct PlayingHSM : public StateMachine<PlayingHSM>
+    struct PlayingHSMDef : public StateMachineDef<PlayingHSMDef>
     {
-        using StateMachine<PlayingHSM>::add;
+        using StateMachineDef<PlayingHSMDef>::add;
 
-        PlayingHSM() = delete;
-        PlayingHSM(std::string name,
-                   EventQueue<Event>& eventQueue,
-                   State* parent = nullptr)
-          : StateMachine<PlayingHSM>(name, eventQueue, parent)
+        PlayingHSMDef(State* parent = nullptr)
+          : StateMachineDef<PlayingHSMDef>("Playing HSM", parent)
           , Song1(std::make_shared<State>("Playing HSM -> Song1"))
           , Song2(std::make_shared<State>("Playing HSM -> Song2"))
           , Song3(std::make_shared<State>("Playing HSM -> Song3"))
         {
 
             // Transition Table for Playing HSM
-            // add(nullptr, null_event, Song1, &PlayingHSM::PlaySong);
+            // add(nullptr, null_event, Song1, &PlayingHSMDef::PlaySong);
             add(Song1,
                 next_song,
                 Song2,
-                &PlayingHSM::PlaySong,
-                &PlayingHSM::PlaySongGuard);
+                &PlayingHSMDef::PlaySong,
+                &PlayingHSMDef::PlaySongGuard);
             add(Song3, prev_song, Song2);
             add(Song2, prev_song, Song1);
         }
@@ -76,14 +82,10 @@ struct CdPlayerHSM : public StateMachine<CdPlayerHSM<ControllerType>>
         }
     };
 
-    CdPlayerHSM() = delete;
-
-    CdPlayerHSM(std::string name,
-                EventQueue<Event>& eventQueue,
-                State* parent = nullptr)
-      : StateMachine<CdPlayerHSM>(name, eventQueue, parent)
+    CdPlayerDef(State* parent = nullptr)
+      : StateMachineDef<CdPlayerDef>("CD Player HSM", parent)
       , Stopped(std::make_shared<State>("Player Stopped"))
-      , Playing(std::make_shared<PlayingHSM>("Playing HSM", eventQueue, this))
+      , Playing(std::make_shared<StateMachine<PlayingHSMDef>>(this))
       , Paused(std::make_shared<State>("Player Paused"))
       , Empty(std::make_shared<State>("Player Empty"))
       , Open(std::make_shared<State>("Player Open"))
@@ -91,7 +93,7 @@ struct CdPlayerHSM : public StateMachine<CdPlayerHSM<ControllerType>>
         // TransitionTable for GarageDoor HSM
         add(Stopped, play, Playing);
         add(Stopped, open_close, Open);
-        add(Stopped, stop, Stopped);
+        add(Stopped, stop_event, Stopped);
         //-------------------------------------------------
         add(Open, open_close, Empty);
         //-------------------------------------------------
@@ -99,16 +101,16 @@ struct CdPlayerHSM : public StateMachine<CdPlayerHSM<ControllerType>>
         add(Empty, cd_detected, Stopped);
         add(Empty, cd_detected, Playing);
         //-------------------------------------------------
-        add(Playing, stop, Stopped);
+        add(Playing, stop_event, Stopped);
         add(Playing, pause, Paused);
         add(Playing, open_close, Open);
         //-------------------------------------------------
         add(Paused, end_pause, Playing);
-        add(Paused, stop, Stopped);
+        add(Paused, stop_event, Stopped);
         add(Paused, open_close, Open);
     }
 
-    virtual ~CdPlayerHSM() = default;
+    virtual ~CdPlayerDef() = default;
 
     shared_ptr<State> getStartState() const override { return Empty; }
 
@@ -116,7 +118,7 @@ struct CdPlayerHSM : public StateMachine<CdPlayerHSM<ControllerType>>
     // States
     shared_ptr<State> Stopped;
 
-    shared_ptr<PlayingHSM> Playing;
+    shared_ptr<PlayingHSMDef> Playing;
 
     shared_ptr<State> Paused;
     shared_ptr<State> Empty;
@@ -125,7 +127,7 @@ struct CdPlayerHSM : public StateMachine<CdPlayerHSM<ControllerType>>
     // Events
     Event play;
     Event open_close;
-    Event stop;
+    Event stop_event;
     Event cd_detected;
     Event pause;
     Event end_pause;
@@ -133,14 +135,10 @@ struct CdPlayerHSM : public StateMachine<CdPlayerHSM<ControllerType>>
     ControllerType controller_;
 };
 
-struct ErrorHSM : public StateMachine<ErrorHSM>
+struct ErrorHSM : public StateMachineDef<ErrorHSM>
 {
-    ErrorHSM() = delete;
-
-    ErrorHSM(std::string name,
-             EventQueue<Event>& eventQueue,
-             State* parent = nullptr)
-      : StateMachine<ErrorHSM>(name, eventQueue, parent)
+    ErrorHSM(State* parent = nullptr)
+      : StateMachineDef<ErrorHSM>("Error HSM", parent)
       , AllOk(std::make_shared<State>("All Ok"))
       , ErrorMode(std::make_shared<State>("Error Mode"))
     {

@@ -74,5 +74,5 @@ else (BUILD_DEPENDENCIES)
       PRIVATE tsm ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
 
     include(GoogleTest)
-    gtest_discover_tests(tsm_test TEST_PREFIX new:)
+    gtest_discover_tests(tsm_test TEST_PREFIX test)
 endif(BUILD_DEPENDENCIES)
