@@ -40,12 +40,6 @@ struct State
 
     bool operator==(State const& rhs) { return this->id == rhs.id; }
 
-    // Methods
-    virtual void execute()
-    {
-        LOG(INFO) << "Executing: " << this->name << std::endl;
-    }
-
     virtual void execute(Event const& nextEvent)
     {
 

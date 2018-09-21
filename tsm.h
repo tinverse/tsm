@@ -18,31 +18,16 @@ namespace tsm {
 
 typedef std::pair<std::shared_ptr<State>, Event> StateEventPair;
 
-struct StateMachineExecutionPolicy
+template<typename HSMDef>
+struct StateMachineDef : public State
 {
-    virtual void start() = 0;
-    virtual void stop() = 0;
-};
-
-template<typename DerivedHSM>
-struct SeparateThreadExecutionPolicy;
-
-template<typename DerivedHSM,
-         template<class> class ExecutionPolicy = SeparateThreadExecutionPolicy>
-struct StateMachine
-  : public State
-  , public ExecutionPolicy<DerivedHSM>
-{
-    using ActionFn = void (DerivedHSM::*)(void);
-    using GuardFn = bool (DerivedHSM::*)(void);
+    using ActionFn = void (HSMDef::*)(void);
+    using GuardFn = bool (HSMDef::*)(void);
     using Transition = TransitionT<State, Event, ActionFn, GuardFn>;
     using TransitionTable =
       std::unordered_map<StateEventPair, shared_ptr<Transition>>;
     using TransitionTableElement =
       std::pair<StateEventPair, shared_ptr<Transition>>;
-
-    using PolicyType = ExecutionPolicy<
-      DerivedHSM>; // SeparateThreadExecutionPolicy<StateMachine<DerivedHSM>>;
 
     struct StateTransitionTable : private TransitionTable
     {
@@ -75,31 +60,21 @@ struct StateMachine
         }
     };
 
-  public:
-    StateMachine() = delete;
+    StateMachineDef() = delete;
 
-    StateMachine(std::string name,
-                 shared_ptr<State> startState,
-                 shared_ptr<State> stopState,
-                 EventQueue<Event>& eventQueue,
-                 State* parent = nullptr)
+    StateMachineDef(std::string const& name,
+                    shared_ptr<State> startState,
+                    shared_ptr<State> stopState,
+                    State* parent = nullptr)
       : State(name)
-      , PolicyType()
-      , interrupt_(false)
-      , currentState_(nullptr)
       , startState_(startState)
       , stopState_(std::move(stopState))
-      , eventQueue_(eventQueue)
       , parent_(parent)
     {}
 
-    StateMachine(std::string name,
-                 EventQueue<Event>& eventQueue,
-                 State* parent = nullptr)
-      : StateMachine(name, nullptr, nullptr, eventQueue, parent)
+    StateMachineDef(std::string const& name, State* parent = nullptr)
+      : StateMachineDef(name, nullptr, nullptr, parent)
     {}
-
-    virtual ~StateMachine() = default;
 
     void add(shared_ptr<State> fromState,
              Event onEvent,
@@ -114,71 +89,69 @@ struct StateMachine
         eventSet_.insert(onEvent);
     }
 
-    virtual shared_ptr<State> getStartState() const { return startState_; }
+    shared_ptr<Transition> next(shared_ptr<State> currentState,
+                                Event const& nextEvent)
+    {
+        return table_.next(currentState, nextEvent);
+    }
 
+    auto& getTable() const { return table_; }
+    auto& getEvents() const { return eventSet_; }
+
+    virtual shared_ptr<State> getStartState() const { return startState_; }
     virtual shared_ptr<State> getStopState() const { return stopState_; }
+
+    State* getParent() const override { return parent_; }
+    void setParent(State* parent) { parent_ = parent; }
+
+  protected:
+    StateTransitionTable table_;
+    shared_ptr<State> startState_;
+    shared_ptr<State> stopState_;
+    State* parent_;
+    std::set<Event> eventSet_;
+
+  private:
+    void addTransition(shared_ptr<State> fromState,
+                       Event onEvent,
+                       shared_ptr<Transition> t)
+    {
+        StateEventPair pair(fromState, onEvent);
+        TransitionTableElement e(pair, t);
+        table_.insert(e);
+    }
+};
+
+template<typename HSMDef>
+struct StateMachine : public HSMDef
+{
+    using Transition = typename StateMachineDef<HSMDef>::Transition;
+
+    StateMachine(State* parent = nullptr)
+      : HSMDef(parent)
+      , currentState_(nullptr)
+    {}
+
+    virtual ~StateMachine() = default;
 
     void onEntry() override
     {
         DLOG(INFO) << "Entering: " << this->name;
-        startHSM();
-        currentState_ = getStartState();
+        currentState_ = this->getStartState();
     }
 
     void onExit() override
     {
-        // TODO (sriram): This really depends on exit/history policy. Sometimes
-        // you want to retain state information when you exit a subhsm for
-        // certain events. Maybe adding a currenEvent_ variable would allow
-        // DerivedHSMs to override onExit appropriately.
+        // TODO (sriram): Does the sub-HSM remember which state it was in at
+        // exit? This really depends on exit/history policy. Sometimes you want
+        // to retain state information when you exit a sub-HSM for certain
+        // events. Maybe adding a currenEvent_ variable would allow HSMDefs to
+        // override onExit appropriately.
+        // Currently as you see, the policy is to 'forget' on exit by setting
+        // the currentState_ to nullptr.
+        DLOG(INFO) << "Exiting: " << this->name;
         currentState_ = nullptr;
-        interrupt_ = true;
-        stopHSM();
-        DLOG(INFO) << "Exiting: " << name;
     }
-
-    void startHSM()
-    {
-        DLOG(INFO) << "starting: " << name;
-        // Only start a separate thread if you are the base Hsm
-        if (!parent_) {
-            PolicyType::start();
-        }
-        DLOG(INFO) << "started: " << name;
-    }
-
-    void stopHSM()
-    {
-        DLOG(INFO) << "stopping: " << name;
-
-        if (!parent_) {
-            eventQueue_.stop();
-            PolicyType::stop();
-        }
-        DLOG(INFO) << "stopped: " << name;
-    }
-
-    virtual void step()
-    {
-        while (!interrupt_) {
-            Event nextEvent;
-            try {
-                // This is a blocking wait
-                nextEvent = eventQueue_.nextEvent();
-            } catch (EventQueueInterruptedException const& e) {
-                if (!interrupt_) {
-                    throw e;
-                }
-                LOG(WARNING)
-                  << this->name << ": Exiting event loop on interrupt";
-                return;
-            }
-
-            // go down the HSM hierarchy to handle the event as that is the
-            // "most active state"
-            dispatch(this)->execute(nextEvent);
-        }
-    };
 
     // traverse the hsm hierarchy down.
     State* dispatch(State* state) const
@@ -198,15 +171,16 @@ struct StateMachine
         LOG(INFO) << "Current State:" << currentState_->name
                   << " Event:" << nextEvent.id;
 
-        shared_ptr<Transition> t = table_.next(currentState_, nextEvent);
+        HSMDef* thisDef = static_cast<HSMDef*>(this);
+        shared_ptr<Transition> t = thisDef->next(currentState_, nextEvent);
 
         if (!t) {
             // If transition does not exist, pass event to parent HSM
-            if (parent_) {
+            if (this->parent_) {
                 // TODO(sriram) : should call onExit? UML spec seems to say yes
                 // invoking onExit() here will not work for Orthogonal state
                 // machines
-                parent_->execute(nextEvent);
+                this->parent_->execute(nextEvent);
             } else {
                 LOG(ERROR) << "Reached top level HSM. Cannot handle event";
             }
@@ -214,15 +188,13 @@ struct StateMachine
             shared_ptr<State> nextState = nullptr;
 
             // Evaluate guard if it exists
-            bool result =
-              t->guard && (static_cast<DerivedHSM*>(this)->*(t->guard))();
+            bool result = t->guard && (thisDef->*(t->guard))();
 
             if (!(t->guard) || result) {
                 // Perform entry and exit actions in the doTransition function.
                 // If just an internal transition, Entry and exit actions are
                 // not performed
-                t->template doTransition<DerivedHSM>(
-                  static_cast<DerivedHSM*>(this));
+                t->template doTransition<HSMDef>(thisDef);
 
                 currentState_ = t->toState;
 
@@ -230,7 +202,7 @@ struct StateMachine
             } else {
                 LOG(INFO) << "Guard prevented transition";
             }
-            if (currentState_ == getStopState()) {
+            if (currentState_ == this->getStopState()) {
                 DLOG(INFO) << this->name << " Done Exiting... ";
                 onExit();
             }
@@ -243,79 +215,186 @@ struct StateMachine
         return currentState_;
     }
 
-    auto& getEvents() const { return eventSet_; }
-    State* getParent() const override { return parent_; }
-    void setParent(State* parent) { parent_ = parent; }
-    auto& getTable() const { return table_; }
-
   protected:
-    std::atomic<bool> interrupt_;
     shared_ptr<State> currentState_;
-    shared_ptr<State> startState_;
-    shared_ptr<State> stopState_;
-    EventQueue<Event>& eventQueue_;
-    StateTransitionTable table_;
-    State* parent_;
-
-  private:
-    void addTransition(shared_ptr<State> fromState,
-                       Event onEvent,
-                       shared_ptr<Transition> t)
-    {
-        StateEventPair pair(fromState, onEvent);
-        TransitionTableElement e(pair, t);
-        table_.insert(e);
-    }
-    std::set<Event> eventSet_;
 };
 
-template<typename DerivedHSM>
-struct SeparateThreadExecutionPolicy : public StateMachineExecutionPolicy
+template<typename StateType>
+struct StateMachineExecutionPolicy
 {
-    using ThreadCallback = void (StateMachine<DerivedHSM>::*)();
-    SeparateThreadExecutionPolicy()
-      : threadCallback_(&StateMachine<DerivedHSM>::step)
+    StateMachineExecutionPolicy() = delete;
+    StateMachineExecutionPolicy(StateType* sm)
+      : sm_(sm)
     {}
 
-    void start() override
+    virtual ~StateMachineExecutionPolicy() = default;
+
+    virtual void start() = 0;
+    virtual void stop() = 0;
+
+  protected:
+    StateType* sm_;
+};
+
+template<typename StateType>
+struct SeparateThreadExecutionPolicy
+  : public StateMachineExecutionPolicy<StateType>
+{
+    using EventQueue = EventQueueT<Event, std::mutex>;
+    using ThreadCallback = void (SeparateThreadExecutionPolicy::*)();
+
+    SeparateThreadExecutionPolicy() = delete;
+
+    SeparateThreadExecutionPolicy(StateType* sm)
+      : StateMachineExecutionPolicy<StateType>(sm)
+      , threadCallback_(&SeparateThreadExecutionPolicy::step)
+      , interrupt_(false)
+    {}
+
+    void start() override { smThread_ = std::thread(threadCallback_, this); }
+
+    void stop() override
     {
-        smThread_ = std::thread(threadCallback_,
-                                static_cast<StateMachine<DerivedHSM>*>(this));
+        interrupt_ = true;
+        eventQueue_.stop();
+        smThread_.join();
     }
 
-    void stop() override { smThread_.join(); }
+    void step()
+    {
+        while (!interrupt_) {
+            Event nextEvent;
+            try {
+                // This is a blocking wait
+                nextEvent = eventQueue_.nextEvent();
+            } catch (EventQueueInterruptedException const& e) {
+                if (!interrupt_) {
+                    throw e;
+                }
+                LOG(WARNING)
+                  << this->sm_->name << ": Exiting event loop on interrupt";
+                return;
+            }
+            // go down the HSM hierarchy to handle the event as that is the
+            // "most active state"
+            // this->sm_->dispatch(this->sm_)->execute(nextEvent);
+            this->sm_->dispatch(this->sm_)->execute(nextEvent);
+        }
+    };
+
+    void sendEvent(Event event) { eventQueue_.addEvent(event); }
 
   protected:
     ThreadCallback threadCallback_;
     std::thread smThread_;
+    EventQueue eventQueue_;
+
+    // R/W is atomic for bool
+    bool interrupt_;
 };
 
-template<typename DerivedHSM1, typename DerivedHSM2>
-struct OrthogonalHSM
-  : public StateMachine<OrthogonalHSM<DerivedHSM1, DerivedHSM2>>
+template<typename StateType>
+struct ParentThreadExecutionPolicy
+  : public StateMachineExecutionPolicy<StateType>
 {
-    using type = OrthogonalHSM<DerivedHSM1, DerivedHSM2>;
-    using base_type = StateMachine<type>;
+    using EventQueue = EventQueueT<Event, dummy_mutex>;
 
-    OrthogonalHSM(std::string name,
-                  EventQueue<Event>& eventQueue,
-                  shared_ptr<StateMachine<DerivedHSM1>> hsm1,
-                  shared_ptr<StateMachine<DerivedHSM2>> hsm2,
-                  State* parent = nullptr)
-      : base_type(name, hsm1, nullptr, eventQueue, parent)
-      , hsm1_(hsm1)
-      , hsm2_(hsm2)
+    ParentThreadExecutionPolicy() = delete;
+
+    ParentThreadExecutionPolicy(StateType* sm)
+      : StateMachineExecutionPolicy<StateType>(sm)
+      , interrupt_(false)
+    {}
+
+    void start() override {}
+
+    void stop() override { eventQueue_.stop(); }
+
+    void step()
     {
-        hsm1_->setParent(this);
-        hsm2_->setParent(this);
+
+        if (eventQueue_.empty()) {
+            LOG(WARNING) << "Event Queue is empty!";
+            return;
+        }
+        Event nextEvent;
+        try {
+            // This is a blocking wait
+            nextEvent = eventQueue_.nextEvent();
+        } catch (EventQueueInterruptedException const& e) {
+            if (!interrupt_) {
+                throw e;
+            }
+            LOG(WARNING) << this->sm_->name
+                         << ": Exiting event loop on interrupt";
+            return;
+        }
+        // go down the HSM hierarchy to handle the event as that is the
+        // "most active state"
+        this->sm_->dispatch(this->sm_)->execute(nextEvent);
     }
+
+    void sendEvent(Event event) { eventQueue_.addEvent(event); }
+
+  protected:
+    EventQueue eventQueue_;
+
+    // R/W is atomic for bool
+    bool interrupt_;
+};
+
+template<typename StateType, template<class> class ExecutionPolicy>
+struct StateMachineWithExecutionPolicy
+  : public StateType
+  , public ExecutionPolicy<StateType>
+{
+
+    using ExecutionPolicy<StateType>::start;
+    using ExecutionPolicy<StateType>::stop;
+
+    StateMachineWithExecutionPolicy()
+      : StateType()
+      , ExecutionPolicy<StateType>(this)
+    {}
+
+    virtual ~StateMachineWithExecutionPolicy() = default;
+
+    void onEntry() override
+    {
+        StateType::onEntry();
+        if (!this->parent_)
+            start();
+    }
+
+    virtual void onExit() override
+    {
+        StateType::onExit();
+        if (!this->parent_)
+            stop();
+    }
+};
+
+template<typename HSMDef1, typename HSMDef2>
+struct OrthogonalStateMachine : public State
+{
+    using type = OrthogonalStateMachine<HSMDef1, HSMDef2>;
+    using SM1Type = StateMachine<HSMDef1>;
+    using SM2Type = StateMachine<HSMDef2>;
+
+    OrthogonalStateMachine(std::string name, State* parent = nullptr)
+      : State(name)
+      , hsm1_(std::make_shared<SM1Type>(this))
+      , hsm2_(std::make_shared<SM2Type>(this))
+      , parent_(parent)
+      , currentState_(nullptr)
+    {}
 
     void onEntry() override
     {
         DLOG(INFO) << "Entering: " << this->name;
+        currentState_ = hsm1_;
         hsm1_->onEntry();
         hsm2_->onEntry();
-        base_type::onEntry();
     }
 
     void onExit() override
@@ -325,19 +404,20 @@ struct OrthogonalHSM
         // Stopping a HSM means stopping all of its sub HSMs
         hsm1_->onExit();
         hsm2_->onExit();
-        base_type::onExit();
     }
 
     void execute(Event const& nextEvent) override
     {
         if (hsm1_->getEvents().find(nextEvent) != hsm1_->getEvents().end()) {
+            currentState_ = hsm1_;
             hsm1_->execute(nextEvent);
         } else if (hsm2_->getEvents().find(nextEvent) !=
                    hsm2_->getEvents().end()) {
+            currentState_ = hsm2_;
             hsm2_->execute(nextEvent);
         } else {
-            if (base_type::parent_) {
-                type::parent_->execute(nextEvent);
+            if (parent_) {
+                parent_->execute(nextEvent);
             } else {
                 LOG(ERROR) << "Reached top level HSM. Cannot handle event";
             }
@@ -345,12 +425,24 @@ struct OrthogonalHSM
     }
 
     shared_ptr<State> const getCurrentState() const override { return hsm1_; }
+    State* const dispatch(State*) const
+    {
+
+        auto hsm = std::dynamic_pointer_cast<SM1Type>(currentState_);
+        if (hsm) {
+            return hsm1_->dispatch(hsm1_.get());
+        } else {
+            return hsm2_->dispatch(hsm2_.get());
+        }
+    }
 
     auto& getHsm1() const { return hsm1_; }
     auto& getHsm2() const { return hsm2_; }
 
-    shared_ptr<StateMachine<DerivedHSM1>> hsm1_;
-    shared_ptr<StateMachine<DerivedHSM2>> hsm2_;
+    shared_ptr<SM1Type> hsm1_;
+    shared_ptr<SM2Type> hsm2_;
+    State* parent_;
+    shared_ptr<State> currentState_;
 };
 
 } // namespace tsm

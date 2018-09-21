@@ -1,18 +1,30 @@
+#include "tsm.h"
+
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#include "StateMachineTest.h"
+using tsm::Event;
+using tsm::EventQueue;
+using tsm::ParentThreadExecutionPolicy;
+using tsm::SeparateThreadExecutionPolicy;
+using tsm::State;
+using tsm::StateMachine;
+using tsm::StateMachineDef;
+using tsm::StateMachineWithExecutionPolicy;
 
 namespace tsmtest {
-struct GarageDoorSM : public StateMachine<GarageDoorSM>
+struct GarageDoorDef : public StateMachineDef<GarageDoorDef>
 {
-    GarageDoorSM() = delete;
+    // Start State declared first
+    static const shared_ptr<State> doorClosed;
 
-    GarageDoorSM(std::string name, EventQueue<Event>& eventQueue)
-      : StateMachine<GarageDoorSM>(name, eventQueue)
+    GarageDoorDef(State* parent = nullptr)
+      : StateMachineDef<GarageDoorDef>("Garage Door HSM",
+                                       doorClosed,
+                                       nullptr,
+                                       parent)
       , doorOpen(std::make_shared<State>("Door Open"))
       , doorOpening(std::make_shared<State>("Door Opening"))
-      , doorClosed(std::make_shared<State>("Door Closed"))
       , doorClosing(std::make_shared<State>("Door Closing"))
       , doorStoppedClosing(std::make_shared<State>("Door Stopped Closing"))
       , doorStoppedOpening(std::make_shared<State>("Door Stopped Opening"))
@@ -30,14 +42,14 @@ struct GarageDoorSM : public StateMachine<GarageDoorSM>
         add(doorClosed, click_event, doorOpening);
     }
 
-    virtual ~GarageDoorSM() = default;
+    virtual ~GarageDoorDef() = default;
 
-    shared_ptr<State> getStartState() const override { return doorClosed; }
+    shared_ptr<State> getStartState() const { return doorClosed; }
 
     // States
     shared_ptr<State> doorOpen;
     shared_ptr<State> doorOpening;
-    shared_ptr<State> doorClosed;
+
     shared_ptr<State> doorClosing;
     shared_ptr<State> doorStoppedClosing;
     shared_ptr<State> doorStoppedOpening;
@@ -48,4 +60,5 @@ struct GarageDoorSM : public StateMachine<GarageDoorSM>
     Event topSensor_event;
     Event obstruct_event;
 };
+
 } // namespace tsmtest
