@@ -4,22 +4,13 @@
 #include <set>
 #include <utility>
 
-#include "CdPlayerHSM.h"
 #include "Event.h"
 #include "EventQueue.h"
 #include "State.h"
-#include "StateMachineTest.h"
-#include "tsm.h"
 
 using tsm::Event;
 using tsm::EventQueue;
-using tsm::OrthogonalHSM;
 using tsm::State;
-using tsm::StateMachine;
-
-using tsmtest::CdPlayerController;
-using tsmtest::CdPlayerHSM;
-using tsmtest::StateMachineTest;
 
 class TestState : public testing::Test
 {

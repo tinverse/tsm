@@ -15,7 +15,7 @@ template<typename DerivedHSM>
 struct StateMachineTest : public StateMachine<DerivedHSM>
 {
     using type = StateMachineTest;
-    using base_type = StateMachineTest<DerivedHSM>;
+    using base_type = StateMachine<DerivedHSM>;
 
     StateMachineTest() = delete;
 

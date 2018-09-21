@@ -2,7 +2,6 @@
 #include <gtest/gtest.h>
 
 #include "CdPlayerHSM.h"
-#include "StateMachineTest.h"
 
 using tsm::OrthogonalHSM;
 
