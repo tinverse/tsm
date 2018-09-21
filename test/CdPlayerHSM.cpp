@@ -28,7 +28,7 @@ TEST_F(TestCdPlayerHSM, testTransitions)
 
     ASSERT_EQ(Playing->getParent(), sm.get());
 
-    sm->OnEntry();
+    sm->onEntry();
 
     eventQueue.addEvent(sm->cd_detected);
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
@@ -60,5 +60,5 @@ TEST_F(TestCdPlayerHSM, testTransitions)
     ASSERT_EQ(sm->getCurrentState(), sm->Stopped);
     ASSERT_EQ(Playing->getCurrentState(), nullptr);
 
-    sm->OnExit();
+    sm->onExit();
 }

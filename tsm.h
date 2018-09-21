@@ -104,20 +104,21 @@ struct StateMachine : public State
 
     virtual shared_ptr<State> getStopState() const { return stopState_; }
 
-    void OnEntry() override
+    void onEntry() override
     {
         DLOG(INFO) << "Entering: " << this->name;
         startHSM();
+        currentState_ = getStartState();
     }
 
-    void OnExit() override
+    void onExit() override
     {
         // TODO (sriram): This really depends on exit/history policy. Sometimes
         // you want to retain state information when you exit a subhsm for
         // certain events. Maybe adding a currenEvent_ variable would allow
-        // DerivedHSMs to override OnExit appropriately.
+        // DerivedHSMs to override onExit appropriately.
         currentState_ = nullptr;
-
+        interrupt_ = true;
         stopHSM();
         DLOG(INFO) << "Exiting: " << name;
     }
@@ -125,7 +126,6 @@ struct StateMachine : public State
     void startHSM()
     {
         DLOG(INFO) << "starting: " << name;
-        currentState_ = getStartState();
         // Only start a separate thread if you are the base Hsm
         if (!parent_) {
             smThread_ = std::thread(threadCallback_, this);
@@ -136,8 +136,6 @@ struct StateMachine : public State
     void stopHSM()
     {
         DLOG(INFO) << "stopping: " << name;
-
-        interrupt_ = true;
 
         if (!parent_) {
             eventQueue_.stop();
@@ -191,8 +189,8 @@ struct StateMachine : public State
         if (!t) {
             // If transition does not exist, pass event to parent HSM
             if (parent_) {
-                // TODO(sriram) : should call OnExit? UML spec seems to say yes
-                // invoking OnExit() here will not work for Orthogonal state
+                // TODO(sriram) : should call onExit? UML spec seems to say yes
+                // invoking onExit() here will not work for Orthogonal state
                 // machines
                 parent_->execute(nextEvent);
             } else {
@@ -205,25 +203,22 @@ struct StateMachine : public State
             bool result =
               t->guard && (static_cast<DerivedHSM*>(this)->*(t->guard))();
 
-            ActionFn action = nullptr;
             if (!(t->guard) || result) {
                 // Perform entry and exit actions in the doTransition function.
                 // If just an internal transition, Entry and exit actions are
                 // not performed
-                action = t->doTransition();
-                nextState = t->toState;
+                t->template doTransition<DerivedHSM>(
+                  static_cast<DerivedHSM*>(this));
 
-                DLOG(INFO) << "Next State:" << nextState->name;
-                if (action) {
-                    (static_cast<DerivedHSM*>(this)->*action)();
-                }
+                currentState_ = t->toState;
+
+                DLOG(INFO) << "Next State:" << currentState_->name;
             } else {
                 LOG(INFO) << "Guard prevented transition";
             }
-            currentState_ = nextState;
-            if (nextState == getStopState()) {
+            if (currentState_ == getStopState()) {
                 DLOG(INFO) << this->name << " Done Exiting... ";
-                OnExit();
+                onExit();
             }
         }
     }
@@ -282,22 +277,22 @@ struct OrthogonalHSM
         hsm2_->setParent(this);
     }
 
-    void OnEntry() override
+    void onEntry() override
     {
         DLOG(INFO) << "Entering: " << this->name;
-        hsm1_->OnEntry();
-        hsm2_->OnEntry();
-        base_type::OnEntry();
+        hsm1_->onEntry();
+        hsm2_->onEntry();
+        base_type::onEntry();
     }
 
-    void OnExit() override
+    void onExit() override
     {
         // TODO(sriram): hsm1->currentState_ = nullptr; etc.
 
         // Stopping a HSM means stopping all of its sub HSMs
-        hsm1_->OnExit();
-        hsm2_->OnExit();
-        base_type::OnExit();
+        hsm1_->onExit();
+        hsm2_->onExit();
+        base_type::onExit();
     }
 
     void execute(Event const& nextEvent) override
