@@ -52,12 +52,12 @@ struct State
         LOG(INFO) << "Executing: " << this->name << std::endl;
     }
 
-    virtual void OnEntry()
+    virtual void onEntry()
     {
         DLOG(INFO) << "Entering: " << this->name << std::endl;
     }
 
-    virtual void OnExit()
+    virtual void onExit()
     {
         DLOG(INFO) << "Exiting: " << this->name << std::endl;
     }

@@ -47,7 +47,7 @@ TEST_F(TestOrthogonalCdPlayerHSM, testTransitions)
     ASSERT_EQ(sm.get(), cdPlayerHSM->getParent());
     ASSERT_EQ(sm.get(), errorHSM->getParent());
 
-    sm->OnEntry();
+    sm->onEntry();
 
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
 
@@ -93,5 +93,5 @@ TEST_F(TestOrthogonalCdPlayerHSM, testTransitions)
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
 
-    sm->OnExit();
+    sm->onExit();
 }

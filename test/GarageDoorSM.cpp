@@ -19,7 +19,7 @@ struct TestGarageDoorSM : public ::testing::Test
 
 TEST_F(TestGarageDoorSM, testGarageDoor)
 {
-    sm->OnEntry();
+    sm->onEntry();
     ASSERT_EQ(sm->getCurrentState(), sm->doorClosed)
       << " CurrentState: " << sm->getCurrentState()->name;
     eventQueue.addEvent(sm->click_event);
@@ -30,5 +30,5 @@ TEST_F(TestGarageDoorSM, testGarageDoor)
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
     ASSERT_EQ(sm->doorOpen, sm->getCurrentState())
       << " CurrentState: " << sm->getCurrentState()->name;
-    sm->OnExit();
+    sm->onExit();
 }

@@ -3,7 +3,6 @@
 #include <glog/logging.h>
 #include <memory>
 
-using std::move;
 using std::shared_ptr;
 
 namespace tsm {
@@ -25,11 +24,18 @@ struct TransitionT
 
     virtual ~TransitionT() = default;
 
-    virtual ActionFn doTransition()
+    template<typename HSMType>
+    void doTransition(HSMType* hsm)
     {
-        this->fromState->OnExit();
-        this->toState->OnEntry();
-        return action;
+        if (!hsm) {
+            // throw NullPointerException;
+        }
+
+        this->fromState->onExit();
+        if (action) {
+            (hsm->*action)();
+        }
+        this->toState->onEntry();
     }
 
     shared_ptr<State> fromState;
@@ -52,12 +58,17 @@ struct InternalTransitionT : public TransitionT<State, Event, ActionFn, GuardFn>
                                                      fromState,
                                                      action,
                                                      guard)
+      , action(action)
     {}
 
-    ActionFn doTransition() override
+    template<typename HSMType>
+    void doTransition(HSMType* hsm)
     {
-        return TransitionT<State, Event, ActionFn, GuardFn>::action;
+        if (action) {
+            (hsm->*action)();
+        }
     }
+    ActionFn action;
 };
 
 } // namespace tsm
