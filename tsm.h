@@ -18,8 +18,20 @@ namespace tsm {
 
 typedef std::pair<std::shared_ptr<State>, Event> StateEventPair;
 
+struct StateMachineExecutionPolicy
+{
+    virtual void start() = 0;
+    virtual void stop() = 0;
+};
+
 template<typename DerivedHSM>
-struct StateMachine : public State
+struct SeparateThreadExecutionPolicy;
+
+template<typename DerivedHSM,
+         template<class> class ExecutionPolicy = SeparateThreadExecutionPolicy>
+struct StateMachine
+  : public State
+  , public ExecutionPolicy<DerivedHSM>
 {
     using ActionFn = void (DerivedHSM::*)(void);
     using GuardFn = bool (DerivedHSM::*)(void);
@@ -28,7 +40,9 @@ struct StateMachine : public State
       std::unordered_map<StateEventPair, shared_ptr<Transition>>;
     using TransitionTableElement =
       std::pair<StateEventPair, shared_ptr<Transition>>;
-    using ThreadCallback = void (StateMachine::*)();
+
+    using PolicyType = ExecutionPolicy<
+      DerivedHSM>; // SeparateThreadExecutionPolicy<StateMachine<DerivedHSM>>;
 
     struct StateTransitionTable : private TransitionTable
     {
@@ -70,12 +84,12 @@ struct StateMachine : public State
                  EventQueue<Event>& eventQueue,
                  State* parent = nullptr)
       : State(name)
+      , PolicyType()
       , interrupt_(false)
       , currentState_(nullptr)
       , startState_(startState)
       , stopState_(std::move(stopState))
       , eventQueue_(eventQueue)
-      , threadCallback_(&StateMachine::step)
       , parent_(parent)
     {}
 
@@ -85,7 +99,7 @@ struct StateMachine : public State
       : StateMachine(name, nullptr, nullptr, eventQueue, parent)
     {}
 
-    virtual ~StateMachine() override = default;
+    virtual ~StateMachine() = default;
 
     void add(shared_ptr<State> fromState,
              Event onEvent,
@@ -128,7 +142,7 @@ struct StateMachine : public State
         DLOG(INFO) << "starting: " << name;
         // Only start a separate thread if you are the base Hsm
         if (!parent_) {
-            smThread_ = std::thread(threadCallback_, this);
+            PolicyType::start();
         }
         DLOG(INFO) << "started: " << name;
     }
@@ -139,7 +153,7 @@ struct StateMachine : public State
 
         if (!parent_) {
             eventQueue_.stop();
-            smThread_.join();
+            PolicyType::stop();
         }
         DLOG(INFO) << "stopped: " << name;
     }
@@ -241,9 +255,7 @@ struct StateMachine : public State
     shared_ptr<State> stopState_;
     EventQueue<Event>& eventQueue_;
     StateTransitionTable table_;
-    ThreadCallback threadCallback_;
     State* parent_;
-    std::thread smThread_;
 
   private:
     void addTransition(shared_ptr<State> fromState,
@@ -255,6 +267,27 @@ struct StateMachine : public State
         table_.insert(e);
     }
     std::set<Event> eventSet_;
+};
+
+template<typename DerivedHSM>
+struct SeparateThreadExecutionPolicy : public StateMachineExecutionPolicy
+{
+    using ThreadCallback = void (StateMachine<DerivedHSM>::*)();
+    SeparateThreadExecutionPolicy()
+      : threadCallback_(&StateMachine<DerivedHSM>::step)
+    {}
+
+    void start() override
+    {
+        smThread_ = std::thread(threadCallback_,
+                                static_cast<StateMachine<DerivedHSM>*>(this));
+    }
+
+    void stop() override { smThread_.join(); }
+
+  protected:
+    ThreadCallback threadCallback_;
+    std::thread smThread_;
 };
 
 template<typename DerivedHSM1, typename DerivedHSM2>
