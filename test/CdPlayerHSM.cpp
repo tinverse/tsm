@@ -4,11 +4,11 @@ using tsmtest::CdPlayerController;
 using tsmtest::CdPlayerDef;
 
 using CdPlayerHSMSeparateThread =
-  StateMachineWithExecutionPolicy<StateMachine<CdPlayerDef<CdPlayerController>>,
-                                  SeparateThreadExecutionPolicy>;
+  StateMachineExecutionPolicy<StateMachine<CdPlayerDef<CdPlayerController>>,
+                                  AsyncExecutionPolicy>;
 
 using CdPlayerHSMParentThread =
-  StateMachineWithExecutionPolicy<StateMachine<CdPlayerDef<CdPlayerController>>,
+  StateMachineExecutionPolicy<StateMachine<CdPlayerDef<CdPlayerController>>,
                                   ParentThreadExecutionPolicy>;
 
 // TODO(sriram): Test no end state

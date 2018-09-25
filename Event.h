@@ -1,7 +1,7 @@
 #pragma once
-#include <cstdint>
-
 #include "UniqueId.h"
+
+#include <cstdint>
 namespace tsm {
 
 class Event

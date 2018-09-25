@@ -1,14 +1,12 @@
 #pragma once
 
-#include <glog/logging.h>
-#include <inttypes.h>
-#include <iostream>
-#include <memory>
-#include <stdint.h>
-#include <string>
-
 #include "Event.h"
 #include "UniqueId.h"
+
+#include <glog/logging.h>
+
+#include <memory>
+#include <string>
 
 namespace tsm {
 
@@ -27,7 +25,7 @@ struct State
   public:
     State() = delete;
 
-    State(std::string stateName)
+    State(std::string const& stateName)
       : name(std::move(stateName))
       , id(UniqueId::getId())
     {}

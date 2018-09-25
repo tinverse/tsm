@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glog/logging.h>
+
 #include <memory>
 
 using std::shared_ptr;

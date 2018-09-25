@@ -3,11 +3,11 @@
 using tsmtest::GarageDoorDef;
 
 using GarageDoorHSMSeparateThread =
-  StateMachineWithExecutionPolicy<StateMachine<GarageDoorDef>,
-                                  SeparateThreadExecutionPolicy>;
+  StateMachineExecutionPolicy<StateMachine<GarageDoorDef>,
+                                  AsyncExecutionPolicy>;
 
 using GarageDoorHSMParentThread =
-  StateMachineWithExecutionPolicy<StateMachine<GarageDoorDef>,
+  StateMachineExecutionPolicy<StateMachine<GarageDoorDef>,
                                   ParentThreadExecutionPolicy>;
 
 // Start State declared first
