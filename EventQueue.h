@@ -1,11 +1,11 @@
 #pragma once
 
+#include <glog/logging.h>
+
 #include <condition_variable>
 #include <deque>
-#include <glog/logging.h>
 #include <iostream>
 #include <mutex>
-#include <numeric>
 #include <string>
 #include <thread>
 

@@ -6,11 +6,11 @@
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::ParentThreadExecutionPolicy;
-using tsm::SeparateThreadExecutionPolicy;
+using tsm::AsyncExecutionPolicy;
 using tsm::State;
 using tsm::StateMachine;
 using tsm::StateMachineDef;
-using tsm::StateMachineWithExecutionPolicy;
+using tsm::StateMachineExecutionPolicy;
 
 namespace tsmtest {
 struct GarageDoorDef : public StateMachineDef<GarageDoorDef>

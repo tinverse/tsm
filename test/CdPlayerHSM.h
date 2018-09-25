@@ -1,3 +1,5 @@
+#pragma once
+
 #include "tsm.h"
 
 #include <glog/logging.h>
@@ -6,11 +8,11 @@
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::ParentThreadExecutionPolicy;
-using tsm::SeparateThreadExecutionPolicy;
+using tsm::AsyncExecutionPolicy;
 using tsm::State;
 using tsm::StateMachine;
 using tsm::StateMachineDef;
-using tsm::StateMachineWithExecutionPolicy;
+using tsm::StateMachineExecutionPolicy;
 
 namespace tsmtest {
 

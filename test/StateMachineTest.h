@@ -4,7 +4,7 @@
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::ParentThreadExecutionPolicy;
-using tsm::SeparateThreadExecutionPolicy;
+using tsm::AsyncExecutionPolicy;
 using tsm::State;
 using tsm::StateMachine;
 

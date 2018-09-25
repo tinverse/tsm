@@ -21,11 +21,11 @@ struct OrthogonalCdPlayerHSM
 };
 
 using OrthogonalCdPlayerHSMSeparateThread =
-  StateMachineWithExecutionPolicy<OrthogonalCdPlayerHSM,
-                                  SeparateThreadExecutionPolicy>;
+  StateMachineExecutionPolicy<OrthogonalCdPlayerHSM,
+                                  AsyncExecutionPolicy>;
 
 using OrthogonalCdPlayerHSMParentThread =
-  StateMachineWithExecutionPolicy<OrthogonalCdPlayerHSM,
+  StateMachineExecutionPolicy<OrthogonalCdPlayerHSM,
                                   ParentThreadExecutionPolicy>;
 
 struct TestOrthogonalCdPlayerHSM : public testing::Test
