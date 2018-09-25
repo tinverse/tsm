@@ -59,7 +59,8 @@ else (BUILD_DEPENDENCIES)
     target_link_libraries(tsm PRIVATE ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES})
 
     add_executable(tsm_test
-      tsm_tests.cpp
+      test/main.cpp
+      test/EventQueue.cpp
       test/GarageDoorSM.cpp
       test/CdPlayerHSM.cpp
       test/OrthogonalCdPlayerHSM.cpp
