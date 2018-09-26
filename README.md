@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/tinverse/tsm.svg?branch=master)](https://travis-ci.org/tinverse/tsm)
 ### Goals:
     * Hierarchical State machine (Unit tests and other contributions welcome). 
     * Thread safe event queue. 
