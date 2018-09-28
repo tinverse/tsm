@@ -89,8 +89,15 @@ else (BUILD_DEPENDENCIES)
       PRIVATE tsm ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
 
     include(GoogleTest)
-    gtest_discover_tests(tsm_test TEST_PREFIX test)
+    gtest_discover_tests(${TEST_PROJECT} TEST_PREFIX "hsm:" TEST_LIST LIST_OF_TESTS)
+    gtest_add_tests(
+      TARGET ${TEST_PROJECT}
+      TEST_LIST ${LIST_OF_TESTS}
+    )
 
-    include (coverage)
+  include(CTest)
+  enable_testing()
+
+  include (coverage)
 
 endif(BUILD_DEPENDENCIES)

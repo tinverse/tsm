@@ -25,11 +25,11 @@ if (BUILD_COVERAGE)
     COMMAND ${TEST_PROJECT}
     COMMAND ${LCOV_PATH} --no-external -b '${PROJECT_SOURCE_DIR}' -c -d . -o ${TEST_PROJECT}_test.info
     COMMAND ${LCOV_PATH} -a ${TEST_PROJECT}_base.info -a ${TEST_PROJECT}_test.info -o ${TEST_PROJECT}_total.info
-    COMMAND ${LCOV_PATH} --remove ${TEST_PROJECT}_total.info '${PROJECT_BINARY_DIR}/*' -o coverage.info
-    COMMAND ${GENHTML_PATH} -o ${TEST_PROJECT}_test_coverage coverage.info
+    COMMAND ${LCOV_PATH} --remove ${TEST_PROJECT}_total.info '${PROJECT_BINARY_DIR}/*' -o lcov.info
+    COMMAND ${GENHTML_PATH} -o ${TEST_PROJECT}_coverage lcov.info
     COMMAND rm ${PROJECT_BINARY_DIR}/${TEST_PROJECT}_*.info
     DEPENDS ${TEST_PROJECT}
-    BYPRODUCTS ${TEST_PROJECT}_base.info ${TEST_PROJECT}_test.info ${TEST_PROJECT}_total.info coverage.info
+    BYPRODUCTS ${TEST_PROJECT}_base.info ${TEST_PROJECT}_test.info ${TEST_PROJECT}_total.info lcov.info
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
   )
 endif(BUILD_COVERAGE)
