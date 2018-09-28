@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/tinverse/tsm.svg?branch=master)](https://travis-ci.org/tinverse/tsm)
+[![codecov.io](http://codecov.io/github/tinverse/tsm/coverage.svg?branch=master)](http://codecov.io/github/tinverse/tsm?branch=master)
 ### Goals:
     * Hierarchical State machine (Unit tests and other contributions welcome).
     * Thread safe event queue.
