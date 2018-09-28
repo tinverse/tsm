@@ -69,6 +69,7 @@ after_success:
     #- codecov -t c376990f-2ad6-4f7b-bbdb-5378a52e295c -X gcov
     # Creating report
     - cd ${TRAVIS_BUILD_DIR}
+    - cmake -DBUILD_COVERAGE -DBUILD_DEPENDENCIES=OFF ..
     - make coverage
     # Uploading report to CodeCov
     - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
