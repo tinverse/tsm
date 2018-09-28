@@ -65,6 +65,11 @@ script:
      - make
      - ctest
 
-
 after_success:
-    - codecov -t c376990f-2ad6-4f7b-bbdb-5378a52e295c -X gcov
+    #- codecov -t c376990f-2ad6-4f7b-bbdb-5378a52e295c -X gcov
+    # Creating report
+    - cd ${TRAVIS_BUILD_DIR}
+    - make coverage
+    # Uploading report to CodeCov
+    - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+    #CODECOV_TOKEN="52e40de6-75d1-45ce-9d9e-d48c16d249b9"

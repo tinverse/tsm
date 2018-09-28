@@ -3,10 +3,11 @@ cmake_minimum_required(VERSION 3.5)
 project(tsm VERSION 0.1.0)
 LIST(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/superbuild")
-if (NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-endif(NOT CMAKE_CXX_STANDARD)
+
+#Compiler MUST be at least CXX 14 compliant
+set(CMAKE_CXX_STANDARD 14)
 
 if (NOT INSTALL_DIR)
     set(INSTALL_DIR ${PROJECT_BINARY_DIR}/${CMAKE_SYSTEM_NAME} CACHE PATH "Install Dir")
@@ -23,6 +24,17 @@ endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
         OR CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" 
         OR CMAKE_INSTALL_PREFIX MATCHES "^C:/Program Files")
 
+#Automatically set build dependencies to on/off
+if (NOT DEFINED BUILD_DEPENDENCIES)
+  #check to see if dependencies are built
+  set(GTEST_ROOT ${INSTALL_DIR})
+  find_package(GTest)
+  if (GTEST_FOUND)
+    set(BUILD_DEPENDENCIES OFF)
+  else(GTEST_FOUND)
+    set(BUILD_DEPENDENCIES ON)
+  endif(GTEST_FOUND)
+endif(NOT DEFINED BUILD_DEPENDENCIES)
 
 if (BUILD_DEPENDENCIES)
     include(dependencies)
@@ -58,7 +70,9 @@ else (BUILD_DEPENDENCIES)
     target_include_directories(tsm SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
     target_link_libraries(tsm PRIVATE ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES})
 
-    add_executable(tsm_test
+    set (TEST_PROJECT "tsm_test")
+
+    add_executable(${TEST_PROJECT}
       test/main.cpp
       test/EventQueue.cpp
       test/GarageDoorSM.cpp
@@ -71,10 +85,13 @@ else (BUILD_DEPENDENCIES)
       SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS}
       )
 
-    target_link_libraries(tsm_test
+    target_link_libraries(${TEST_PROJECT}
       PRIVATE tsm ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
 
     include(GoogleTest)
     gtest_discover_tests(tsm_test TEST_PREFIX test)
+
+    include (coverage)
+
 endif(BUILD_DEPENDENCIES)
 
