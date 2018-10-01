@@ -19,6 +19,7 @@ struct TestGarageDoorSM : public ::testing::Test
     TestGarageDoorSM()
       : testing::Test()
     {}
+    ~TestGarageDoorSM() { tsm::UniqueId::reset(); }
 };
 
 TEST_F(TestGarageDoorSM, testGarageDoorSeparateThreadPolicy)

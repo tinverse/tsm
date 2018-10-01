@@ -20,6 +20,10 @@ struct TestCdPlayerHSM : public testing::Test
     TestCdPlayerHSM()
       : testing::Test()
     {}
+    ~TestCdPlayerHSM()
+    { // TODO(sriram): ugh! Fix Id generation
+        tsm::UniqueId::reset();
+    }
 };
 
 TEST_F(TestCdPlayerHSM, testTransitionsSeparateThreadPolicy)
