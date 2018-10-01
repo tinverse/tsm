@@ -12,7 +12,7 @@ template<typename State, typename Event, typename ActionFn, typename GuardFn>
 struct TransitionT
 {
     TransitionT(shared_ptr<State> fromState,
-                Event event,
+                Event const& event,
                 shared_ptr<State> toState,
                 ActionFn action,
                 GuardFn guard)
@@ -32,11 +32,11 @@ struct TransitionT
             // throw NullPointerException;
         }
 
-        this->fromState->onExit();
+        this->fromState->onExit(onEvent);
         if (action) {
             (hsm->*action)();
         }
-        this->toState->onEntry();
+        this->toState->onEntry(onEvent);
     }
 
     shared_ptr<State> fromState;
@@ -50,7 +50,7 @@ template<typename State, typename Event, typename ActionFn, typename GuardFn>
 struct InternalTransitionT : public TransitionT<State, Event, ActionFn, GuardFn>
 {
     InternalTransitionT(shared_ptr<State> fromState,
-                        Event event,
+                        Event const& event,
                         shared_ptr<State> toState,
                         ActionFn action,
                         GuardFn guard)

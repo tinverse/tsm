@@ -9,8 +9,8 @@ template<typename HSMDef1, typename HSMDef2>
 struct OrthogonalStateMachine : public State
 {
     using type = OrthogonalStateMachine<HSMDef1, HSMDef2>;
-    using SM1Type = StateMachine<HSMDef1>;
-    using SM2Type = StateMachine<HSMDef2>;
+    using SM1Type = HSMBehavior<HSMDef1>;
+    using SM2Type = HSMBehavior<HSMDef2>;
 
     OrthogonalStateMachine(std::string name, State* parent = nullptr)
       : State(name)
@@ -20,21 +20,25 @@ struct OrthogonalStateMachine : public State
       , currentState_(nullptr)
     {}
 
-    void onEntry() override
+    void startSM() { onEntry(Event::dummy_event); }
+
+    void onEntry(Event const& e) override
     {
         DLOG(INFO) << "Entering: " << this->name;
         currentState_ = hsm1_;
-        hsm1_->onEntry();
-        hsm2_->onEntry();
+        hsm1_->onEntry(e);
+        hsm2_->onEntry(e);
     }
 
-    void onExit() override
+    void stopSM() { onExit(Event::dummy_event); }
+
+    void onExit(Event const& e) override
     {
         // TODO(sriram): hsm1->currentState_ = nullptr; etc.
 
         // Stopping a HSM means stopping all of its sub HSMs
-        hsm1_->onExit();
-        hsm2_->onExit();
+        hsm1_->onExit(e);
+        hsm2_->onExit(e);
     }
 
     void execute(Event const& nextEvent) override

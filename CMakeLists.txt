@@ -64,7 +64,8 @@ else (BUILD_DEPENDENCIES)
     message(STATUS ${CMAKE_INSTALL_PREFIX})
 
     add_library(tsm
-        UniqueId.cpp
+      Event.cpp
+      UniqueId.cpp
     )
 
     target_include_directories(tsm SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
@@ -78,12 +79,12 @@ else (BUILD_DEPENDENCIES)
       test/GarageDoorSM.cpp
       test/CdPlayerHSM.cpp
       test/OrthogonalCdPlayerHSM.cpp
-      )
+    )
 
     target_include_directories(tsm_test
       PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/test
       SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS}
-      )
+    )
 
     target_link_libraries(${TEST_PROJECT}
       PRIVATE tsm ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)

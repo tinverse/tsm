@@ -20,6 +20,10 @@ struct MethodNotImplementedException : public std::runtime_error
     {}
 };
 
+///
+/// All StateMachineDef types inherit from State. This is the base class for all
+/// StateMachines.
+///
 struct State
 {
   public:
@@ -44,12 +48,12 @@ struct State
         LOG(INFO) << "Executing: " << this->name << std::endl;
     }
 
-    virtual void onEntry()
+    virtual void onEntry(Event const&)
     {
         DLOG(INFO) << "Entering: " << this->name << std::endl;
     }
 
-    virtual void onExit()
+    virtual void onExit(Event const&)
     {
         DLOG(INFO) << "Exiting: " << this->name << std::endl;
     }
@@ -66,7 +70,6 @@ struct State
 
     const std::string name;
 
-  private:
     const uint64_t id;
 };
 } // namespace tsm

@@ -73,7 +73,7 @@ class EventQueueT : private deque<Event>
         }
     }
 
-    void addEvent(const Event& e)
+    void addEvent(Event const& e)
     {
         std::lock_guard<LockType> lock(eventQueueMutex_);
         DLOG(INFO) << "Thread:" << std::this_thread::get_id()
@@ -89,7 +89,7 @@ class EventQueueT : private deque<Event>
         // Log the events that are going to get dumped if the queue is not empty
     }
 
-    void addFront(const Event& e)
+    void addFront(Event const& e)
     {
         std::lock_guard<LockType> lock(eventQueueMutex_);
         push_front(e);

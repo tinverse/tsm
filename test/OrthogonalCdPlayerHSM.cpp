@@ -1,10 +1,15 @@
+#include "CdPlayerHSM.h"
+
+#include "Observer.h"
+
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#include "CdPlayerHSM.h"
-
-using tsm::EventQueueT;
+using tsm::AsyncExecutionPolicy;
+using tsm::BlockingObserver;
 using tsm::OrthogonalStateMachine;
+using tsm::ParentThreadExecutionPolicy;
+using tsm::StateMachineWithExecutionPolicy;
 
 using tsmtest::CdPlayerController;
 using tsmtest::CdPlayerDef;
@@ -20,12 +25,16 @@ struct OrthogonalCdPlayerHSM
     virtual ~OrthogonalCdPlayerHSM() = default;
 };
 
+/// A "Blocking" Observer with Async Execution Policy
+template<typename StateType>
+using AsyncBlockingObserver =
+  tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
+
 using OrthogonalCdPlayerHSMSeparateThread =
-  StateMachineExecutionPolicy<OrthogonalCdPlayerHSM,
-                                  AsyncExecutionPolicy>;
+  StateMachineWithExecutionPolicy<OrthogonalCdPlayerHSM, AsyncBlockingObserver>;
 
 using OrthogonalCdPlayerHSMParentThread =
-  StateMachineExecutionPolicy<OrthogonalCdPlayerHSM,
+  StateMachineWithExecutionPolicy<OrthogonalCdPlayerHSM,
                                   ParentThreadExecutionPolicy>;
 
 struct TestOrthogonalCdPlayerHSM : public testing::Test
@@ -52,52 +61,53 @@ TEST_F(TestOrthogonalCdPlayerHSM, testOrthogonalHSMSeparateThread)
     ASSERT_EQ(sm.get(), cdPlayerHSM->getParent());
     ASSERT_EQ(sm.get(), errorHSM->getParent());
 
-    sm->onEntry();
+    sm->startSM();
 
+    sm->wait();
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
 
     sm->sendEvent(cdPlayerHSM->cd_detected);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
 
     sm->sendEvent(cdPlayerHSM->play);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), Playing);
 
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
 
     sm->sendEvent(Playing->next_song);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), Playing);
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     sm->sendEvent(cdPlayerHSM->pause);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Paused);
-    ASSERT_EQ(Playing->getCurrentState(), nullptr);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     sm->sendEvent(cdPlayerHSM->end_pause);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Playing);
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     sm->sendEvent(cdPlayerHSM->stop_event);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
     ASSERT_EQ(Playing->getCurrentState(), nullptr);
 
     // same as TestCdPlayerDef::testTransitions upto this point
     sm->sendEvent(errorHSM->error);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->ErrorMode);
 
     sm->sendEvent(errorHSM->recover);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
 
-    sm->onExit();
+    sm->stopSM();
 }
 
 TEST_F(TestOrthogonalCdPlayerHSM, testOrthogonalHSMParentThread)
@@ -116,7 +126,7 @@ TEST_F(TestOrthogonalCdPlayerHSM, testOrthogonalHSMParentThread)
     ASSERT_EQ(sm.get(), cdPlayerHSM->getParent());
     ASSERT_EQ(sm.get(), errorHSM->getParent());
 
-    sm->onEntry();
+    sm->startSM();
 
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
 
@@ -138,12 +148,12 @@ TEST_F(TestOrthogonalCdPlayerHSM, testOrthogonalHSMParentThread)
     sm->sendEvent(cdPlayerHSM->pause);
     sm->step();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Paused);
-    ASSERT_EQ(Playing->getCurrentState(), nullptr);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     sm->sendEvent(cdPlayerHSM->end_pause);
     sm->step();
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Playing);
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     sm->sendEvent(cdPlayerHSM->stop_event);
     sm->step();
@@ -161,5 +171,5 @@ TEST_F(TestOrthogonalCdPlayerHSM, testOrthogonalHSMParentThread)
     ASSERT_EQ(cdPlayerHSM->getCurrentState(), cdPlayerHSM->Stopped);
     ASSERT_EQ(errorHSM->getCurrentState(), errorHSM->AllOk);
 
-    sm->onExit();
+    sm->stopSM();
 }
