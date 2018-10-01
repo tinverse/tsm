@@ -2,4 +2,4 @@
 
 using tsm::UniqueId;
 
-std::uint64_t UniqueId::id_ = 0;
+std::uint64_t UniqueId::id_{ 0 };
