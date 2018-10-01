@@ -7,12 +7,9 @@
 
 using tsm::Event;
 using tsm::EventQueue;
-using tsm::ParentThreadExecutionPolicy;
-using tsm::AsyncExecutionPolicy;
+using tsm::HSMBehavior;
 using tsm::State;
-using tsm::StateMachine;
 using tsm::StateMachineDef;
-using tsm::StateMachineExecutionPolicy;
 
 namespace tsmtest {
 
@@ -52,18 +49,15 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
           , Song3(std::make_shared<State>("Playing HSM -> Song3"))
         {
 
-            // Transition Table for Playing HSM
-            // add(nullptr, null_event, Song1, &PlayingHSMDef::PlaySong);
-            add(Song1,
-                next_song,
-                Song2,
-                &PlayingHSMDef::PlaySong,
-                &PlayingHSMDef::PlaySongGuard);
+            // clang-format off
+            add(Song1, next_song, Song2, &PlayingHSMDef::PlaySong, &PlayingHSMDef::PlaySongGuard);
+            // clang-format on
+            add(Song2, next_song, Song3);
             add(Song3, prev_song, Song2);
             add(Song2, prev_song, Song1);
         }
 
-        shared_ptr<State> getStartState() const override { return Song1; }
+        shared_ptr<State> getStartState() const { return Song1; }
 
         // States
         shared_ptr<State> Song1;
@@ -71,7 +65,6 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
         shared_ptr<State> Song3;
 
         // Events
-        Event null_event;
         Event next_song;
         Event prev_song;
 
@@ -82,12 +75,30 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
             LOG(INFO) << "Play Song Guard";
             return true;
         }
+
+        // If the event is a pause, stay on the song that is playing. For all
+        // other events, go back to the start state
+        void onEntry(Event const& e) override
+        {
+            auto parent = static_cast<CdPlayerDef*>(this->parent_);
+            if (parent->end_pause != e) {
+                StateMachineDef<PlayingHSMDef>::onEntry(e);
+            }
+        }
+
+        void onExit(Event const& e) override
+        {
+            auto parent = static_cast<CdPlayerDef*>(this->parent_);
+            if (parent->pause != e) {
+                StateMachineDef<PlayingHSMDef>::onExit(e);
+            }
+        }
     };
 
     CdPlayerDef(State* parent = nullptr)
       : StateMachineDef<CdPlayerDef>("CD Player HSM", parent)
       , Stopped(std::make_shared<State>("Player Stopped"))
-      , Playing(std::make_shared<StateMachine<PlayingHSMDef>>(this))
+      , Playing(std::make_shared<HSMBehavior<PlayingHSMDef>>(this))
       , Paused(std::make_shared<State>("Player Paused"))
       , Empty(std::make_shared<State>("Player Empty"))
       , Open(std::make_shared<State>("Player Open"))
@@ -104,6 +115,8 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
         add(Empty, cd_detected, Playing);
         //-------------------------------------------------
         add(Playing, stop_event, Stopped);
+        LOG(INFO) << "****** Adding pause: " << pause.id
+                  << "Playing id: " << Playing->id;
         add(Playing, pause, Paused);
         add(Playing, open_close, Open);
         //-------------------------------------------------
@@ -114,7 +127,7 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
 
     virtual ~CdPlayerDef() = default;
 
-    shared_ptr<State> getStartState() const override { return Empty; }
+    shared_ptr<State> getStartState() const { return Empty; }
 
     // CdPlayer HSM
     // States
@@ -160,7 +173,7 @@ struct ErrorHSM : public StateMachineDef<ErrorHSM>
     // Actions
     void recovery() { LOG(INFO) << "Recovering from Error:"; }
 
-    shared_ptr<State> getStartState() const override { return AllOk; }
+    shared_ptr<State> getStartState() const { return AllOk; }
 };
 
 } // namespace tsmtest

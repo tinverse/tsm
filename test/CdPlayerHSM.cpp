@@ -1,15 +1,25 @@
 #include "CdPlayerHSM.h"
+#include "Observer.h"
 
 using tsmtest::CdPlayerController;
 using tsmtest::CdPlayerDef;
 
-using CdPlayerHSMSeparateThread =
-  StateMachineExecutionPolicy<StateMachine<CdPlayerDef<CdPlayerController>>,
-                                  AsyncExecutionPolicy>;
+using tsm::AsyncExecWithObserver;
+using tsm::AsyncStateMachine;
+using tsm::BlockingObserver;
+using tsm::StateMachine;
+using tsm::StateMachineWithExecutionPolicy;
 
-using CdPlayerHSMParentThread =
-  StateMachineExecutionPolicy<StateMachine<CdPlayerDef<CdPlayerController>>,
-                                  ParentThreadExecutionPolicy>;
+/// A "Blocking" Observer with Async Execution Policy
+template<typename StateType>
+using AsyncBlockingObserver =
+  tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
+
+using CdPlayerHSMSeparateThread =
+  StateMachineWithExecutionPolicy<HSMBehavior<CdPlayerDef<CdPlayerController>>,
+                                  AsyncBlockingObserver>;
+
+using CdPlayerHSMParentThread = StateMachine<CdPlayerDef<CdPlayerController>>;
 
 // TODO(sriram): Test no end state
 // Model interruptions to workflow
@@ -28,56 +38,66 @@ struct TestCdPlayerHSM : public testing::Test
 
 TEST_F(TestCdPlayerHSM, testTransitionsSeparateThreadPolicy)
 {
-    auto sm = std::make_shared<CdPlayerHSMSeparateThread>();
+
+    shared_ptr<CdPlayerHSMSeparateThread> sm(
+      std::make_shared<CdPlayerHSMSeparateThread>());
 
     auto& Playing = sm->Playing;
 
     ASSERT_EQ(Playing->getParent(), sm.get());
 
-    sm->onEntry();
+    sm->startSM();
 
+    sm->wait();
     sm->sendEvent(sm->cd_detected);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+    sm->wait();
     ASSERT_EQ(sm->getCurrentState(), sm->Stopped);
 
     sm->sendEvent(sm->play);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    sm->wait();
     ASSERT_EQ(sm->getCurrentState(), Playing);
-
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
 
     sm->sendEvent(Playing->next_song);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    sm->wait();
     ASSERT_EQ(sm->getCurrentState(), Playing);
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     sm->sendEvent(sm->pause);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(sm->getCurrentState(), sm->Paused);
-    ASSERT_EQ(Playing->getCurrentState(), nullptr);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     sm->sendEvent(sm->end_pause);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    sm->wait();
     ASSERT_EQ(sm->getCurrentState(), sm->Playing);
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
+
+    sm->sendEvent(Playing->next_song);
+    sm->wait();
+    ASSERT_EQ(sm->getCurrentState(), sm->Playing);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song3);
 
     sm->sendEvent(sm->stop_event);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    sm->wait();
     ASSERT_EQ(sm->getCurrentState(), sm->Stopped);
     ASSERT_EQ(Playing->getCurrentState(), nullptr);
 
-    sm->onExit();
+    sm->stopSM();
 }
 
 TEST_F(TestCdPlayerHSM, testTransitionsParentThreadPolicy)
 {
-    auto sm = std::make_shared<CdPlayerHSMParentThread>();
+
+    shared_ptr<CdPlayerHSMParentThread> sm(
+      std::make_shared<CdPlayerHSMParentThread>());
 
     auto& Playing = sm->Playing;
 
     ASSERT_EQ(Playing->getParent(), sm.get());
 
-    sm->onEntry();
+    sm->startSM();
 
     sm->sendEvent(sm->cd_detected);
     sm->step();
@@ -94,20 +114,25 @@ TEST_F(TestCdPlayerHSM, testTransitionsParentThreadPolicy)
     ASSERT_EQ(sm->getCurrentState(), Playing);
     ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
+    LOG(INFO) << "******Current State:" << Playing->getCurrentState()->name;
     sm->sendEvent(sm->pause);
     sm->step();
     ASSERT_EQ(sm->getCurrentState(), sm->Paused);
-    ASSERT_EQ(Playing->getCurrentState(), nullptr);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
 
     sm->sendEvent(sm->end_pause);
     sm->step();
     ASSERT_EQ(sm->getCurrentState(), sm->Playing);
-    ASSERT_EQ(Playing->getCurrentState(), Playing->Song1);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song2);
+
+    sm->sendEvent(Playing->next_song);
+    sm->step();
+    ASSERT_EQ(sm->getCurrentState(), sm->Playing);
+    ASSERT_EQ(Playing->getCurrentState(), Playing->Song3);
 
     sm->sendEvent(sm->stop_event);
     sm->step();
     ASSERT_EQ(sm->getCurrentState(), sm->Stopped);
     ASSERT_EQ(Playing->getCurrentState(), nullptr);
-
-    sm->onExit();
+    sm->stopSM();
 }

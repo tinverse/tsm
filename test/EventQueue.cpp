@@ -9,12 +9,12 @@
 using tsm::Event;
 using tsm::EventQueue;
 
-class TestEventQueue : public testing::Test
+struct TestEventQueue : public testing::Test
 {
-  public:
-    ~TestEventQueue() override = default;
+    TestEventQueue()
+      : testing::Test()
+    {}
 
-  protected:
     EventQueue<Event> eq_;
     Event e1;
 };
@@ -39,7 +39,7 @@ TEST_F(TestEventQueue, testAddFrom100Threads)
     v.reserve(NEVENTS);
 
     for (int i = 0; i < NEVENTS; i++) {
-        v.emplace_back();
+        v[i] = Event();
     }
 
     std::vector<std::thread> vtProduce;

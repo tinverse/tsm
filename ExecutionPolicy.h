@@ -11,8 +11,8 @@ struct ExecutionPolicy
 
     virtual ~ExecutionPolicy() = default;
 
-    virtual void start() = 0;
-    virtual void stop() = 0;
+    virtual void entry() = 0;
+    virtual void exit() = 0;
 
   protected:
     StateType* sm_;

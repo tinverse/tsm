@@ -1,18 +1,18 @@
 #include "GarageDoorSM.h"
+#include "Observer.h"
+
+using tsm::AsyncExecWithObserver;
+using tsm::BlockingObserver;
+using tsm::HSMBehavior;
+using tsm::StateMachine;
+using tsm::StateMachineWithExecutionPolicy;
 
 using tsmtest::GarageDoorDef;
 
-using GarageDoorHSMSeparateThread =
-  StateMachineExecutionPolicy<StateMachine<GarageDoorDef>,
-                                  AsyncExecutionPolicy>;
-
-using GarageDoorHSMParentThread =
-  StateMachineExecutionPolicy<StateMachine<GarageDoorDef>,
-                                  ParentThreadExecutionPolicy>;
-
-// Start State declared first
-const shared_ptr<State> GarageDoorDef::doorClosed =
-  std::make_shared<State>("Door Closed");
+/// A "Blocking" Observer with Async Execution Policy
+template<typename StateType>
+using AsyncBlockingObserver =
+  tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
 
 struct TestGarageDoorSM : public ::testing::Test
 {
@@ -22,40 +22,52 @@ struct TestGarageDoorSM : public ::testing::Test
     ~TestGarageDoorSM() { tsm::UniqueId::reset(); }
 };
 
+///
+/// Mix the Async observer and the GarageDoor StateMachine to get an
+/// asynchronous garage door state machine that notifies a listener at the end
+/// of processing each event.
+///
+using GarageDoorHSMSeparateThread =
+  StateMachineWithExecutionPolicy<HSMBehavior<GarageDoorDef>,
+                                  AsyncBlockingObserver>;
+
 TEST_F(TestGarageDoorSM, testGarageDoorSeparateThreadPolicy)
 {
     auto sm = std::make_shared<GarageDoorHSMSeparateThread>();
     auto smDef = std::static_pointer_cast<GarageDoorDef>(sm);
-    sm->onEntry();
-    ASSERT_EQ(sm->getCurrentState(), smDef->doorClosed)
-      << " CurrentState: " << sm->getCurrentState()->name;
+
+    sm->startSM();
+
+    sm->wait();
+    ASSERT_EQ(sm->getCurrentState(), smDef->doorClosed);
+
     sm->sendEvent(smDef->click_event);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-    ASSERT_EQ(smDef->doorOpening, sm->getCurrentState())
-      << " CurrentState: " << sm->getCurrentState()->name;
+    sm->wait();
+    ASSERT_EQ(sm->getCurrentState(), smDef->doorOpening);
+
     sm->sendEvent(smDef->topSensor_event);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-    ASSERT_EQ(smDef->doorOpen, sm->getCurrentState())
-      << " CurrentState: " << sm->getCurrentState()->name;
-    sm->onExit();
+    sm->wait();
+    ASSERT_EQ(sm->getCurrentState(), smDef->doorOpen);
+
+    sm->stopSM();
 }
 
 TEST_F(TestGarageDoorSM, testGarageDoorParentThreadPolicy)
 {
-    auto sm = std::make_shared<GarageDoorHSMParentThread>();
+    auto sm = std::make_shared<StateMachine<GarageDoorDef>>();
     auto smDef = std::static_pointer_cast<GarageDoorDef>(sm);
 
     sm->sendEvent(smDef->click_event);
     sm->sendEvent(smDef->topSensor_event);
 
-    sm->onEntry();
-    ASSERT_EQ(sm->getCurrentState(), sm->doorClosed)
-      << " CurrentState: " << sm->getCurrentState()->name;
+    sm->startSM();
+    ASSERT_EQ(sm->getCurrentState(), sm->doorClosed);
+
     sm->step();
-    ASSERT_EQ(smDef->doorOpening, sm->getCurrentState())
-      << " CurrentState: " << sm->getCurrentState()->name;
+    ASSERT_EQ(sm->getCurrentState(), smDef->doorOpening);
+
     sm->step();
-    ASSERT_EQ(smDef->doorOpen, sm->getCurrentState())
-      << " CurrentState: " << sm->getCurrentState()->name;
-    sm->onExit();
+    ASSERT_EQ(sm->getCurrentState(), smDef->doorOpen);
+
+    sm->stopSM();
 }

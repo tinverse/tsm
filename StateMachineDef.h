@@ -29,7 +29,8 @@ struct StateMachineDef : public State
         using TransitionTable::size;
 
       public:
-        shared_ptr<Transition> next(shared_ptr<State> fromState, Event onEvent)
+        shared_ptr<Transition> next(shared_ptr<State> fromState,
+                                    Event const& onEvent)
         {
             // Check if event in HSM
             StateEventPair pair(fromState, onEvent);
@@ -55,21 +56,20 @@ struct StateMachineDef : public State
     StateMachineDef() = delete;
 
     StateMachineDef(std::string const& name,
-                    shared_ptr<State> startState,
                     shared_ptr<State> stopState,
                     State* parent = nullptr)
       : State(name)
-      , startState_(startState)
       , stopState_(std::move(stopState))
       , parent_(parent)
+      , currentState_(nullptr)
     {}
 
     StateMachineDef(std::string const& name, State* parent = nullptr)
-      : StateMachineDef(name, nullptr, nullptr, parent)
+      : StateMachineDef(name, nullptr, parent)
     {}
 
     void add(shared_ptr<State> fromState,
-             Event onEvent,
+             Event const& onEvent,
              shared_ptr<State> toState,
              ActionFn action = nullptr,
              GuardFn guard = nullptr)
@@ -87,10 +87,28 @@ struct StateMachineDef : public State
         return table_.next(currentState, nextEvent);
     }
 
+    void onEntry(Event const&) override
+    {
+        DLOG(INFO) << "Entering: " << this->name;
+        currentState_ = static_cast<HSMDef*>(this)->getStartState();
+    }
+
+    void onExit(Event const&) override
+    {
+        // TODO (sriram): Does the sub-HSM remember which state it was in at
+        // exit? This really depends on exit/history policy. Sometimes you want
+        // to retain state information when you exit a sub-HSM for certain
+        // events. Maybe adding a currenEvent_ variable would allow HSMDefs to
+        // override onExit appropriately.
+        // Currently as you see, the policy is to 'forget' on exit by setting
+        // the currentState_ to nullptr.
+        DLOG(INFO) << "Exiting: " << this->name;
+        currentState_ = nullptr;
+    }
+
     auto& getTable() const { return table_; }
     auto& getEvents() const { return eventSet_; }
 
-    virtual shared_ptr<State> getStartState() const { return startState_; }
     virtual shared_ptr<State> getStopState() const { return stopState_; }
 
     State* getParent() const override { return parent_; }
@@ -98,10 +116,10 @@ struct StateMachineDef : public State
 
   protected:
     StateTransitionTable table_;
-    shared_ptr<State> startState_;
     shared_ptr<State> stopState_;
     State* parent_;
     std::set<Event> eventSet_;
+    shared_ptr<State> currentState_;
 
   private:
     void addTransition(shared_ptr<State> fromState,
