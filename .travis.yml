@@ -3,46 +3,29 @@ language: cpp
 env:
   global:
     # Ubuntu version
-    - LINUX_DIST=trusty
+    - LINUX_DIST=xenial
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-    # Global build options and C++ flags
-    - CXX_FLAGS="-Wall -pedantic -Werror -Wno-variadic-macros -Wno-long-long -Wno-shadow"
-    # Misc
-    - RUN_TESTS=true
-    - COVERAGE=false
 
 matrix:
   include:
     - os: linux
-      dist: trusty
+      dist: xenial
       sudo: true
-      compiler: gcc
+      compiler: g++
       addons:
        apt:
-         packages: &precise_latest_boost_packages
-           - gcc-4.8
-           - g++-4.8
-           #- gcov-4.9
-           - clang-3.7
-           - valgrind
+         packages:
            # Misc
            - python-yaml
            - lcov
-         sources: &precise_latest_boost_sources
-           - ubuntu-toolchain-r-test
-           - llvm-toolchain-precise-3.7
+           - doxygen
+           - doxygen-doc
+           - graphviz
+         sources:
 
 before_install:
-    # Combine global build options with OS/compiler-dependent options
-    - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
-    - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
 
 install:
-    - if [ "$CXX" = "clang++" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
-    - echo ${PATH}
-    - echo ${CXX}
-    - ${CXX} --version
-    - ${CXX} -v
     - sudo pip install codecov
 
     # Download and install recent cmake
@@ -61,14 +44,23 @@ script:
      - cd build
      - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DBUILD_DEPENDENCIES=ON ..
      - make
-     - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DBUILD_DEPENDENCIES=OFF ..
-     - make
-     - ctest
-     - cmake -DBUILD_COVERAGE=ON -DBUILD_DEPENDENCIES=OFF ..
+     - cmake ${CMAKE_OPTIONS} -DBUILD_COVERAGE=ON -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DBUILD_DEPENDENCIES=OFF ..
      - make coverage
+     - ctest
 
 after_success:
     # Creating report
     - cd ${TRAVIS_BUILD_DIR}
     # Uploading report to CodeCov
     - bash <(curl -s https://codecov.io/bash) -s . -f lcov.info || echo "Codecov did not collect coverage reports"
+
+    # Generate the docs only if master, the travis_build_docs is true and we can use secure variables
+    - >-
+      if [[ "$TRAVIS_BRANCH" = "master" && -n "$TRAVIS_BUILD_DOCS" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
+        cd $PROJECT_DIR_ABS
+        source .ci/setup_ssh.sh || travis_terminate 1
+        .ci/gen_doc.sh || travis_terminate 1
+      fi
+after_failure:
+  # show actions of the OOM killer
+  - sudo dmesg

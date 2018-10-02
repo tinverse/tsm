@@ -18,8 +18,12 @@ if (BUILD_COVERAGE)
   set(CMAKE_BUILD_TYPE "Debug")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+endif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+
   add_custom_target(coverage
-    COMMAND ${LCOV_PATH} -z -d .
+    # COMMAND ${LCOV_PATH} -z -d .
     COMMAND ${LCOV_PATH} --no-external -b '${PROJECT_SOURCE_DIR}' -c -i -d . -o ${TEST_PROJECT}_base.info
     COMMAND ${TEST_PROJECT}
     COMMAND ${LCOV_PATH} --no-external -b '${PROJECT_SOURCE_DIR}' -c -d . -o ${TEST_PROJECT}_test.info
@@ -30,5 +34,6 @@ if (BUILD_COVERAGE)
     DEPENDS ${TEST_PROJECT}
     BYPRODUCTS ${TEST_PROJECT}_base.info ${TEST_PROJECT}_test.info ${TEST_PROJECT}_total.info lcov.info
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-  )
+    )
+
 endif(BUILD_COVERAGE)
