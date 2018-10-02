@@ -50,7 +50,7 @@ else (BUILD_DEPENDENCIES)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
       endif()
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-long-long -pedantic")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-long-long -pedantic -Wno-shadow")
     endif()
 
     set(CMAKE_FIND_ROOT_PATH ${INSTALL_DIR} CACHE PATH "")
@@ -100,6 +100,34 @@ else (BUILD_DEPENDENCIES)
   enable_testing()
 
   include (coverage)
+
+  find_package(Doxygen)
+  option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
+
+  if(${DOXYGEN_FOUND})
+      set(DOC_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/doc CACHE PATH "")
+  endif(${DOXYGEN_FOUND})
+
+  if(BUILD_DOCUMENTATION)
+      if(NOT DOXYGEN_FOUND)
+          message(FATAL_ERROR "Doxygen is needed to build the documentation.")
+      endif()
+
+      set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
+      set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile)
+
+      configure_file(${doxyfile_in} ${doxyfile} @ONLY)
+
+      add_custom_target(tsm_doc
+          COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+          COMMENT "Generating API documentation with Doxygen"
+          VERBATIM)
+
+      install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc)
+  endif()
+
+
 
 endif(BUILD_DEPENDENCIES)
 
