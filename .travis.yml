@@ -40,15 +40,17 @@ script:
     ############################################################################
     # Build main and tests
     ############################################################################
-     - export PROJECT_DIR_ABS=`pwd`
-     - echo $PROJECT_DIR_ABS
      - mkdir -p build
      - cd build
+     # This step will build gtest glog and gflags
      - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DBUILD_DEPENDENCIES=ON ..
      - make
+     # This step will reconfigure to detect dependencies locally and build tsm 
      - cmake ${CMAKE_OPTIONS} -DBUILD_COVERAGE=ON -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DBUILD_DEPENDENCIES=OFF ..
+     # This will run the unit tests as well
      - make coverage
-     - ctest
+     # generate documentation
+     - make tsm_doc
 
 after_success:
     # Creating report
@@ -56,13 +58,15 @@ after_success:
     # Uploading report to CodeCov
     - bash <(curl -s https://codecov.io/bash) -s . -f lcov.info || echo "Codecov did not collect coverage reports"
 
-    # Generate the docs only if master, the travis_build_docs is true and we can use secure variables
-    - >-
-      if [[ "$TRAVIS_BRANCH" = "master" && -n "$TRAVIS_BUILD_DOCS" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
-        cd $PROJECT_DIR_ABS
-        source $PROJECT_DIR_ABS/.ci/setup_ssh.sh || travis_terminate 1
-        $PROJECT_DIR_ABS/.ci/gen_doc.sh || travis_terminate 1
-      fi
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: $TRAVIS_BUILD_DIR/docs/html
+  github_token: $GH_REPO_TOKEN
+  on:
+    branch: master
+
+
 after_failure:
   # show actions of the OOM killer
   - echo pwd
