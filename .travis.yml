@@ -40,6 +40,7 @@ script:
     ############################################################################
     # Build main and tests
     ############################################################################
+     - export PROJECT_DIR_ABS=`pwd`
      - mkdir -p build
      - cd build
      - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DBUILD_DEPENDENCIES=ON ..
@@ -63,4 +64,5 @@ after_success:
       fi
 after_failure:
   # show actions of the OOM killer
+  - echo pwd
   - sudo dmesg
