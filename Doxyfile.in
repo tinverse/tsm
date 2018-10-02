@@ -4,6 +4,7 @@ STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@ \
                          @PROJECT_BINARY_DIR@
 INPUT                  = @doxy_main_page@ \
                          @CMAKE_CURRENT_SOURCE_DIR@
+INPUT                 += @PROJECT_SOURCE_DIR@/README.md
 GENERATE_RTF           = NO
 GENERATE_LATEX         = NO
 OUTPUT_DIRECTORY       = @PROJECT_BINARY_DIR@/docs
