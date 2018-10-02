@@ -58,8 +58,8 @@ after_success:
     - >-
       if [[ "$TRAVIS_BRANCH" = "master" && -n "$TRAVIS_BUILD_DOCS" && "$TRAVIS_PULL_REQUEST" = "false" ]] ; then
         cd $PROJECT_DIR_ABS
-        source .ci/setup_ssh.sh || travis_terminate 1
-        .ci/gen_doc.sh || travis_terminate 1
+        source ../.ci/setup_ssh.sh || travis_terminate 1
+        ../.ci/gen_doc.sh || travis_terminate 1
       fi
 after_failure:
   # show actions of the OOM killer

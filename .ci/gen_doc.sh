@@ -50,7 +50,9 @@ git clone -b gh-pages git@github.com:$GH_REPO_ORG/$GH_REPO_NAME.git code_docs
 cd code_docs
 
 # Copy DoxygenLayout.xml here
-cp $TRAVIS_BUILD_DIR/doc/DoxygenLayout.xml .
+if [ -f $TRAVIS_BUILD_DIR/doc/DoxygenLayout.xml ]
+   cp $TRAVIS_BUILD_DIR/doc/DoxygenLayout.xml .
+fi
 
 ##### Configure git.
 # Set the push default to simple i.e. push only the current branch.
