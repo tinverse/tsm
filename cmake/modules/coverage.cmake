@@ -15,7 +15,6 @@ if (BUILD_COVERAGE)
       message(FATAL_ERROR "GENHTML not found.")
   endif(NOT GENHTML_PATH)
 
-  include(CodeCoverage)
   set(CMAKE_BUILD_TYPE "Debug")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
 

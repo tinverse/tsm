@@ -64,8 +64,8 @@ script:
      - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DBUILD_DEPENDENCIES=OFF ..
      - make
      - ctest
-    - cmake -DBUILD_COVERAGE -DBUILD_DEPENDENCIES=OFF ..
-    - make coverage
+     - cmake -DBUILD_COVERAGE=ON -DBUILD_DEPENDENCIES=OFF ..
+     - make coverage
 
 after_success:
     # Creating report
