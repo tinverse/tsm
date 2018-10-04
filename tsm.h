@@ -23,7 +23,7 @@ namespace tsm {
 /// struct MyHSMDef : StateMachineDef<MyHSMDef> { ... };
 /// 2. Then create your statemachine class by wrapping it arount the
 /// StateMachine generic defined in "tsm.h". The StateMachine generic is a mixin
-/// that mixes the ParentThreadExecutionPolicy along with the HSMBehavior
+/// that mixes the ParentThreadExecutionPolicy along with the StateMachine
 /// class.
 /// using MyStateMachine = StateMachine<MyHSMDef>
 /// 3. Now instantiate an object of your state machine type.
@@ -34,8 +34,8 @@ namespace tsm {
 /// mySMObj.step();
 ///
 template<typename HSMDef>
-using StateMachine =
-  StateMachineWithExecutionPolicy<HSMBehavior<HSMDef>,
+using SimpleStateMachine =
+  StateMachineWithExecutionPolicy<StateMachine<HSMDef>,
                                   ParentThreadExecutionPolicy>;
 ///
 /// An Asynchronous state machine. Event processing is done in a separate
@@ -49,20 +49,21 @@ using StateMachine =
 ///
 template<typename HSMDef>
 using AsyncStateMachine =
-  StateMachineWithExecutionPolicy<HSMBehavior<HSMDef>, AsyncExecutionPolicy>;
+  StateMachineWithExecutionPolicy<StateMachine<HSMDef>, AsyncExecutionPolicy>;
 }
 
 // Provide a hash function for StateEventPair
 namespace std {
+using tsm::State;
 template<>
 struct hash<tsm::StateEventPair>
 {
     size_t operator()(const tsm::StateEventPair& s) const
     {
-        shared_ptr<tsm::State> statePtr = s.first;
+        State* statePtr = &s.first;
         uint64_t id_s = statePtr->id;
         tsm::Event event = s.second;
-        auto address = reinterpret_cast<uintptr_t>(statePtr.get());
+        auto address = reinterpret_cast<uintptr_t>(statePtr);
         uint64_t id_e = event.id;
         size_t hash_value = hash<uint64_t>{}(id_s) ^
                             hash<uintptr_t>{}(address) ^

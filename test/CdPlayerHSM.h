@@ -7,8 +7,8 @@
 
 using tsm::Event;
 using tsm::EventQueue;
-using tsm::HSMBehavior;
 using tsm::State;
+using tsm::StateMachine;
 using tsm::StateMachineDef;
 
 namespace tsmtest {
@@ -44,9 +44,9 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
 
         PlayingHSMDef(State* parent = nullptr)
           : StateMachineDef<PlayingHSMDef>("Playing HSM", parent)
-          , Song1(std::make_shared<State>("Playing HSM -> Song1"))
-          , Song2(std::make_shared<State>("Playing HSM -> Song2"))
-          , Song3(std::make_shared<State>("Playing HSM -> Song3"))
+          , Song1("Playing HSM -> Song1")
+          , Song2("Playing HSM -> Song2")
+          , Song3("Playing HSM -> Song3")
         {
 
             // clang-format off
@@ -57,12 +57,13 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
             add(Song2, prev_song, Song1);
         }
 
-        shared_ptr<State> getStartState() const { return Song1; }
+        State* getStartState() { return &Song1; }
+        State* getStopState() { return nullptr; }
 
         // States
-        shared_ptr<State> Song1;
-        shared_ptr<State> Song2;
-        shared_ptr<State> Song3;
+        State Song1;
+        State Song2;
+        State Song3;
 
         // Events
         Event next_song;
@@ -97,11 +98,11 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
 
     CdPlayerDef(State* parent = nullptr)
       : StateMachineDef<CdPlayerDef>("CD Player HSM", parent)
-      , Stopped(std::make_shared<State>("Player Stopped"))
-      , Playing(std::make_shared<HSMBehavior<PlayingHSMDef>>(this))
-      , Paused(std::make_shared<State>("Player Paused"))
-      , Empty(std::make_shared<State>("Player Empty"))
-      , Open(std::make_shared<State>("Player Open"))
+      , Stopped("Player Stopped")
+      , Playing(this)
+      , Paused("Player Paused")
+      , Empty("Player Empty")
+      , Open("Player Open")
     {
         // TransitionTable for GarageDoor HSM
         add(Stopped, play, Playing);
@@ -115,8 +116,6 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
         add(Empty, cd_detected, Playing);
         //-------------------------------------------------
         add(Playing, stop_event, Stopped);
-        LOG(INFO) << "****** Adding pause: " << pause.id
-                  << "Playing id: " << Playing->id;
         add(Playing, pause, Paused);
         add(Playing, open_close, Open);
         //-------------------------------------------------
@@ -127,17 +126,18 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
 
     virtual ~CdPlayerDef() = default;
 
-    shared_ptr<State> getStartState() const { return Empty; }
+    State* getStartState() { return &Empty; }
+    State* getStopState() { return nullptr; }
 
     // CdPlayer HSM
     // States
-    shared_ptr<State> Stopped;
+    State Stopped;
 
-    shared_ptr<PlayingHSMDef> Playing;
+    StateMachine<PlayingHSMDef> Playing;
 
-    shared_ptr<State> Paused;
-    shared_ptr<State> Empty;
-    shared_ptr<State> Open;
+    State Paused;
+    State Empty;
+    State Open;
 
     // Events
     Event play;
@@ -154,8 +154,8 @@ struct ErrorHSM : public StateMachineDef<ErrorHSM>
 {
     ErrorHSM(State* parent = nullptr)
       : StateMachineDef<ErrorHSM>("Error HSM", parent)
-      , AllOk(std::make_shared<State>("All Ok"))
-      , ErrorMode(std::make_shared<State>("Error Mode"))
+      , AllOk("All Ok")
+      , ErrorMode("Error Mode")
     {
         add(AllOk, error, ErrorMode);
         // Potentially transition to a recovery HSM
@@ -163,8 +163,8 @@ struct ErrorHSM : public StateMachineDef<ErrorHSM>
     }
 
     // States
-    shared_ptr<State> AllOk;
-    shared_ptr<State> ErrorMode;
+    State AllOk;
+    State ErrorMode;
 
     // Events
     Event error;
@@ -173,7 +173,8 @@ struct ErrorHSM : public StateMachineDef<ErrorHSM>
     // Actions
     void recovery() { LOG(INFO) << "Recovering from Error:"; }
 
-    shared_ptr<State> getStartState() const { return AllOk; }
+    State* getStartState() { return &AllOk; }
+    State* getStopState() { return nullptr; }
 };
 
 } // namespace tsmtest
