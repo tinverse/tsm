@@ -47,7 +47,7 @@ struct AsyncExecutionPolicy : public ExecutionPolicy<StateType>
                 if (!interrupt_) {
                     throw e;
                 }
-                LOG(WARNING)
+                DLOG(WARNING)
                   << this->sm_->name << ": Exiting event loop on interrupt";
                 return;
             }
@@ -100,7 +100,7 @@ struct AsyncExecWithObserver
                 if (!interrupt_) {
                     throw e;
                 }
-                LOG(WARNING)
+                DLOG(WARNING)
                   << this->sm_->name << ": Exiting event loop on interrupt";
                 return;
             }

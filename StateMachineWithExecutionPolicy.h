@@ -22,7 +22,7 @@ struct StateMachineWithExecutionPolicy
         entry();
     }
 
-    virtual void onExit(Event const& e) override
+    void onExit(Event const& e) override
     {
         exit();
         StateType::onExit(e);

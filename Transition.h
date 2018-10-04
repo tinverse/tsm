@@ -1,19 +1,13 @@
 #pragma once
 
-#include <glog/logging.h>
-
-#include <memory>
-
-using std::shared_ptr;
-
 namespace tsm {
 
 template<typename State, typename Event, typename ActionFn, typename GuardFn>
 struct TransitionT
 {
-    TransitionT(shared_ptr<State> fromState,
+    TransitionT(State& fromState,
                 Event const& event,
-                shared_ptr<State> toState,
+                State& toState,
                 ActionFn action,
                 GuardFn guard)
       : fromState(fromState)
@@ -32,16 +26,16 @@ struct TransitionT
             // throw NullPointerException;
         }
 
-        this->fromState->onExit(onEvent);
+        this->fromState.onExit(onEvent);
         if (action) {
             (hsm->*action)();
         }
-        this->toState->onEntry(onEvent);
+        this->toState.onEntry(onEvent);
     }
 
-    shared_ptr<State> fromState;
+    State& fromState;
     Event onEvent;
-    shared_ptr<State> toState;
+    State& toState;
     ActionFn action;
     GuardFn guard;
 };
@@ -49,9 +43,9 @@ struct TransitionT
 template<typename State, typename Event, typename ActionFn, typename GuardFn>
 struct InternalTransitionT : public TransitionT<State, Event, ActionFn, GuardFn>
 {
-    InternalTransitionT(shared_ptr<State> fromState,
+    InternalTransitionT(State& fromState,
                         Event const& event,
-                        shared_ptr<State> toState,
+                        State& toState,
                         ActionFn action,
                         GuardFn guard)
       : TransitionT<State, Event, ActionFn, GuardFn>(fromState,

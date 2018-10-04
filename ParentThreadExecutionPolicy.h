@@ -31,7 +31,7 @@ struct ParentThreadExecutionPolicy : public ExecutionPolicy<StateType>
     {
 
         if (eventQueue_.empty()) {
-            LOG(WARNING) << "Event Queue is empty!";
+            DLOG(WARNING) << "Event Queue is empty!";
             return;
         }
         try {
@@ -45,8 +45,8 @@ struct ParentThreadExecutionPolicy : public ExecutionPolicy<StateType>
             if (!interrupt_) {
                 throw e;
             }
-            LOG(WARNING) << this->sm_->name
-                         << ": Exiting event loop on interrupt";
+            DLOG(WARNING) << this->sm_->name
+                          << ": Exiting event loop on interrupt";
             return;
         }
     }

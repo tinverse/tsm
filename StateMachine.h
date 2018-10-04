@@ -6,15 +6,15 @@
 
 namespace tsm {
 template<typename HSMDef>
-struct HSMBehavior : public HSMDef
+struct StateMachine : public HSMDef
 {
     using Transition = typename StateMachineDef<HSMDef>::Transition;
 
-    HSMBehavior(State* parent = nullptr)
+    StateMachine(State* parent = nullptr)
       : HSMDef(parent)
     {}
 
-    virtual ~HSMBehavior() = default;
+    virtual ~StateMachine() = default;
 
     void startSM() { this->onEntry(Event::dummy_event); }
 
@@ -24,22 +24,20 @@ struct HSMBehavior : public HSMDef
     State* dispatch(State* state) const
     {
         State* parent = state;
-        State* kid = parent->getCurrentState().get();
+        State* kid = parent->getCurrentState();
         while (kid->getParent()) {
             parent = kid;
-            kid = kid->getCurrentState().get();
+            kid = kid->getCurrentState();
         }
         return parent;
     }
 
     void execute(Event const& nextEvent) override
     {
-        LOG(INFO) << "Current State:" << this->currentState_->name
-                  << " Event:" << nextEvent.id;
+        DLOG(INFO) << "Current State:" << this->currentState_->name
+                   << " Event:" << nextEvent.id;
 
-        HSMDef* thisDef = static_cast<HSMDef*>(this);
-        shared_ptr<Transition> t =
-          thisDef->next(this->currentState_, nextEvent);
+        Transition* t = this->next(*this->currentState_, nextEvent);
 
         if (!t) {
             // If transition does not exist, pass event to parent HSM
@@ -50,23 +48,23 @@ struct HSMBehavior : public HSMDef
                 // this->onExit(nextEvent);
                 this->parent_->execute(nextEvent);
             } else {
-                LOG(ERROR) << "Reached top level HSM. Cannot handle event";
+                DLOG(ERROR) << "Reached top level HSM. Cannot handle event";
             }
         } else {
             // Evaluate guard if it exists
-            bool result = t->guard && (thisDef->*(t->guard))();
+            bool result = t->guard && (this->*(t->guard))();
 
             if (!(t->guard) || result) {
                 // Perform entry and exit actions in the doTransition function.
                 // If just an internal transition, Entry and exit actions are
                 // not performed
-                t->template doTransition<HSMDef>(thisDef);
+                t->template doTransition<HSMDef>(this);
 
-                this->currentState_ = t->toState;
+                this->currentState_ = &t->toState;
 
                 DLOG(INFO) << "Next State:" << this->currentState_->name;
             } else {
-                LOG(INFO) << "Guard prevented transition";
+                DLOG(INFO) << "Guard prevented transition";
             }
             if (this->currentState_ == this->getStopState()) {
                 DLOG(INFO) << this->name << " Done Exiting... ";
@@ -75,7 +73,7 @@ struct HSMBehavior : public HSMDef
         }
     }
 
-    shared_ptr<State> const getCurrentState() const override
+    State* getCurrentState() override
     {
         DLOG(INFO) << "GetState : " << this->name;
         return this->currentState_;

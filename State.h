@@ -42,6 +42,8 @@ struct State
 
     bool operator==(State const& rhs) { return this->id == rhs.id; }
 
+    bool operator!=(State& rhs) { return !(*this == rhs); }
+
     virtual void execute(Event const& nextEvent)
     {
 
@@ -60,7 +62,7 @@ struct State
 
     virtual State* getParent() const { return nullptr; }
 
-    virtual std::shared_ptr<State> const getCurrentState() const
+    virtual State* getCurrentState()
     {
         throw MethodNotImplementedException(
           "The State::getCurrentState method is not implemented - by design. "

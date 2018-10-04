@@ -14,12 +14,12 @@ struct GarageDoorDef : public StateMachineDef<GarageDoorDef>
 
     GarageDoorDef(State* parent = nullptr)
       : StateMachineDef<GarageDoorDef>("Garage Door HSM", parent)
-      , doorOpen(std::make_shared<State>("Door Open"))
-      , doorOpening(std::make_shared<State>("Door Opening"))
-      , doorClosing(std::make_shared<State>("Door Closing"))
-      , doorClosed(std::make_shared<State>("Door Closed"))
-      , doorStoppedClosing(std::make_shared<State>("Door Stopped Closing"))
-      , doorStoppedOpening(std::make_shared<State>("Door Stopped Opening"))
+      , doorOpen("Door Open")
+      , doorOpening("Door Opening")
+      , doorClosing("Door Closing")
+      , doorClosed("Door Closed")
+      , doorStoppedClosing("Door Stopped Closing")
+      , doorStoppedOpening("Door Stopped Opening")
     {
         // TransitionTable
         add(doorClosed, click_event, doorOpening);
@@ -36,15 +36,16 @@ struct GarageDoorDef : public StateMachineDef<GarageDoorDef>
 
     virtual ~GarageDoorDef() = default;
 
-    shared_ptr<State> getStartState() const { return doorClosed; }
+    State* getStartState() { return &doorClosed; }
+    State* getStopState() const { return nullptr; }
 
     // States
-    shared_ptr<State> doorOpen;
-    shared_ptr<State> doorOpening;
-    shared_ptr<State> doorClosing;
-    shared_ptr<State> doorClosed;
-    shared_ptr<State> doorStoppedClosing;
-    shared_ptr<State> doorStoppedOpening;
+    State doorOpen;
+    State doorOpening;
+    State doorClosing;
+    State doorClosed;
+    State doorStoppedClosing;
+    State doorStoppedOpening;
 
     // Events
     Event click_event;

@@ -3,7 +3,7 @@
 
 using tsm::AsyncExecWithObserver;
 using tsm::BlockingObserver;
-using tsm::HSMBehavior;
+using tsm::SimpleStateMachine;
 using tsm::StateMachine;
 using tsm::StateMachineWithExecutionPolicy;
 
@@ -28,7 +28,7 @@ struct TestGarageDoorSM : public ::testing::Test
 /// of processing each event.
 ///
 using GarageDoorHSMSeparateThread =
-  StateMachineWithExecutionPolicy<HSMBehavior<GarageDoorDef>,
+  StateMachineWithExecutionPolicy<StateMachine<GarageDoorDef>,
                                   AsyncBlockingObserver>;
 
 TEST_F(TestGarageDoorSM, testGarageDoorSeparateThreadPolicy)
@@ -39,35 +39,35 @@ TEST_F(TestGarageDoorSM, testGarageDoorSeparateThreadPolicy)
     sm->startSM();
 
     sm->wait();
-    ASSERT_EQ(sm->getCurrentState(), smDef->doorClosed);
+    ASSERT_EQ(sm->getCurrentState(), &smDef->doorClosed);
 
     sm->sendEvent(smDef->click_event);
     sm->wait();
-    ASSERT_EQ(sm->getCurrentState(), smDef->doorOpening);
+    ASSERT_EQ(sm->getCurrentState(), &smDef->doorOpening);
 
     sm->sendEvent(smDef->topSensor_event);
     sm->wait();
-    ASSERT_EQ(sm->getCurrentState(), smDef->doorOpen);
+    ASSERT_EQ(sm->getCurrentState(), &smDef->doorOpen);
 
     sm->stopSM();
 }
 
 TEST_F(TestGarageDoorSM, testGarageDoorParentThreadPolicy)
 {
-    auto sm = std::make_shared<StateMachine<GarageDoorDef>>();
+    auto sm = std::make_shared<SimpleStateMachine<GarageDoorDef>>();
     auto smDef = std::static_pointer_cast<GarageDoorDef>(sm);
 
     sm->sendEvent(smDef->click_event);
     sm->sendEvent(smDef->topSensor_event);
 
     sm->startSM();
-    ASSERT_EQ(sm->getCurrentState(), sm->doorClosed);
+    ASSERT_EQ(sm->getCurrentState(), &sm->doorClosed);
 
     sm->step();
-    ASSERT_EQ(sm->getCurrentState(), smDef->doorOpening);
+    ASSERT_EQ(sm->getCurrentState(), &smDef->doorOpening);
 
     sm->step();
-    ASSERT_EQ(sm->getCurrentState(), smDef->doorOpen);
+    ASSERT_EQ(sm->getCurrentState(), &smDef->doorOpen);
 
     sm->stopSM();
 }
