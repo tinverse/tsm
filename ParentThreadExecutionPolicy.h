@@ -2,7 +2,6 @@
 
 #include "Event.h"
 #include "EventQueue.h"
-#include "ExecutionPolicy.h"
 ///
 /// The policy for "synchronous" event processing. Events can be queued up in
 /// the event queue as they arrive. However, to process each event, a
@@ -12,24 +11,26 @@
 ///
 namespace tsm {
 template<typename StateType>
-struct ParentThreadExecutionPolicy : public ExecutionPolicy<StateType>
+struct ParentThreadExecutionPolicy : public StateType
 {
     using EventQueue = EventQueueT<Event, dummy_mutex>;
 
-    ParentThreadExecutionPolicy() = delete;
-
-    ParentThreadExecutionPolicy(StateType* sm)
-      : ExecutionPolicy<StateType>(sm)
+    ParentThreadExecutionPolicy()
+      : StateType()
       , interrupt_(false)
     {}
 
-    void entry() override {}
+    virtual ~ParentThreadExecutionPolicy() = default;
 
-    void exit() override { eventQueue_.stop(); }
+    void onExit(Event const& e) override
+    {
+        DLOG(INFO) << "Exiting from Parent thread policy...";
+        eventQueue_.stop();
+        StateType::onExit(e);
+    }
 
     void step()
     {
-
         if (eventQueue_.empty()) {
             DLOG(WARNING) << "Event Queue is empty!";
             return;
@@ -39,14 +40,13 @@ struct ParentThreadExecutionPolicy : public ExecutionPolicy<StateType>
             Event const& nextEvent = eventQueue_.nextEvent();
             // go down the HSM hierarchy to handle the event as that is the
             // "most active state"
-            this->sm_->dispatch(this->sm_)->execute(nextEvent);
+            this->dispatch(this)->execute(nextEvent);
 
         } catch (EventQueueInterruptedException const& e) {
             if (!interrupt_) {
                 throw e;
             }
-            DLOG(WARNING) << this->sm_->name
-                          << ": Exiting event loop on interrupt";
+            DLOG(WARNING) << this->name << ": Exiting event loop on interrupt";
             return;
         }
     }

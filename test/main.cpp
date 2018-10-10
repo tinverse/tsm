@@ -1,7 +1,5 @@
-#include "Event.h"
-#include "EventQueue.h"
-#include "State.h"
-#include "StateMachineDef.h"
+#include "TestMachines.h"
+#include "tsm.h"
 
 #include <memory>
 
@@ -12,27 +10,8 @@ using tsm::Event;
 using tsm::State;
 using tsm::StateMachineDef;
 
-using std::make_shared;
-using std::shared_ptr;
-
-// struct SimpleSM : public StateMachineDef<SimpleSM>
-//{
-//    using StateMachineDef<SimpleSM>::uniqueId_;
-//
-//    SimpleSM()
-//      : StateMachineDef<SimpleSM>("Simple SM")
-//      , e(uniqueId_.next())
-//      , s(make_shared<State>("Test State", uniqueId_.next()))
-//    {}
-//
-//    bool operator=(SimpleSM const& rhs)
-//    {
-//        return (e.id == rhs.e.id) && (s->id == rhs.s->id);
-//    }
-//
-//    Event e;
-//    shared_ptr<State> s;
-//};
+using tsmtest::AHsmDef;
+using tsmtest::BHsmDef;
 
 class TestState : public testing::Test
 {
@@ -54,13 +33,34 @@ TEST_F(TestState, Construct)
     EXPECT_EQ(state_.name, "Dummy");
 }
 
-// TEST_F(TestState, testTwoInstancesAreEqual)
-//{
-//    auto sm1 = make_shared<SimpleSM>();
-//    auto sm2 = make_shared<SimpleSM>();
-//
-//    ASSERT_EQ(sm1, sm2);
-//}
+struct TestStateMachineProperties : public testing::Test
+{
+    virtual ~TestStateMachineProperties() { tsm::UniqueId::reset(); }
+};
+
+TEST_F(TestStateMachineProperties, testMachineExitsWhenReachingStopState)
+{
+    SimpleStateMachine<AHsmDef> sm;
+    sm.startSM();
+    ASSERT_EQ(&sm.s1, sm.getCurrentState());
+
+    sm.sendEvent(sm.e1);
+    sm.step();
+    ASSERT_EQ(&sm.s2, sm.getCurrentState());
+
+    sm.sendEvent(sm.e2_in);
+    sm.step();
+    ASSERT_EQ(&sm.bHsmDef, sm.getCurrentState());
+
+    sm.sendEvent(sm.e2_out);
+    sm.step();
+    ASSERT_EQ(&sm.s3, sm.getCurrentState())
+      << "exp: " << sm.s3.name << " act: " << sm.getCurrentState()->name;
+
+    sm.sendEvent(sm.end_event);
+    sm.step();
+    ASSERT_EQ(nullptr, sm.getCurrentState());
+}
 
 int
 main(int argc, char* argv[])

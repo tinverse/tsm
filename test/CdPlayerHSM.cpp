@@ -9,7 +9,6 @@ using tsm::AsyncStateMachine;
 using tsm::BlockingObserver;
 using tsm::SimpleStateMachine;
 using tsm::StateMachine;
-using tsm::StateMachineWithExecutionPolicy;
 
 /// A "Blocking" Observer with Async Execution Policy
 template<typename StateType>
@@ -17,8 +16,7 @@ using AsyncBlockingObserver =
   tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
 
 using CdPlayerHSMSeparateThread =
-  StateMachineWithExecutionPolicy<StateMachine<CdPlayerDef<CdPlayerController>>,
-                                  AsyncBlockingObserver>;
+  AsyncBlockingObserver<StateMachine<CdPlayerDef<CdPlayerController>>>;
 
 using CdPlayerHSMParentThread =
   SimpleStateMachine<CdPlayerDef<CdPlayerController>>;
@@ -32,7 +30,7 @@ struct TestCdPlayerHSM : public testing::Test
     TestCdPlayerHSM()
       : testing::Test()
     {}
-    ~TestCdPlayerHSM()
+    virtual ~TestCdPlayerHSM()
     { // TODO(sriram): ugh! Fix Id generation
         tsm::UniqueId::reset();
     }
@@ -132,5 +130,34 @@ TEST_F(TestCdPlayerHSM, testTransitionsParentThreadPolicy)
     sm.step();
     ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
     ASSERT_EQ(Playing.getCurrentState(), nullptr);
+
+    sm.stopSM();
+}
+
+TEST_F(TestCdPlayerHSM, testCallingStepOnParentThreadPolicyEmptyEventQueue)
+{
+    CdPlayerHSMParentThread sm;
+
+    sm.startSM();
+    sm.sendEvent(sm.cd_detected);
+    sm.step();
+    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
+
+    // Event queue is empty now. Nothing should change
+    sm.step();
+    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
+
+    sm.stopSM();
+}
+
+TEST_F(TestCdPlayerHSM, testEventQueueInterruptedException)
+{
+    CdPlayerHSMParentThread sm;
+
+    sm.startSM();
+    sm.sendEvent(sm.cd_detected);
+    sm.step();
+    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
+
     sm.stopSM();
 }

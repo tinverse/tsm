@@ -34,25 +34,27 @@ TEST_F(TestEventQueue, testSingleEvent)
 TEST_F(TestEventQueue, testAddFrom100Threads)
 {
     EventQueue<Event> eq_;
-    std::vector<Event> v;
+    std::vector<Event const> v;
     const int NEVENTS = 100;
-    v.reserve(NEVENTS);
 
     for (int i = 0; i < NEVENTS; i++) {
-        v[i] = Event();
+        v.emplace_back();
     }
 
     std::vector<std::thread> vtProduce;
     std::vector<std::future<const Event>> vtConsume;
 
-    for (auto event : v) {
-        vtConsume.push_back(std::async(&EventQueue<Event>::nextEvent, &eq_));
-        vtProduce.emplace_back(&EventQueue<Event>::addEvent, &eq_, event);
+    for (Event const& e : v) {
+        auto f = std::async(&EventQueue<Event>::nextEvent, &eq_);
+        // add a 100 threads to asynchronously wait on nextEvent
+        vtConsume.push_back(std::move(f));
+        // add 100 events to the event queue.
+        vtProduce.emplace_back(&EventQueue<Event>::addEvent, &eq_, e);
     }
 
     for (auto&& future : vtConsume) {
-        const Event e = future.get();
-        ASSERT_TRUE(std::find(v.begin(), v.end(), e) != v.end());
+        Event const& e = future.get();
+        ASSERT_TRUE(std::find(v.begin(), v.end(), e) != v.end()) << e.id;
     }
 
     for (auto&& t : vtProduce) {

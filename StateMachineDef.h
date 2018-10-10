@@ -10,8 +10,39 @@
 namespace tsm {
 typedef std::pair<State&, Event> StateEventPair;
 
+struct IHsmDef : public State
+{
+    IHsmDef() = delete;
+
+    IHsmDef(std::string const& name, IHsmDef* parent)
+      : State(name)
+      , parent_(parent)
+      , currentState_(nullptr)
+    {}
+
+    virtual ~IHsmDef() = default;
+
+    virtual State* getStartState() = 0;
+    virtual State* getStopState() = 0;
+
+    State* getCurrentState()
+    {
+        DLOG(INFO) << "Get Current State: "
+                   << ((currentState_) ? currentState_->name : "nullptr");
+        return currentState_;
+    }
+
+    IHsmDef* getParent() const { return parent_; }
+
+    void setParent(IHsmDef* parent) { parent_ = parent; }
+
+  protected:
+    IHsmDef* parent_;
+    State* currentState_;
+};
+
 template<typename HSMDef>
-struct StateMachineDef : public State
+struct StateMachineDef : public IHsmDef
 {
     using ActionFn = void (HSMDef::*)(void);
     using GuardFn = bool (HSMDef::*)(void);
@@ -54,11 +85,11 @@ struct StateMachineDef : public State
 
     StateMachineDef() = delete;
 
-    StateMachineDef(std::string const& name, State* parent = nullptr)
-      : State(name)
-      , parent_(parent)
-      , currentState_(nullptr)
+    StateMachineDef(std::string const& name, IHsmDef* parent = nullptr)
+      : IHsmDef(name, parent)
     {}
+
+    virtual ~StateMachineDef() = default;
 
     void add(State& fromState,
              Event const& onEvent,
@@ -77,37 +108,32 @@ struct StateMachineDef : public State
         return table_.next(currentState, nextEvent);
     }
 
-    void onEntry(Event const&) override
+    void onEntry(Event const& e) override
     {
         DLOG(INFO) << "Entering: " << this->name;
-        currentState_ = static_cast<HSMDef*>(this)->getStartState();
-    }
+        currentState_ = this->getStartState();
 
+        this->currentState_->execute(e);
+    }
     void onExit(Event const&) override
     {
         // TODO (sriram): Does the sub-HSM remember which state it was in at
-        // exit? This really depends on exit/history policy. Sometimes you want
-        // to retain state information when you exit a sub-HSM for certain
-        // events. Maybe adding a currenEvent_ variable would allow HSMDefs to
-        // override onExit appropriately.
-        // Currently as you see, the policy is to 'forget' on exit by setting
-        // the currentState_ to nullptr.
+        // exit? This really depends on exit/history policy. Sometimes you
+        // want to retain state information when you exit a sub-HSM for
+        // certain events. Maybe adding a currenEvent_ variable would allow
+        // HSMDefs to override onExit appropriately. Currently as you see,
+        // the policy is to 'forget' on exit by setting the currentState_ to
+        // nullptr.
         DLOG(INFO) << "Exiting: " << this->name;
-        currentState_ = nullptr;
+        this->currentState_ = nullptr;
     }
 
     auto& getTable() const { return table_; }
     auto& getEvents() const { return eventSet_; }
 
-    State* getParent() const override { return parent_; }
-    void setParent(State* parent) { parent_ = parent; }
-
   protected:
     StateTransitionTable table_;
-    State* stopState_;
-    State* parent_;
     std::set<Event> eventSet_;
-    State* currentState_;
 
   private:
     void addTransition(State& fromState, Event onEvent, Transition t)

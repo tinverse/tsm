@@ -2,7 +2,7 @@
 
 #include "Event.h"
 #include "EventQueue.h"
-#include "ExecutionPolicy.h"
+
 ///
 /// The default policy class for asynchronous event processing. This policy is
 /// mixed in with a StateMachineT class to create an AsyncStateMachine. The
@@ -11,46 +11,38 @@
 ///
 namespace tsm {
 template<typename StateType>
-struct AsyncExecutionPolicy : public ExecutionPolicy<StateType>
+struct AsyncExecutionPolicy : public StateType
 {
     using EventQueue = EventQueueT<Event, std::mutex>;
     using ThreadCallback = void (AsyncExecutionPolicy::*)();
 
-    AsyncExecutionPolicy() = delete;
-
-    AsyncExecutionPolicy(StateType* sm)
-      : ExecutionPolicy<StateType>(sm)
+    AsyncExecutionPolicy()
+      : StateType()
       , threadCallback_(&AsyncExecutionPolicy::step)
       , interrupt_(false)
     {}
 
-    void entry() override { smThread_ = std::thread(threadCallback_, this); }
+    virtual ~AsyncExecutionPolicy() = default;
 
-    void exit() override
+    void onEntry(Event const& e) override
+    {
+        StateType::onEntry(e);
+        smThread_ = std::thread(threadCallback_, this);
+    }
+
+    void onExit(Event const& e) override
     {
         interrupt_ = true;
         eventQueue_.stop();
         smThread_.join();
+
+        StateType::onExit(e);
     }
 
     virtual void step()
     {
         while (!interrupt_) {
-            try {
-                // This is a blocking wait
-                Event const& nextEvent = eventQueue_.nextEvent();
-                // go down the HSM hierarchy to handle the event as that is the
-                // "most active state"
-                this->sm_->dispatch(this->sm_)->execute(nextEvent);
-
-            } catch (EventQueueInterruptedException const& e) {
-                if (!interrupt_) {
-                    throw e;
-                }
-                DLOG(WARNING)
-                  << this->sm_->name << ": Exiting event loop on interrupt";
-                return;
-            }
+            processEvent();
         }
     };
 
@@ -61,6 +53,24 @@ struct AsyncExecutionPolicy : public ExecutionPolicy<StateType>
     std::thread smThread_;
     EventQueue eventQueue_;
     bool interrupt_;
+
+    void processEvent()
+    {
+        try {
+            // This is a blocking wait
+            Event const& nextEvent = eventQueue_.nextEvent();
+            // go down the HSM hierarchy to handle the event as that is the
+            // "most active state"
+            this->dispatch(this)->execute(nextEvent);
+
+        } catch (EventQueueInterruptedException const& e) {
+            if (!interrupt_) {
+                throw e;
+            }
+            DLOG(WARNING) << this->name << ": Exiting event loop on interrupt";
+            return;
+        }
+    }
 };
 
 ///
@@ -78,33 +88,19 @@ struct AsyncExecWithObserver
     using AsyncExecutionPolicy<StateType>::eventQueue_;
     using Observer::notify;
 
-    AsyncExecWithObserver() = delete;
-
-    AsyncExecWithObserver(StateType* sm)
-      : AsyncExecutionPolicy<StateType>(sm)
+    AsyncExecWithObserver()
+      : AsyncExecutionPolicy<StateType>()
       , Observer()
     {}
+
+    virtual ~AsyncExecWithObserver() = default;
 
     void step() override
     {
         while (!interrupt_) {
-            try {
-                notify();
-                // This is a blocking wait
-                Event const& nextEvent = eventQueue_.nextEvent();
-                // go down the HSM hierarchy to handle the event as that is the
-                // "most active state"
-                this->sm_->dispatch(this->sm_)->execute(nextEvent);
-
-            } catch (EventQueueInterruptedException const& e) {
-                if (!interrupt_) {
-                    throw e;
-                }
-                DLOG(WARNING)
-                  << this->sm_->name << ": Exiting event loop on interrupt";
-                return;
-            }
+            notify();
+            this->processEvent();
         }
-    };
+    }
 };
 } // namespace tsm

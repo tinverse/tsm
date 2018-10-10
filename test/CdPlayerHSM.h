@@ -7,6 +7,7 @@
 
 using tsm::Event;
 using tsm::EventQueue;
+using tsm::IHsmDef;
 using tsm::State;
 using tsm::StateMachine;
 using tsm::StateMachineDef;
@@ -18,7 +19,7 @@ struct CdPlayerController
     // Actions
     void playSong(std::string const& songName)
     {
-        LOG(ERROR) << "Playing song: " << songName;
+        DLOG(INFO) << "Playing song: " << songName;
     }
 };
 
@@ -42,9 +43,16 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
     {
         using StateMachineDef<PlayingHSMDef>::add;
 
-        PlayingHSMDef(State* parent = nullptr)
+        struct Song1State : public State
+        {
+            Song1State()
+              : State("Playing HSM -> Song1")
+            {}
+            void execute(Event const&) override {}
+        };
+        PlayingHSMDef(IHsmDef* parent = nullptr)
           : StateMachineDef<PlayingHSMDef>("Playing HSM", parent)
-          , Song1("Playing HSM -> Song1")
+          , Song1()
           , Song2("Playing HSM -> Song2")
           , Song3("Playing HSM -> Song3")
         {
@@ -57,11 +65,13 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
             add(Song2, prev_song, Song1);
         }
 
-        State* getStartState() { return &Song1; }
-        State* getStopState() { return nullptr; }
+        virtual ~PlayingHSMDef() = default;
+
+        State* getStartState() override { return &Song1; }
+        State* getStopState() override { return nullptr; }
 
         // States
-        State Song1;
+        Song1State Song1;
         State Song2;
         State Song3;
 
@@ -70,10 +80,16 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
         Event prev_song;
 
         // Actions
-        void PlaySong() { LOG(INFO) << "Play Song"; }
+        void PlaySong()
+        {
+            DLOG(INFO) << "Play Song";
+            controller_.playSong(this->getCurrentState()->name);
+        }
+
+        // Guards
         bool PlaySongGuard()
         {
-            LOG(INFO) << "Play Song Guard";
+            DLOG(INFO) << "Play Song Guard";
             return true;
         }
 
@@ -94,9 +110,11 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
                 StateMachineDef<PlayingHSMDef>::onExit(e);
             }
         }
+
+        CdPlayerController controller_;
     };
 
-    CdPlayerDef(State* parent = nullptr)
+    CdPlayerDef(IHsmDef* parent = nullptr)
       : StateMachineDef<CdPlayerDef>("CD Player HSM", parent)
       , Stopped("Player Stopped")
       , Playing(this)
@@ -152,7 +170,7 @@ struct CdPlayerDef : public StateMachineDef<CdPlayerDef<ControllerType>>
 
 struct ErrorHSM : public StateMachineDef<ErrorHSM>
 {
-    ErrorHSM(State* parent = nullptr)
+    ErrorHSM(IHsmDef* parent = nullptr)
       : StateMachineDef<ErrorHSM>("Error HSM", parent)
       , AllOk("All Ok")
       , ErrorMode("Error Mode")
@@ -162,6 +180,7 @@ struct ErrorHSM : public StateMachineDef<ErrorHSM>
         add(ErrorMode, recover, AllOk, &ErrorHSM::recovery);
     }
 
+    virtual ~ErrorHSM() = default;
     // States
     State AllOk;
     State ErrorMode;
@@ -171,7 +190,7 @@ struct ErrorHSM : public StateMachineDef<ErrorHSM>
     Event recover;
 
     // Actions
-    void recovery() { LOG(INFO) << "Recovering from Error:"; }
+    void recovery() { DLOG(INFO) << "Recovering from Error:"; }
 
     State* getStartState() { return &AllOk; }
     State* getStopState() { return nullptr; }

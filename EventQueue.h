@@ -32,9 +32,6 @@ struct EventQueueInterruptedException : public std::runtime_error
     explicit EventQueueInterruptedException(const std::string& what_arg)
       : std::runtime_error(what_arg)
     {}
-    explicit EventQueueInterruptedException(const char* what_arg)
-      : std::runtime_error(what_arg)
-    {}
 };
 
 // A thread safe event queue. Any thread can call addEvent if it has a pointer
@@ -65,11 +62,11 @@ class EventQueueT : private deque<Event>
         if (interrupt_) {
             throw EventQueueInterruptedException("Bailing from Event Queue");
         } else {
-            const Event e = front();
+            const Event e = std::move(front());
             DLOG(INFO) << "Thread:" << std::this_thread::get_id()
                        << " Popping Event:" << e.id;
             pop_front();
-            return e;
+            return std::move(e);
         }
     }
 

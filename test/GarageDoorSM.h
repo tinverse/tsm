@@ -12,7 +12,7 @@ namespace tsmtest {
 struct GarageDoorDef : public StateMachineDef<GarageDoorDef>
 {
 
-    GarageDoorDef(State* parent = nullptr)
+    GarageDoorDef(IHsmDef* parent = nullptr)
       : StateMachineDef<GarageDoorDef>("Garage Door HSM", parent)
       , doorOpen("Door Open")
       , doorOpening("Door Opening")
@@ -36,8 +36,8 @@ struct GarageDoorDef : public StateMachineDef<GarageDoorDef>
 
     virtual ~GarageDoorDef() = default;
 
-    State* getStartState() { return &doorClosed; }
-    State* getStopState() const { return nullptr; }
+    State* getStartState() override { return &doorClosed; }
+    State* getStopState() override { return nullptr; }
 
     // States
     State doorOpen;

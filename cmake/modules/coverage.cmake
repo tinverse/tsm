@@ -23,7 +23,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
   add_custom_target(coverage
-    # COMMAND ${LCOV_PATH} -z -d .
+    COMMAND ${LCOV_PATH} -z -d .
     COMMAND ${LCOV_PATH} --no-external -b '${PROJECT_SOURCE_DIR}' -c -i -d . -o ${TEST_PROJECT}_base.info
     COMMAND ${TEST_PROJECT}
     COMMAND ${LCOV_PATH} --no-external -b '${PROJECT_SOURCE_DIR}' -c -d . -o ${TEST_PROJECT}_test.info
