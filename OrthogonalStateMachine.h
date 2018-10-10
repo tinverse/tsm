@@ -7,18 +7,16 @@
 #include <memory>
 namespace tsm {
 template<typename HSMDef1, typename HSMDef2>
-struct OrthogonalStateMachine : public State
+struct OrthogonalStateMachine : public IHsmDef
 {
     using type = OrthogonalStateMachine<HSMDef1, HSMDef2>;
     using SM1Type = StateMachine<HSMDef1>;
     using SM2Type = StateMachine<HSMDef2>;
 
-    OrthogonalStateMachine(std::string name, State* parent = nullptr)
-      : State(name)
+    OrthogonalStateMachine(std::string const& name, IHsmDef* parent = nullptr)
+      : IHsmDef(name, parent)
       , hsm1_(SM1Type(this))
       , hsm2_(SM2Type(this))
-      , parent_(parent)
-      , currentState_(nullptr)
     {}
 
     void startSM() { onEntry(Event::dummy_event); }
@@ -26,7 +24,7 @@ struct OrthogonalStateMachine : public State
     void onEntry(Event const& e) override
     {
         DLOG(INFO) << "Entering: " << this->name;
-        currentState_ = &hsm1_;
+        this->currentState_ = &hsm1_;
         hsm1_.onEntry(e);
         hsm2_.onEntry(e);
     }
@@ -45,11 +43,11 @@ struct OrthogonalStateMachine : public State
     void execute(Event const& nextEvent) override
     {
         if (hsm1_.getEvents().find(nextEvent) != hsm1_.getEvents().end()) {
-            currentState_ = &hsm1_;
+            this->currentState_ = &hsm1_;
             hsm1_.execute(nextEvent);
         } else if (hsm2_.getEvents().find(nextEvent) !=
                    hsm2_.getEvents().end()) {
-            currentState_ = &hsm2_;
+            this->currentState_ = &hsm2_;
             hsm2_.execute(nextEvent);
         } else {
             if (parent_) {
@@ -60,11 +58,9 @@ struct OrthogonalStateMachine : public State
         }
     }
 
-    State* getCurrentState() override { return &hsm1_; }
-
-    State* dispatch(State*)
+    IHsmDef* dispatch(IHsmDef*)
     {
-        SM1Type* hsm = dynamic_cast<SM1Type*>(currentState_);
+        SM1Type* hsm = dynamic_cast<SM1Type*>(this->currentState_);
         if (hsm) {
             return hsm1_.dispatch(&hsm1_);
         } else {
@@ -72,13 +68,14 @@ struct OrthogonalStateMachine : public State
         }
     }
 
+    State* getStartState() override { return &hsm1_; }
+    State* getStopState() override { return nullptr; }
+
     auto& getHsm1() { return hsm1_; }
     auto& getHsm2() { return hsm2_; }
 
     SM1Type hsm1_;
     SM2Type hsm2_;
-    State* parent_;
-    State* currentState_;
 };
 
 } // namespace tsm

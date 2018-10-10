@@ -47,7 +47,7 @@ struct State
     virtual void execute(Event const& nextEvent)
     {
 
-        LOG(INFO) << "Executing: " << this->name << std::endl;
+        DLOG(INFO) << "Executing: " << this->name << std::endl;
     }
 
     virtual void onEntry(Event const&)
@@ -58,16 +58,6 @@ struct State
     virtual void onExit(Event const&)
     {
         DLOG(INFO) << "Exiting: " << this->name << std::endl;
-    }
-
-    virtual State* getParent() const { return nullptr; }
-
-    virtual State* getCurrentState()
-    {
-        throw MethodNotImplementedException(
-          "The State::getCurrentState method is not implemented - by design. "
-          "You should invoke "
-          "StateMachine<DerivedHSM>::getCurrentState");
     }
 
     const std::string name;

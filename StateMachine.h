@@ -10,7 +10,7 @@ struct StateMachine : public HSMDef
 {
     using Transition = typename StateMachineDef<HSMDef>::Transition;
 
-    StateMachine(State* parent = nullptr)
+    StateMachine(IHsmDef* parent = nullptr)
       : HSMDef(parent)
     {}
 
@@ -21,13 +21,13 @@ struct StateMachine : public HSMDef
     void stopSM() { this->onExit(Event::dummy_event); }
 
     // traverse the hsm hierarchy down.
-    State* dispatch(State* state) const
+    IHsmDef* dispatch(IHsmDef* state) const
     {
-        State* parent = state;
-        State* kid = parent->getCurrentState();
-        while (kid->getParent()) {
+        IHsmDef* parent = state;
+        IHsmDef* kid = dynamic_cast<IHsmDef*>(parent->getCurrentState());
+        while (kid && kid->getParent()) {
             parent = kid;
-            kid = kid->getCurrentState();
+            kid = dynamic_cast<IHsmDef*>(kid->getCurrentState());
         }
         return parent;
     }
@@ -59,24 +59,21 @@ struct StateMachine : public HSMDef
                 // If just an internal transition, Entry and exit actions are
                 // not performed
                 t->template doTransition<HSMDef>(this);
-
                 this->currentState_ = &t->toState;
-
                 DLOG(INFO) << "Next State:" << this->currentState_->name;
+
+                if (!dynamic_cast<IHsmDef*>(this->currentState_)) {
+                    this->currentState_->execute(nextEvent);
+                }
+
             } else {
                 DLOG(INFO) << "Guard prevented transition";
             }
             if (this->currentState_ == this->getStopState()) {
-                DLOG(INFO) << this->name << " Done Exiting... ";
+                DLOG(INFO) << this->name << " Reached stop state. Exiting... ";
                 this->onExit(Event::dummy_event);
             }
         }
-    }
-
-    State* getCurrentState() override
-    {
-        DLOG(INFO) << "GetState : " << this->name;
-        return this->currentState_;
     }
 };
 

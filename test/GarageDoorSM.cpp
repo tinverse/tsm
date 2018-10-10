@@ -5,7 +5,6 @@ using tsm::AsyncExecWithObserver;
 using tsm::BlockingObserver;
 using tsm::SimpleStateMachine;
 using tsm::StateMachine;
-using tsm::StateMachineWithExecutionPolicy;
 
 using tsmtest::GarageDoorDef;
 
@@ -28,8 +27,7 @@ struct TestGarageDoorSM : public ::testing::Test
 /// of processing each event.
 ///
 using GarageDoorHSMSeparateThread =
-  StateMachineWithExecutionPolicy<StateMachine<GarageDoorDef>,
-                                  AsyncBlockingObserver>;
+  AsyncBlockingObserver<StateMachine<GarageDoorDef>>;
 
 TEST_F(TestGarageDoorSM, testGarageDoorSeparateThreadPolicy)
 {

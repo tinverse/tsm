@@ -9,7 +9,6 @@ using tsm::AsyncExecutionPolicy;
 using tsm::BlockingObserver;
 using tsm::OrthogonalStateMachine;
 using tsm::ParentThreadExecutionPolicy;
-using tsm::StateMachineWithExecutionPolicy;
 
 using tsmtest::CdPlayerController;
 using tsmtest::CdPlayerDef;
@@ -31,11 +30,10 @@ using AsyncBlockingObserver =
   tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
 
 using OrthogonalCdPlayerHSMSeparateThread =
-  StateMachineWithExecutionPolicy<OrthogonalCdPlayerHSM, AsyncBlockingObserver>;
+  AsyncBlockingObserver<OrthogonalCdPlayerHSM>;
 
 using OrthogonalCdPlayerHSMParentThread =
-  StateMachineWithExecutionPolicy<OrthogonalCdPlayerHSM,
-                                  ParentThreadExecutionPolicy>;
+  ParentThreadExecutionPolicy<OrthogonalCdPlayerHSM>;
 
 struct TestOrthogonalCdPlayerHSM : public testing::Test
 {
@@ -47,8 +45,7 @@ struct TestOrthogonalCdPlayerHSM : public testing::Test
 
 TEST_F(TestOrthogonalCdPlayerHSM, testOrthogonalHSMSeparateThread)
 {
-    std::shared_ptr<OrthogonalCdPlayerHSMSeparateThread> sm(
-      std::make_shared<OrthogonalCdPlayerHSMSeparateThread>());
+    auto sm = std::make_shared<OrthogonalCdPlayerHSMSeparateThread>();
 
     auto* cdPlayerHSM = &sm->getHsm1();
 
@@ -112,8 +109,7 @@ TEST_F(TestOrthogonalCdPlayerHSM, testOrthogonalHSMSeparateThread)
 TEST_F(TestOrthogonalCdPlayerHSM, testOrthogonalHSMParentThread)
 {
 
-    std::shared_ptr<OrthogonalCdPlayerHSMParentThread> sm(
-      std::make_shared<OrthogonalCdPlayerHSMParentThread>());
+    auto sm = std::make_shared<OrthogonalCdPlayerHSMParentThread>();
 
     auto* cdPlayerHSM = &sm->getHsm1();
 

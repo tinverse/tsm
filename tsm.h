@@ -9,9 +9,7 @@
 #include "Transition.h"
 
 #include "AsyncExecutionPolicy.h"
-#include "ExecutionPolicy.h"
 #include "ParentThreadExecutionPolicy.h"
-#include "StateMachineWithExecutionPolicy.h"
 
 namespace tsm {
 
@@ -21,35 +19,32 @@ namespace tsm {
 /// Use it like this:
 /// 1. The first step is to create your own state machine definition.
 /// struct MyHSMDef : StateMachineDef<MyHSMDef> { ... };
-/// 2. Then create your statemachine class by wrapping it arount the
-/// StateMachine generic defined in "tsm.h". The StateMachine generic is a mixin
-/// that mixes the ParentThreadExecutionPolicy along with the StateMachine
-/// class.
-/// using MyStateMachine = StateMachine<MyHSMDef>
-/// 3. Now instantiate an object of your state machine type.
-/// MyStateMachine mySMObj;
+/// 2. To create any statemachine, wrap an execution policy around the
+/// StateMachine generic defined in StateMachine.h. Here, SimpleStateMachine
+/// is a mixin that combines the ParentThreadExecutionPolicy along with the
+/// StateMachine class; which in turn takes a state machine definition(HSMDef)
+/// as seen in the using statement below.
+/// 3. Now that you have your own SimpleStateMachine, instantiate an object of
+/// your state machine type. SimpleStateMachine<MyHSMDef> sm;
 /// 4. Send events to it using the sendEvent method.
-/// mySMObj.sendEvent(mySMObj.some_event);
+/// sm.sendEvent(sm.some_event);
 /// 5. To process the event, call the step method
-/// mySMObj.step();
+/// sm.step();
 ///
 template<typename HSMDef>
-using SimpleStateMachine =
-  StateMachineWithExecutionPolicy<StateMachine<HSMDef>,
-                                  ParentThreadExecutionPolicy>;
+using SimpleStateMachine = ParentThreadExecutionPolicy<StateMachine<HSMDef>>;
 ///
 /// An Asynchronous state machine. Event processing is done in a separate
-/// thread. Usage is similar to the "simple" state machine above. The final call
+/// thread. Usage is similar to SimpleStateMachine above. The final call
 /// to "step" is not required. The state machine is blocked waiting on the next
 /// event to be processed. As soon as an event is sent to it (sendEvent), the
 /// client/parent thread returns and the event is processed in a separate
-/// thread. This guarantees that events are immediately processed as soon as
-/// possible. It also simplifies the interface in that only one call to
-/// sendEvent is required.
+/// thread. This design forces events to be immediately processed as soon as
+/// the StateMachine is done processing the previous event. It also simplifies
+/// the interface in that only one call to sendEvent is required.
 ///
 template<typename HSMDef>
-using AsyncStateMachine =
-  StateMachineWithExecutionPolicy<StateMachine<HSMDef>, AsyncExecutionPolicy>;
+using AsyncStateMachine = AsyncExecutionPolicy<StateMachine<HSMDef>>;
 }
 
 // Provide a hash function for StateEventPair
