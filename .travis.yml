@@ -53,10 +53,8 @@ script:
      - make tsm_doc
 
 after_success:
-    # Creating report
-    - cd ${TRAVIS_BUILD_DIR}
     # Uploading report to CodeCov
-    - bash <(curl -s https://codecov.io/bash) -s . -f lcov.info || echo "Codecov did not collect coverage reports"
+    - bash <(curl -s https://codecov.io/bash) -f "lcov.info" || echo "Codecov did not collect coverage reports"
 
 deploy:
   provider: pages
