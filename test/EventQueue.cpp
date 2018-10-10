@@ -34,7 +34,7 @@ TEST_F(TestEventQueue, testSingleEvent)
 TEST_F(TestEventQueue, testAddFrom100Threads)
 {
     EventQueue<Event> eq_;
-    std::vector<Event const> v;
+    std::vector<Event> v;
     const int NEVENTS = 100;
 
     for (int i = 0; i < NEVENTS; i++) {
