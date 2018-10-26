@@ -85,12 +85,12 @@ b. Create a state machine that processes incomming events in its own thread.
       AsyncStateMachine<GarageDoorDef> sm;
 ```
 
-Send events to the state machine by using sendEvent method provided by the policy.
+c. Send events to the state machine by using sendEvent method provided by the policy.
 ```
     sm.sendEvent(sm.doorOpen);
 ```
 
-If the state machine is running in parent thread context, invoke the `step` method to process the first event in the event queue. The AsyncStateMachine will immediately process an event on completion of prior event processing.
+d. If the state machine is running in parent thread context, invoke the `step` method to process the first event in the event queue. The `AsyncStateMachine` will immediately process an event on completion of prior event processing.
 ```
     sm.step();
 ```
@@ -105,14 +105,15 @@ The `StateMachine::getStartState` method should be overridden to reflect the cor
 
 The design uses CRTP to force Actions and Guards to be callbacks that are part of your HSM class. See the implementation of
 
-  ```
+```
     template <typename DerivedHSM>
     struct StateMachine {
     ...
   };
-  ```
 
-The AsyncStateMachine processes events in it's own thread. The processing of events is single threaded for OrthogonalHSMs (and HSMs). So when it is started using a call to `startSM`, the `StateMachine` will block on the call to `nextEvent` in the `execute` method. See tsm.h. The main advantage is that the only external interface to the StateMachine can be the EventQueue. Any "client" can asynchronously place an event in the event queue as long as they have a pointer to it. As soon as the StateMachine is done with its processing, it will pick up the first event in the queue and process it. This can be seen in the test/*.cpp files.
+```
+
+The `AsyncStateMachine` processes events in it's own thread. The processing of events is single threaded within all HSMs. So when a HSM is started using a call to `startSM`, the `StateMachine` will block on the call to `nextEvent` in the `execute` method. See tsm.h. The main advantage is that the only external interface to the StateMachine can be the EventQueue. Any "client" can asynchronously place an event in the event queue as long as they have a pointer to it. As soon as the StateMachine is done with its processing, it will pick up the first event in the queue and process it. This can be seen in the test/*.cpp files.
 
 For testing the AsyncStateMachine, the AsyncExecWithObserver class is used with a special Observer class that blocks the parent thread until the AsyncStateMachine finishes event processing. The state machine thread then calls a notify method that releases the mutexblocking the parent thread.
 
