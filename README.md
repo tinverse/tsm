@@ -110,7 +110,7 @@ The design uses CRTP to force Actions and Guards to be callbacks that are part o
     struct StateMachine { 
     ...
   };
-    ```
+  ```
     
 The AsyncStateMachine processes events in it's own thread. The processing of events is single threaded for OrthogonalHSMs (and HSMs). So when it is started using a call to `startSM`, the `StateMachine` will block on the call to `nextEvent` in the `execute` method. See tsm.h. The main advantage is that the only external interface to the StateMachine can be the EventQueue. Any "client" can asynchronously place an event in the event queue as long as they have a pointer to it. As soon as the StateMachine is done with its processing, it will pick up the first event in the queue and process it. This can be seen in the test/*.cpp files.
     
