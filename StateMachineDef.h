@@ -10,6 +10,9 @@
 namespace tsm {
 typedef std::pair<State&, Event> StateEventPair;
 
+///
+/// Interface for any Hierarchical SM.
+///
 struct IHsmDef : public State
 {
     IHsmDef() = delete;
@@ -136,7 +139,7 @@ struct StateMachineDef : public IHsmDef
     std::set<Event> eventSet_;
 
   private:
-    void addTransition(State& fromState, Event onEvent, Transition t)
+    void addTransition(State& fromState, Event const& onEvent, Transition const& t)
     {
         StateEventPair pair(fromState, onEvent);
         TransitionTableElement e(pair, t);
