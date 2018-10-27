@@ -57,6 +57,11 @@ TEST_F(TestStateMachineProperties, testMachineExitsWhenReachingStopState)
     ASSERT_EQ(&sm.s3, sm.getCurrentState())
       << "exp: " << sm.s3.name << " act: " << sm.getCurrentState()->name;
 
+    // Send unknown event
+    Event randomEvent;
+    sm.sendEvent(randomEvent);
+    sm.step();
+
     sm.sendEvent(sm.end_event);
     sm.step();
     ASSERT_EQ(nullptr, sm.getCurrentState());
