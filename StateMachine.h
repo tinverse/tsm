@@ -5,6 +5,9 @@
 #include "StateMachineDef.h"
 
 namespace tsm {
+///
+/// Support for Mealy and Moore machines
+///
 template<typename HSMDef>
 struct StateMachine : public HSMDef
 {
@@ -23,13 +26,11 @@ struct StateMachine : public HSMDef
     // traverse the hsm hierarchy down.
     IHsmDef* dispatch(IHsmDef* state) const
     {
-        IHsmDef* parent = state;
-        IHsmDef* kid = dynamic_cast<IHsmDef*>(parent->getCurrentState());
-        while (kid && kid->getParent()) {
-            parent = kid;
-            kid = dynamic_cast<IHsmDef*>(kid->getCurrentState());
+        if (this->currentHsm_) {
+            return this->currentHsm_;
+        } else {
+            return state;
         }
-        return parent;
     }
 
     void execute(Event const& nextEvent) override

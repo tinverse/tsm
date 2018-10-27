@@ -21,6 +21,7 @@ struct IHsmDef : public State
       : State(name)
       , parent_(parent)
       , currentState_(nullptr)
+      , currentHsm_(nullptr)
     {}
 
     virtual ~IHsmDef() = default;
@@ -35,6 +36,9 @@ struct IHsmDef : public State
         return currentState_;
     }
 
+    IHsmDef* getCurrentHsm() { return currentHsm_; }
+
+    void setCurrentHsm(IHsmDef* currentHsm) { currentHsm_ = currentHsm; }
     IHsmDef* getParent() const { return parent_; }
 
     void setParent(IHsmDef* parent) { parent_ = parent; }
@@ -42,6 +46,7 @@ struct IHsmDef : public State
   protected:
     IHsmDef* parent_;
     State* currentState_;
+    IHsmDef* currentHsm_;
 };
 
 template<typename HSMDef>
@@ -100,7 +105,6 @@ struct StateMachineDef : public IHsmDef
              ActionFn action = nullptr,
              GuardFn guard = nullptr)
     {
-
         Transition t(fromState, onEvent, toState, action, guard);
         addTransition(fromState, onEvent, t);
         eventSet_.insert(onEvent);
@@ -116,8 +120,13 @@ struct StateMachineDef : public IHsmDef
         DLOG(INFO) << "Entering: " << this->name;
         currentState_ = this->getStartState();
 
+        if (this->parent_) {
+            this->parent_->setCurrentHsm(this);
+        }
+
         this->currentState_->execute(e);
     }
+
     void onExit(Event const&) override
     {
         // TODO (sriram): Does the sub-HSM remember which state it was in at
@@ -129,6 +138,10 @@ struct StateMachineDef : public IHsmDef
         // nullptr.
         DLOG(INFO) << "Exiting: " << this->name;
         this->currentState_ = nullptr;
+
+        if (this->parent_) {
+            this->parent_->setCurrentHsm(nullptr);
+        }
     }
 
     auto& getTable() const { return table_; }
@@ -139,7 +152,9 @@ struct StateMachineDef : public IHsmDef
     std::set<Event> eventSet_;
 
   private:
-    void addTransition(State& fromState, Event const& onEvent, Transition const& t)
+    void addTransition(State& fromState,
+                       Event const& onEvent,
+                       Transition const& t)
     {
         StateEventPair pair(fromState, onEvent);
         TransitionTableElement e(pair, t);
