@@ -6,7 +6,7 @@
 
 namespace tsm {
 ///
-/// Support for Mealy and Moore machines
+/// Supports Mealy and Moore machines
 ///
 template<typename HSMDef>
 struct StateMachine : public HSMDef
@@ -52,6 +52,13 @@ struct StateMachine : public HSMDef
                 DLOG(ERROR) << "Reached top level HSM. Cannot handle event";
             }
         } else {
+
+            // This call to the Simple state's execute method makes it
+            // behave like a moore machine.
+            if (this->currentState_ != this->currentHsm_) {
+                this->currentState_->execute(nextEvent);
+            }
+
             // Evaluate guard if it exists
             bool result = t->guard && (this->*(t->guard))();
 
@@ -62,10 +69,6 @@ struct StateMachine : public HSMDef
                 t->template doTransition<HSMDef>(this);
                 this->currentState_ = &t->toState;
                 DLOG(INFO) << "Next State:" << this->currentState_->name;
-
-                if (!dynamic_cast<IHsmDef*>(this->currentState_)) {
-                    this->currentState_->execute(nextEvent);
-                }
 
             } else {
                 DLOG(INFO) << "Guard prevented transition";
