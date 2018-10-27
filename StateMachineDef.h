@@ -49,6 +49,11 @@ struct IHsmDef : public State
     IHsmDef* currentHsm_;
 };
 
+///
+/// Captures 'structural' aspects of the state machine and behavior specific to
+/// HSMDef. For e.g. the HSMDef can override the onEntry and onExit behaviors to
+/// implement history preserving policy for specific events.
+///
 template<typename HSMDef>
 struct StateMachineDef : public IHsmDef
 {

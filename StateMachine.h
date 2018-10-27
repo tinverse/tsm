@@ -26,11 +26,14 @@ struct StateMachine : public HSMDef
     // traverse the hsm hierarchy down.
     IHsmDef* dispatch(IHsmDef* state) const
     {
-        if (this->currentHsm_) {
-            return this->currentHsm_;
-        } else {
-            return state;
+        while (1) {
+            if (state->getCurrentHsm()) {
+                state = state->getCurrentHsm();
+            } else {
+                break;
+            }
         }
+        return state;
     }
 
     void execute(Event const& nextEvent) override
