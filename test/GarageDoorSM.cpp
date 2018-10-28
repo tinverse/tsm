@@ -22,9 +22,11 @@ struct TestGarageDoorSM : public ::testing::Test
 };
 
 ///
-/// Mix the Async observer and the GarageDoor StateMachine to get an
-/// asynchronous garage door state machine that notifies a listener at the end
-/// of processing each event.
+/// GarageDoorDef is the state machine definition. It has knowledge of the HSM
+/// hierarchy, its states, events and sub-HSMs if any. The relationships between
+/// HSMs (parentHsm_) is also setup here. Mix the Async observer and the
+/// GarageDoor StateMachine to get an asynchronous garage door state machine
+/// that notifies a listener at the end of processing each event.
 ///
 using GarageDoorHSMSeparateThread =
   AsyncBlockingObserver<StateMachine<GarageDoorDef>>;
