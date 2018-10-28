@@ -146,9 +146,17 @@ Policy classes like `AsyncExecutionPolicy` and `ParentThreadExecutionPolicy` are
 The `AsyncStateMachine` processes events in it's own thread. The processing of events is single threaded within all HSMs. So when a HSM is started using a call to `startSM`, the `StateMachine` will block on the call to `nextEvent` in the `execute` method. See tsm.h. The main advantage is that the only external interface to the StateMachine can be the EventQueue. Any "client" can asynchronously place an event in the event queue as long as they have a pointer to it. As soon as the StateMachine is done with its processing, it will pick up the first event in the queue and process it. This can be seen in the test/*.cpp files.
 
 #### Putting it all together
-Create your own state machine class that derives from `StateMachineDef`. Then choose a policy class for your state machine. Create your own state machine type by wrapping the policy class around the `StateMachine` generic. The unit test provided below is illustrative.
+Create your own state machine definition that derives from `StateMachineDef`. The HSM hierarchy, its states (and sub-HSMs if any), events, actions and guards are all specified and defined in the definition. The relationships between HSMs and the state transition table is also specified here. All code related to your HSM lives here.
+Then choose a policy class for your state machine. Create your own state machine type by wrapping the policy class around the `StateMachine` generic. The unit test provided below is illustrative.
 
 ```
+///
+/// GarageDoorDef is the state machine definition. It has knowledge of the HSM
+/// hierarchy, its states, events and sub-HSMs if any. The relationships between
+/// HSMs (parentHsm_) is also setup here. Mix the Async observer and the
+/// GarageDoor StateMachine to get an asynchronous garage door state machine
+/// that notifies a listener at the end of processing each event.
+///
 using GarageDoorHSMSeparateThread =
   AsyncBlockingObserver<StateMachine<GarageDoorDef>>;
 
