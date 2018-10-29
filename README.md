@@ -39,7 +39,7 @@ make -j4
 ### Documentation
 For a primer on UML state machines, look [here][1]. 
 
-######    Using tsm: [GarageDoorDef.h][2]
+######    Using tsm
 
 Create the state machine definition (HSMDef).
    ```
@@ -91,12 +91,18 @@ c. Send events to the state machine by using sendEvent method provided by the po
 ```
 
 d. If the state machine is running in parent thread context, invoke the `step` method to process the first event in the event queue. The `AsyncStateMachine` will immediately process an event on completion of prior event processing.
+
+For a complete example see  [GarageDoorDef.h][2] and [GarageDoorDef.cpp][3]. Also look at [CdPlayerHSM.h][4] [CdPlayerHSM.cpp][5]
+
 ```
     sm.step();
 ```
 
 [1]: https://en.wikipedia.org/wiki/UML_state_machine
 [2]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorDef.h
+[3]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorDef.cpp
+[4]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHSM.h
+[5]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHSM.cpp
 
 ### Architecture 
 
@@ -147,7 +153,7 @@ The `AsyncStateMachine` processes events in it's own thread. The processing of e
 
 #### Putting it all together
 Create your own state machine definition that derives from `StateMachineDef`. The HSM hierarchy, its states (and sub-HSMs if any), events, actions and guards are all specified and defined in the definition. The relationships between HSMs and the state transition table is also specified here. All code related to your HSM lives here.
-Then choose a policy class for your state machine. Create your own state machine type by wrapping the policy class around the `StateMachine` generic. The unit test provided below is illustrative.
+Then choose a policy class for your state machine. Create your own state machine type by wrapping the policy class around the `StateMachine` generic. The unit test provided below is illustrative. 
 
 ```
 ///
