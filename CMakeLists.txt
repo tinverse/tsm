@@ -67,6 +67,7 @@ else (BUILD_DEPENDENCIES)
       Event.cpp
       UniqueId.cpp
     )
+    install(TARGETS tsm ARCHIVE DESTINATION lib)
 
     target_include_directories(tsm SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
     target_link_libraries(tsm PRIVATE ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES})
