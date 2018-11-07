@@ -1,4 +1,5 @@
-language: cpp
+language: nix
+#nix: 2.0.4
 
 env:
   global:
@@ -11,55 +12,31 @@ matrix:
     - os: linux
       dist: xenial
       sudo: true
-      compiler: g++
       addons:
        apt:
          packages:
            # Misc
            - python-yaml
-           - lcov
-           - doxygen
-           - doxygen-doc
-           - graphviz
          sources:
 
 before_install:
 
 install:
     - sudo pip install codecov
-
-    # Download and install recent cmake
-    - |
-      if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
-        CMAKE_URL="http://www.cmake.org/files/v3.12/cmake-3.12.2-Linux-x86_64.tar.gz"
-        mkdir -p ${DEPS_DIR}/cmake
-        travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
-        export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-      fi
 script:
     ############################################################################
     # Build main and tests
     ############################################################################
-     - mkdir -p build
-     - cd build
-     # This step will build gtest glog and gflags
-     - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DBUILD_DEPENDENCIES=ON ..
-     - make
-     # This step will reconfigure to detect dependencies locally and build tsm
-     - cmake ${CMAKE_OPTIONS} -DBUILD_COVERAGE=ON -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DBUILD_DEPENDENCIES=OFF ..
-     # This will run the unit tests as well
-     - make coverage
-     # generate documentation
-     - make tsm_doc
+     - nix-build
 
 after_success:
     # Uploading report to CodeCov
-    - bash <(curl -s https://codecov.io/bash) -f "lcov.info" || echo "Codecov did not collect coverage reports"
+    - bash <(curl -s https://codecov.io/bash) -f "result/tsm_test-coverage/tsm_test.profdata" || echo "Codecov did not collect coverage reports"
 
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: build/docs/html
+  local_dir: result/share/doc
   github_token: $GH_REPO_TOKEN
   on:
     branch: master
