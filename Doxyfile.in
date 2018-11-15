@@ -5,7 +5,8 @@ STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@ \
 INPUT                  = @doxy_main_page@ \
                          @CMAKE_CURRENT_SOURCE_DIR@ \
                          @CMAKE_CURRENT_SOURCE_DIR@/test
-INPUT                 += @PROJECT_SOURCE_DIR@/README.md
+INPUT                 += @PROJECT_SOURCE_DIR@/Documentation.dox
+EXTENSION_MAPPING     += dox=md
 GENERATE_RTF           = NO
 GENERATE_LATEX         = NO
 OUTPUT_DIRECTORY       = @PROJECT_BINARY_DIR@/docs
@@ -21,7 +22,7 @@ CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = YES
 UML_LOOK               = YES
 UML_LIMIT_NUM_FIELDS   = 10
-USE_MDFILE_AS_MAINPAGE = @PROJECT_SOURCE_DIR@/README.md
+USE_MDFILE_AS_MAINPAGE = @PROJECT_SOURCE_DIR@/Documentation.dox
 TEMPLATE_RELATIONS     = YES
 DOT_GRAPH_MAX_NODES    = 50
 MAX_DOT_GRAPH_DEPTH    = 2

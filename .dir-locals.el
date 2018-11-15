@@ -1,7 +1,7 @@
                                         ; -*- mode: Lisp -*-
 (nil . ((cmake-ide-project-dir . "./")
          (cmake-ide-build-dir . "build/")
-         (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_DEPENDENCIES=OFF")
+         (cmake-ide-cmake-opts . "-GNinja -DCMAKE_BUILD_TYPE=Debug -DBUILD_COVERAGE=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_DEPENDENCIES=OFF")
         (helm-make-build-dir . "build/")
         (helm-make-arguments . "-j4")
         (indent-tabs-mode . nil)
