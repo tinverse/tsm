@@ -69,13 +69,15 @@ if (BUILD_COVERAGE)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
-    add_custom_command(TARGET coverage POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-          ${CMAKE_CURRENT_BINARY_DIR}/${TEST_PROJECT}-coverage
-          ${CMAKE_INSTALL_PREFIX}/${TEST_PROJECT}-coverage
-            && ${CMAKE_COMMAND} -E copy
-          ${CMAKE_CURRENT_BINARY_DIR}/${TEST_PROJECT}.profdata
-          ${CMAKE_INSTALL_PREFIX}/${TEST_PROJECT}-coverage
-        COMMENT "Installing coverage data to ${CMAKE_INSTALL_PREFIX}")
+    if (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
+        add_custom_command(TARGET coverage POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+              ${CMAKE_CURRENT_BINARY_DIR}/${TEST_PROJECT}-coverage
+              ${CMAKE_INSTALL_PREFIX}/${TEST_PROJECT}-coverage
+                && ${CMAKE_COMMAND} -E copy
+              ${CMAKE_CURRENT_BINARY_DIR}/${TEST_PROJECT}.profdata
+              ${CMAKE_INSTALL_PREFIX}/${TEST_PROJECT}-coverage
+            COMMENT "Installing coverage data to ${CMAKE_INSTALL_PREFIX}")
+    endif (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
 
 endif(BUILD_COVERAGE)

@@ -99,10 +99,12 @@ else (BUILD_DEPENDENCIES)
           COMMENT "Generating API documentation with Doxygen"
           VERBATIM)
 
-   add_custom_command(TARGET tsm_doc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-                  ${CMAKE_CURRENT_BINARY_DIR}/docs/html
-                  ${CMAKE_INSTALL_PREFIX}/share/doc
-        COMMENT "Installing docs to ${CMAKE_INSTALL_PREFIX}/share/doc")
+    if (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
+        add_custom_command(TARGET tsm_doc POST_BUILD
+             COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_CURRENT_BINARY_DIR}/docs/html
+                       ${CMAKE_INSTALL_PREFIX}/share/doc
+             COMMENT "Installing docs to ${CMAKE_INSTALL_PREFIX}/share/doc")
+    endif (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
   endif()
 endif(BUILD_DEPENDENCIES)

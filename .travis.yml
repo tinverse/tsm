@@ -27,8 +27,7 @@ script:
     ############################################################################
     # Build main and tests
     ############################################################################
-     - nix-build
-
+    - nix-shell --run ./build.sh
 after_success:
     # Uploading report to CodeCov
     - bash <(curl -s https://codecov.io/bash) -f "result/tsm_test-coverage/tsm_test.profdata" || echo "Codecov did not collect coverage reports"
@@ -36,7 +35,7 @@ after_success:
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: result/share/doc
+  local_dir: build/docs/html
   github_token: $GH_REPO_TOKEN
   on:
     branch: master
