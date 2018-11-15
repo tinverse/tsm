@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.org/tinverse/tsm.svg?branch=master)](https://travis-ci.org/tinverse/tsm)
 [![codecov.io](http://codecov.io/github/tinverse/tsm/coverage.svg?branch=master)](http://codecov.io/github/tinverse/tsm?branch=master)
+
+This README can be viewed along with the [C++ doxygen documentation](https://tinverse.github.io/tsm/index.html).
+
 ### What is tsm?
 tsm is a flexible state machine framework with support for Hierarchical and Orthogonal State Machines.
 
@@ -33,11 +36,11 @@ nix-shell --run ./build.sh
 
 And you are done! If you open `build.sh` you'll notice that it uses ninja instead of make. `build.sh` creates a build folder, invokes cmake to generate the build scripts and then calls ninja or make via the `cmake --build` command to create the build outputs. You can find the test executable `tsm_test` under `build/test`, documentation under `build/docs/html` and coverage data under `test/tsm_test-coverage`. For your normal workflow,
 
-    ```
-    nix-shell
-    cd build
-    ninja tsm_test
-    ```
+```
+nix-shell
+cd build
+ninja tsm_test
+```
 Other build targets are `coverage` `tsm_doc`. These can be invoked as needed - `ninja coverage`, `ninja tsm_doc` or just plain `ninja` from the build folder.
 
 You can also run `nix-build` from the command-line. This will build all targets and deploy them to `/nix/store`. A sym-link named `result` will be created in the cloned folder (the folder that contains default.nix) to the `/nix/store`. So to invoke tsm_test, run `./result/test/tsm_test`.
@@ -60,7 +63,7 @@ ninja
 ### Documentation
 For a primer on UML state machines, look [here][1].
 
-######    Using tsm
+#### Using tsm
 
 Create the state machine definition (HSMDef).
    ```
