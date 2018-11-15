@@ -54,7 +54,7 @@ cmake -GNinja -DBUILD_DEPENDENCIES=ON ..
 ninja
 cmake -GNinja -DBUILD_DEPENDENCIES=OFF ..
 ninja
-./tsm_tests
+./test/tsm_test
 ```
 
 ### Documentation
