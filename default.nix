@@ -11,7 +11,7 @@ stdenv.mkDerivation {
         else if stdenv.isLinux then [lcov gcc]
         else throw "unsupported platform");
 
-  buildInputs = [gflags glog gtest] ;
+  buildInputs = [google-gflags glog gtest] ;
 
   buildPhase = ''
     cmake --build .
