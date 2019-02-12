@@ -7,7 +7,6 @@ namespace tsm {
 class Event
 {
   public:
-    uint64_t id;
     Event()
       : id(tsm::counter_inc()())
     {}
@@ -31,6 +30,8 @@ class Event
     ///< "automatically" transitions to the starting state.
     ///< However, the State interface requires that an event
     ///< be passed to the onEntry and onExit
+
+    uint64_t id;
 };
 
 Event const dummy_event = Event{};
