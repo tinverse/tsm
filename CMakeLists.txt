@@ -6,8 +6,8 @@ LIST(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/superbuild")
 
-#Compiler MUST be at least CXX 14 compliant
-set(CMAKE_CXX_STANDARD 14)
+#Compiler MUST be at least CXX 17 compliant
+set(CMAKE_CXX_STANDARD 17)
 
 if (NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -51,18 +51,6 @@ message(STATUS "Module path:" ${CMAKE_MODULE_PATH})
 message(STATUS "GLog:" ${GLOG_FOUND} " " ${GLOG_INCLUDE_DIRS} " " ${GLOG_LIBRARIES})
 message(STATUS "GTest:" ${GTEST_FOUND} " " ${GTEST_INCLUDE_DIRS} " " ${GTEST_LIBRARIES})
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
-
-add_library(tsm
-  Event.cpp
-  UniqueId.cpp
-)
-
-target_include_directories(tsm SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GFLAGS_INCLUDE_DIRS})
-target_link_libraries(tsm PRIVATE ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES})
-
-install(TARGETS tsm
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib)
 
 add_subdirectory(test)
 

@@ -19,9 +19,9 @@ struct StateMachine : public HSMDef
 
     virtual ~StateMachine() = default;
 
-    void startSM() { this->onEntry(Event::dummy_event); }
+    void startSM() { this->onEntry(tsm::dummy_event); }
 
-    void stopSM() { this->onExit(Event::dummy_event); }
+    void stopSM() { this->onExit(tsm::dummy_event); }
 
     // traverse the hsm hierarchy down.
     IHsmDef* dispatch(IHsmDef* state) const
@@ -78,7 +78,7 @@ struct StateMachine : public HSMDef
             }
             if (this->currentState_ == this->getStopState()) {
                 DLOG(INFO) << this->name << " Reached stop state. Exiting... ";
-                this->onExit(Event::dummy_event);
+                this->onExit(tsm::dummy_event);
             }
         }
     }
