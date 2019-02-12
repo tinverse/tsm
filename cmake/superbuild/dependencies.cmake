@@ -1,86 +1,106 @@
-# Make sure that CMAKE_INSTALL_PREFIX is set appropriately
-set(CMAKE_FIND_ROOT_PATH ${CMAKE_INSTALL_PREFIX})
+#Automatically set build dependencies to on/off
 
-set( BUILD_SHARED_LIBS ON CACHE BOOL "Build with Shared Libs")
+#check to see if dependencies are built
+set(GTEST_ROOT ${INSTALL_DIR})
+find_package(Gflags PATHS ${INSTALL_DIR})
+find_package(Glog PATHS ${INSTALL_DIR})
+find_package(GTest PATHS ${INSTALL_DIR})
 
-#RPATH
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_MACOSX_RPATH ON CACHE BOOL "")
-endif()
+if (GTEST_FOUND AND GFLAGS_FOUND AND GLOG_FOUND)
+set(BUILD_DEPENDENCIES OFF)
+else(GTEST_FOUND AND GFLAGS_FOUND AND GLOG_FOUND)
+set(BUILD_DEPENDENCIES ON)
+endif(GTEST_FOUND AND GFLAGS_FOUND AND GLOG_FOUND)
 
-set(CMAKE_SKIP_BUILD_RPATH FALSE CACHE BOOL "")
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE CACHE BOOL "")
+if (BUILD_DEPENDENCIES)
+    set_directory_properties(PROPERTIES EP_BASE ${INSTALL_DIR})
+    set(CMAKE_INSTALL_PREFIX ${INSTALL_DIR} CACHE PATH "ThirdParty stuff")
 
-set(CMAKE_INSTALL_RPATH
-    "${CMAKE_INSTALL_PREFIX}/lib;${CMAKE_INSTALL_PREFIX}/lib64"
-    CACHE STRING "")
-set(INSTALL_RPATH_USE_LINK_PATH TRUE CACHE BOOL "")
+    # Make sure that CMAKE_INSTALL_PREFIX is set appropriately
+    set(CMAKE_FIND_ROOT_PATH ${CMAKE_INSTALL_PREFIX})
 
-# the RPATH to be used when installing, but only if it's not a system directory
-list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib"
-          isSystemDir)
-if("${isSystemDir}" STREQUAL "-1")
-  set(CMAKE_INSTALL_RPATH
-      "${CMAKE_INSTALL_PREFIX}/lib;${CMAKE_INSTALL_PREFIX}/lib64")
-endif("${isSystemDir}" STREQUAL "-1")
+    set( BUILD_SHARED_LIBS ON CACHE BOOL "Build with Shared Libs")
 
-
-# set CMAKE_MODULE_PATH for cmake macro/function and modules
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../CMake)
-
-if( CMAKE_HOST_WIN32 )
-    string( LENGTH "${CMAKE_CURRENT_SOURCE_DIR}" n )
-    if( n GREATER 50 )
-        message( FATAL_ERROR
-            "source code directory path length is too long (${n} > 50)."
-            "Please move the tsm source code directory to a directory with a shorter path."
-            )
+    #RPATH
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+        set(CMAKE_MACOSX_RPATH ON CACHE BOOL "")
     endif()
-    string( LENGTH "${CMAKE_CURRENT_BINARY_DIR}" n )
-    if( n GREATER 50 )
-        message( FATAL_ERROR
-            "tsm build directory path length is too long (${n} > 50)."
-            "Please move the tsm build directory to a directory with a shorter path."
-            )
+
+    set(CMAKE_SKIP_BUILD_RPATH FALSE CACHE BOOL "")
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE CACHE BOOL "")
+
+    set(CMAKE_INSTALL_RPATH
+        "${CMAKE_INSTALL_PREFIX}/lib;${CMAKE_INSTALL_PREFIX}/lib64"
+        CACHE STRING "")
+    set(INSTALL_RPATH_USE_LINK_PATH TRUE CACHE BOOL "")
+
+    # the RPATH to be used when installing, but only if it's not a system directory
+    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib"
+              isSystemDir)
+    if("${isSystemDir}" STREQUAL "-1")
+      set(CMAKE_INSTALL_RPATH
+          "${CMAKE_INSTALL_PREFIX}/lib;${CMAKE_INSTALL_PREFIX}/lib64")
+    endif("${isSystemDir}" STREQUAL "-1")
+
+
+    # set CMAKE_MODULE_PATH for cmake macro/function and modules
+    set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../CMake)
+
+    if( CMAKE_HOST_WIN32 )
+        string( LENGTH "${CMAKE_CURRENT_SOURCE_DIR}" n )
+        if( n GREATER 50 )
+            message( FATAL_ERROR
+                "source code directory path length is too long (${n} > 50)."
+                "Please move the tsm source code directory to a directory with a shorter path."
+                )
+        endif()
+        string( LENGTH "${CMAKE_CURRENT_BINARY_DIR}" n )
+        if( n GREATER 50 )
+            message( FATAL_ERROR
+                "tsm build directory path length is too long (${n} > 50)."
+                "Please move the tsm build directory to a directory with a shorter path."
+                )
+        endif()
     endif()
-endif()
 
-option( BUILD_SHARED_LIBS "Build shared libraries" ON )
+    option( BUILD_SHARED_LIBS "Build shared libraries" ON )
 
-include( ExternalProject )
+    if (NOT CMAKE_BUILD_TYPE)
+        set( CMAKE_BUILD_TYPE Release)
+    endif(  )
 
-if (NOT CMAKE_BUILD_TYPE)
-    set( CMAKE_BUILD_TYPE Release)
-endif(  )
+    set( Patches_DIR ${CMAKE_CURRENT_SOURCE_DIR}/patches )
 
-set( Patches_DIR ${CMAKE_CURRENT_SOURCE_DIR}/patches )
+    set( tsm_DEPENDENCIES)
 
+    #---------------------------- Gflags -------------------------------------------
+    configure_file(cmake/superbuild/External-Gflags.txt.in ${INSTALL_DIR}/ThirdParty/Gflags/CMakeLists.txt)
 
-set( tsm_DEPENDENCIES)
+    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+        WORKING_DIRECTORY "${INSTALL_DIR}/ThirdParty/Gflags" )
+    execute_process(COMMAND "${CMAKE_COMMAND}" --build .
+        WORKING_DIRECTORY "${INSTALL_DIR}/ThirdParty/Gflags" )
 
-#---------------------------- Gflags -------------------------------------------
-option( USE_SYSTEM_Gflags "Use system libraries for Gflags" OFF )
-if( ${USE_SYSTEM_Gflags} MATCHES "OFF" )
-    include( External-Gflags )
     set( tsm_DEPENDENCIES ${tsm_DEPENDENCIES} Gflags )
-else()
-    find_package(Gflags REQUIRED)
-endif()
 
-#---------------------------- Glog ---------------------------------------------
-option( USE_SYSTEM_Glog "Use system libraries for Glog" OFF )
-if( ${USE_SYSTEM_Glog} MATCHES "OFF" )
-    include( External-Glog )
+    #---------------------------- Glog ---------------------------------------------
+    configure_file(cmake/superbuild/External-Glog.txt.in ${INSTALL_DIR}/ThirdParty/Glog/CMakeLists.txt)
+
+    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+        WORKING_DIRECTORY "${INSTALL_DIR}/ThirdParty/Glog" )
+    execute_process(COMMAND "${CMAKE_COMMAND}" --build .
+        WORKING_DIRECTORY "${INSTALL_DIR}/ThirdParty/Glog" )
+
     set( tsm_DEPENDENCIES ${tsm_DEPENDENCIES} Glog )
-else()
-    find_package(Glog REQUIRED)
-endif()
 
-#---------------------------- GTest --------------------------------------------
-option( USE_SYSTEM_GTest "Use system libraries for GTest" OFF )
-if( ${USE_SYSTEM_GTest} MATCHES "OFF" )
-    include( External-GTest )
+    #---------------------------- GTest --------------------------------------------
+    configure_file(cmake/superbuild/External-GTest.txt.in ${INSTALL_DIR}/ThirdParty/GTest/CMakeLists.txt)
+
+    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+        WORKING_DIRECTORY "${INSTALL_DIR}/ThirdParty/GTest" )
+    execute_process(COMMAND "${CMAKE_COMMAND}" --build .
+        WORKING_DIRECTORY "${INSTALL_DIR}/ThirdParty/GTest" )
+
     set( tsm_DEPENDENCIES ${tsm_DEPENDENCIES} GTest )
-else()
-    find_package(GTest REQUIRED)
-endif()
+
+endif (BUILD_DEPENDENCIES)
