@@ -2,9 +2,12 @@
 
 #check to see if dependencies are built
 set(GTEST_ROOT ${INSTALL_DIR})
-find_package(Gflags PATHS ${INSTALL_DIR})
-find_package(Glog PATHS ${INSTALL_DIR})
-find_package(GTest PATHS ${INSTALL_DIR})
+set(GFLAGS_ROOT_DIR ${INSTALL_DIR})
+set(GLOG_ROOT_DIR ${INSTALL_DIR})
+
+find_package(Gflags)
+find_package(Glog)
+find_package(GTest)
 
 if (GTEST_FOUND AND GFLAGS_FOUND AND GLOG_FOUND)
 set(BUILD_DEPENDENCIES OFF)

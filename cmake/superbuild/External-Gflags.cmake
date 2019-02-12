@@ -9,7 +9,7 @@ option( USE_GIT_PROTOCOL "If behind a firewall turn this off to use http instead
 
 set(git_protocol "git")
 if(NOT USE_GIT_PROTOCOL)
-  set(git_protocol "http")
+  set(git_protocol "https")
 endif()
 
 ExternalProject_Add(Gflags
@@ -22,4 +22,4 @@ ExternalProject_Add(Gflags
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
     )
 
-set( GFLAGS_ROOT_DIR ${INSTALL_DEPENDENCIES_DIR} CACHE PATH "")
+set( GFLAGS_ROOT_DIR ${CMAKE_INSTALL_PREFIX} CACHE PATH "")
