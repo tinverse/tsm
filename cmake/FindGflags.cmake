@@ -18,6 +18,7 @@ if(WIN32)
 else()
     find_path(GFLAGS_INCLUDE_DIR
         NAMES gflags/gflags.h
+              google-gflags/gflags.h
         PATHS ${GFLAGS_ROOT_DIR}
 		PATH_SUFFIXES include)
 endif()
