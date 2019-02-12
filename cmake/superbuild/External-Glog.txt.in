@@ -18,4 +18,4 @@ ExternalProject_Add(Glog
         -Dgflags_DIR:PATH=${CMAKE_INSTALL_PREFIX}
     )
 
-set( GLOG_ROOT_DIR ${INSTALL_DEPENDENCIES_DIR} CACHE PATH "Glog Root dir")
+set( GLOG_ROOT_DIR ${CMAKE_INSTALL_PREFIX} CACHE PATH "Glog Root dir")
