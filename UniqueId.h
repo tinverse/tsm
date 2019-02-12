@@ -3,17 +3,13 @@
 #include <mutex>
 
 namespace tsm {
-
-struct UniqueId
+constexpr auto
+counter_inc()
 {
-    static uint64_t getId() { return ++id_; }
-    static void reset()
-    {
-        id_ = 1; // dummy_event gets id=0 assigned to it
-    }
-
-  private:
-    static std::uint64_t id_;
-};
+    return []() {
+        static uint64_t a = 0;
+        return ++a;
+    };
+}
 
 } // namespace tsm

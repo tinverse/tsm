@@ -31,7 +31,7 @@ struct State
 
     State(std::string const& stateName)
       : name(std::move(stateName))
-      , id(UniqueId::getId())
+      , id(tsm::counter_inc()())
     {}
 
     State(State const& other) = default;

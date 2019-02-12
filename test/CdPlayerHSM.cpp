@@ -30,10 +30,7 @@ struct TestCdPlayerHSM : public testing::Test
     TestCdPlayerHSM()
       : testing::Test()
     {}
-    virtual ~TestCdPlayerHSM()
-    { // TODO(sriram): ugh! Fix Id generation
-        tsm::UniqueId::reset();
-    }
+    virtual ~TestCdPlayerHSM() {}
 };
 
 TEST_F(TestCdPlayerHSM, testTransitionsSeparateThreadPolicy)

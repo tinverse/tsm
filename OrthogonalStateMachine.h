@@ -19,7 +19,7 @@ struct OrthogonalStateMachine : public IHsmDef
       , hsm2_(SM2Type(this))
     {}
 
-    void startSM() { onEntry(Event::dummy_event); }
+    void startSM() { onEntry(tsm::dummy_event); }
 
     void onEntry(Event const& e) override
     {
@@ -29,7 +29,7 @@ struct OrthogonalStateMachine : public IHsmDef
         hsm2_.onEntry(e);
     }
 
-    void stopSM() { onExit(Event::dummy_event); }
+    void stopSM() { onExit(tsm::dummy_event); }
 
     void onExit(Event const& e) override
     {

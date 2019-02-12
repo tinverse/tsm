@@ -35,7 +35,7 @@ TEST_F(TestState, Construct)
 
 struct TestStateMachineProperties : public testing::Test
 {
-    virtual ~TestStateMachineProperties() { tsm::UniqueId::reset(); }
+    virtual ~TestStateMachineProperties() {}
 };
 
 TEST_F(TestStateMachineProperties, testMachineExitsWhenReachingStopState)

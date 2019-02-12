@@ -40,7 +40,7 @@ struct TestOrthogonalCdPlayerHSM : public testing::Test
     TestOrthogonalCdPlayerHSM()
       : testing::Test()
     {}
-    ~TestOrthogonalCdPlayerHSM() { tsm::UniqueId::reset(); }
+    ~TestOrthogonalCdPlayerHSM() {}
 };
 
 TEST_F(TestOrthogonalCdPlayerHSM, testOrthogonalHSMSeparateThread)
