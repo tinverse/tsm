@@ -145,11 +145,6 @@ cmake -GNinja .. && ninja
 ./test/tsm_test
 ```
 
-### Current Status
-    * Thread-safe event queue.
-    * Hierarchical State Machine.
-    * Up to two simultaneous HSMs in the OrthogonalStateMachine.
-
 ### External Dependencies:
     Gflags, Glog, Gtest
 
