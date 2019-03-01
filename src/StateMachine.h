@@ -18,9 +18,7 @@ struct StateMachine : public HSMDef
     {}
 
     virtual ~StateMachine() = default;
-
     void startSM() { this->onEntry(tsm::dummy_event); }
-
     void stopSM() { this->onExit(tsm::dummy_event); }
 
     // traverse the hsm hierarchy down.
