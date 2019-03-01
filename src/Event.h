@@ -4,15 +4,12 @@
 #include <cstdint>
 namespace tsm {
 
-class Event
+struct Event
 {
-  public:
     Event()
       : id(tsm::counter_inc()())
     {}
-
     Event(Event const& other) = default;
-
     Event(Event&& other) = default;
 
     Event& operator=(Event const& e)
@@ -20,6 +17,7 @@ class Event
         this->id = e.id;
         return *this;
     }
+
     virtual ~Event() = default;
 
     bool operator==(const Event& rhs) const { return this->id == rhs.id; }

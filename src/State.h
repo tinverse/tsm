@@ -35,13 +35,9 @@ struct State
     {}
 
     State(State const& other) = default;
-
     State(State&& other) = default;
-
     virtual ~State() = default;
-
     bool operator==(State const& rhs) { return this->id == rhs.id; }
-
     bool operator!=(State& rhs) { return !(*this == rhs); }
 
     virtual void execute(Event const& nextEvent)
@@ -61,7 +57,6 @@ struct State
     }
 
     const std::string name;
-
     const uint64_t id;
 };
 } // namespace tsm

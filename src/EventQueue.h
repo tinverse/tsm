@@ -17,7 +17,6 @@ struct dummy_mutex
 {
     dummy_mutex() = default;
     ~dummy_mutex() = default;
-
     dummy_mutex(dummy_mutex&) = delete;
     dummy_mutex(dummy_mutex const&) = delete;
     dummy_mutex(dummy_mutex&&) = delete;
@@ -37,7 +36,7 @@ struct EventQueueInterruptedException : public std::runtime_error
 // A thread safe event queue. Any thread can call addEvent if it has a pointer
 // to the event queue. The call to nextEvent is a blocking call
 template<typename Event, typename LockType>
-class EventQueueT : private deque<Event>
+struct EventQueueT : private deque<Event>
 {
   public:
     using deque<Event>::empty;
