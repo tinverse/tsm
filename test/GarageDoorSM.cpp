@@ -1,6 +1,8 @@
 #include "GarageDoorSM.h"
 #include "Observer.h"
 
+#include <gtest/gtest.h>
+
 using tsm::AsyncExecWithObserver;
 using tsm::BlockingObserver;
 using tsm::SimpleStateMachine;

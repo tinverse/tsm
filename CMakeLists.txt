@@ -29,6 +29,11 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX ${INSTALL_DIR} CACHE PATH "Overriding install dir" FORCE)
 endif (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
+# Build tests by default.
+option(BUILD_TESTS "Enable Testing" ON)
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 include(dependencies)
 
 if(MSVC)
@@ -43,24 +48,23 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 endif()
 
 set(CMAKE_FIND_ROOT_PATH ${INSTALL_DIR} CACHE PATH "")
-find_package(Gflags REQUIRED)
-find_package(GTest REQUIRED)
-find_package(Glog REQUIRED)
-
 message(STATUS "Module path:" ${CMAKE_MODULE_PATH})
-message(STATUS "GLog:" ${GLOG_FOUND} " " ${GLOG_INCLUDE_DIRS} " " ${GLOG_LIBRARIES})
-message(STATUS "GTest:" ${GTEST_FOUND} " " ${GTEST_INCLUDE_DIRS} " " ${GTEST_LIBRARIES})
-message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 
-add_subdirectory(test)
+if (BUILD_TESTS)
+  find_package(GTest REQUIRED)
+  add_subdirectory(test)
+endif(BUILD_TESTS)
+
+message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 
 # generate documentation
 find_package(Doxygen)
-option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
+option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" OFF)
 
 if(${DOXYGEN_FOUND})
   set(DOC_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/doc CACHE PATH "")
 endif(${DOXYGEN_FOUND})
+
 
 if(BUILD_DOCUMENTATION)
   if(NOT DOXYGEN_FOUND)
@@ -86,3 +90,7 @@ if (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
          COMMENT "Installing docs to ${CMAKE_INSTALL_PREFIX}/share/doc")
 endif (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
 endif()
+
+install(DIRECTORY src/ DESTINATION ${CMAKE_INSTALL_PREFIX} 
+        FILES_MATCHING PATTERN "*.h")
+
