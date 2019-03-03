@@ -1,6 +1,8 @@
 #include "CdPlayerHSM.h"
 #include "Observer.h"
 
+#include <gtest/gtest.h>
+
 using tsmtest::CdPlayerController;
 using tsmtest::CdPlayerDef;
 

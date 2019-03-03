@@ -2,8 +2,7 @@
 
 #include "Event.h"
 #include "UniqueId.h"
-
-#include <glog/logging.h>
+#include "tsm_log.h"
 
 #include <memory>
 #include <string>
@@ -30,7 +29,7 @@ struct State
     State() = delete;
 
     State(std::string const& stateName)
-      : name(std::move(stateName))
+      : name(stateName)
       , id(tsm::counter_inc()())
     {}
 

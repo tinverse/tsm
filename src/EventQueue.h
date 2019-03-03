@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glog/logging.h>
+#include "tsm_log.h"
 
 #include <condition_variable>
 #include <deque>

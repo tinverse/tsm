@@ -1,8 +1,6 @@
 #include "CdPlayerHSM.h"
-
 #include "Observer.h"
 
-#include <glog/logging.h>
 #include <gtest/gtest.h>
 
 using tsm::AsyncExecutionPolicy;

@@ -1,8 +1,5 @@
 #include "tsm.h"
 
-#include <glog/logging.h>
-#include <gtest/gtest.h>
-
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::State;
