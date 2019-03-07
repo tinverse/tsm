@@ -13,7 +13,7 @@ namespace tsm {
 template<typename StateType>
 struct ParentThreadExecutionPolicy : public StateType
 {
-    using EventQueue = EventQueueT<Event, dummy_mutex>;
+    using EventQueue = EventQueueT<Event, null_mutex>;
 
     ParentThreadExecutionPolicy()
       : StateType()
@@ -35,22 +35,16 @@ struct ParentThreadExecutionPolicy : public StateType
             DLOG(WARNING) << "Event Queue is empty!";
             return;
         }
-        try {
-            // This is a blocking wait
-            Event const& nextEvent = eventQueue_.nextEvent();
-            // go down the HSM hierarchy to handle the event as that is the
-            // "most active state"
+        // This is a blocking wait
+        Event const& nextEvent = eventQueue_.nextEvent();
+        // go down the HSM hierarchy to handle the event as that is the
+        // "most active state"
+        if (!eventQueue_.interrupted()) {
             this->dispatch(this)->execute(nextEvent);
-
-        } catch (EventQueueInterruptedException const& e) {
-            if (!interrupt_) {
-                throw e;
-            }
+        } else {
             DLOG(WARNING) << this->name << ": Exiting event loop on interrupt";
-            return;
         }
     }
-
     void sendEvent(Event const& event) { eventQueue_.addEvent(event); }
 
   protected:

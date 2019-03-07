@@ -6,8 +6,8 @@ LIST(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/superbuild")
 
-#Compiler MUST be at least CXX 17 compliant
-set(CMAKE_CXX_STANDARD 17)
+#Compiler MUST be at least CXX 11 compliant
+set(CMAKE_CXX_STANDARD 11)
 
 if (NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -28,6 +28,7 @@ endif(NOT INSTALL_DIR)
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX ${INSTALL_DIR} CACHE PATH "Overriding install dir" FORCE)
 endif (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
 
 # Build tests by default.
 option(BUILD_TESTS "Enable Testing" ON)
@@ -51,7 +52,6 @@ set(CMAKE_FIND_ROOT_PATH ${INSTALL_DIR} CACHE PATH "")
 message(STATUS "Module path:" ${CMAKE_MODULE_PATH})
 
 if (BUILD_TESTS)
-  find_package(GTest REQUIRED)
   add_subdirectory(test)
 endif(BUILD_TESTS)
 

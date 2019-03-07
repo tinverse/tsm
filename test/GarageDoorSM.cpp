@@ -1,7 +1,7 @@
 #include "GarageDoorSM.h"
 #include "Observer.h"
 
-#include <gtest/gtest.h>
+#include <catch2/catch.hpp>
 
 using tsm::AsyncExecWithObserver;
 using tsm::BlockingObserver;
@@ -15,14 +15,6 @@ template<typename StateType>
 using AsyncBlockingObserver =
   tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
 
-struct TestGarageDoorSM : public ::testing::Test
-{
-    TestGarageDoorSM()
-      : testing::Test()
-    {}
-    ~TestGarageDoorSM() {}
-};
-
 ///
 /// GarageDoorDef is the state machine definition. It has knowledge of the HSM
 /// hierarchy, its states, events and sub-HSMs if any. The relationships between
@@ -33,7 +25,7 @@ struct TestGarageDoorSM : public ::testing::Test
 using GarageDoorHSMSeparateThread =
   AsyncBlockingObserver<StateMachine<GarageDoorDef>>;
 
-TEST_F(TestGarageDoorSM, testGarageDoorSeparateThreadPolicy)
+TEST_CASE("TestGarageDoorSM - testGarageDoorSeparateThreadPolicy")
 {
     auto sm = std::make_shared<GarageDoorHSMSeparateThread>();
     auto smDef = std::static_pointer_cast<GarageDoorDef>(sm);
@@ -41,20 +33,20 @@ TEST_F(TestGarageDoorSM, testGarageDoorSeparateThreadPolicy)
     sm->startSM();
 
     sm->wait();
-    ASSERT_EQ(sm->getCurrentState(), &smDef->doorClosed);
+    REQUIRE(sm->getCurrentState() == &smDef->doorClosed);
 
     sm->sendEvent(smDef->click_event);
     sm->wait();
-    ASSERT_EQ(sm->getCurrentState(), &smDef->doorOpening);
+    REQUIRE(sm->getCurrentState() == &smDef->doorOpening);
 
     sm->sendEvent(smDef->topSensor_event);
     sm->wait();
-    ASSERT_EQ(sm->getCurrentState(), &smDef->doorOpen);
+    REQUIRE(sm->getCurrentState() == &smDef->doorOpen);
 
     sm->stopSM();
 }
 
-TEST_F(TestGarageDoorSM, testGarageDoorParentThreadPolicy)
+TEST_CASE("TestGarageDoorSM - testGarageDoorParentThreadPolicy")
 {
     auto sm = std::make_shared<SimpleStateMachine<GarageDoorDef>>();
     auto smDef = std::static_pointer_cast<GarageDoorDef>(sm);
@@ -63,13 +55,13 @@ TEST_F(TestGarageDoorSM, testGarageDoorParentThreadPolicy)
     sm->sendEvent(smDef->topSensor_event);
 
     sm->startSM();
-    ASSERT_EQ(sm->getCurrentState(), &sm->doorClosed);
+    REQUIRE(sm->getCurrentState() == &sm->doorClosed);
 
     sm->step();
-    ASSERT_EQ(sm->getCurrentState(), &smDef->doorOpening);
+    REQUIRE(sm->getCurrentState() == &smDef->doorOpening);
 
     sm->step();
-    ASSERT_EQ(sm->getCurrentState(), &smDef->doorOpen);
+    REQUIRE(sm->getCurrentState() == &smDef->doorOpen);
 
     sm->stopSM();
 }

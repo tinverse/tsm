@@ -7,7 +7,7 @@ namespace tsm {
 struct Event
 {
     Event()
-      : id(tsm::counter_inc()())
+      : id(tsm::counter_inc())
     {}
     Event(Event const& other) = default;
     Event(Event&& other) = default;

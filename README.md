@@ -147,7 +147,7 @@ cmake -GNinja .. && ninja
 ```
 
 ### External Dependencies:
-    Gflags, Glog, Gtest
+    None, if you just want to use the library. Just `#include <tsm>` and start using it! Catch2 unit test framework if you wish to run the unit tests. Set the BUILD_TESTING option in the CMake file to OFF if not needed.
 
 ### TODOs
     * UML front end to define State Machine.

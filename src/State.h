@@ -9,16 +9,6 @@
 
 namespace tsm {
 
-struct MethodNotImplementedException : public std::runtime_error
-{
-    explicit MethodNotImplementedException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
-    {}
-    explicit MethodNotImplementedException(const char* what_arg)
-      : std::runtime_error(what_arg)
-    {}
-};
-
 ///
 /// All StateMachineDef types inherit from State. This is the base class for all
 /// StateMachines.
@@ -30,7 +20,7 @@ struct State
 
     State(std::string const& stateName)
       : name(stateName)
-      , id(tsm::counter_inc()())
+      , id(tsm::counter_inc())
     {}
 
     State(State const& other) = default;

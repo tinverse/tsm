@@ -1,27 +1,26 @@
+find_package(Catch2 REQUIRED CONFIG)
+
 set (TEST_PROJECT "tsm_test")
 
 add_executable(${TEST_PROJECT}
   main.cpp
-  EventQueue.cpp
+  TestMachines.cpp
   GarageDoorSM.cpp
   CdPlayerHSM.cpp
+  EventQueue.cpp
   OrthogonalCdPlayerHSM.cpp
 )
 
 target_include_directories(tsm_test
   PUBLIC ${PROJECT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}
-  SYSTEM PRIVATE ${GLOG_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS}
 )
 
 target_link_libraries(${TEST_PROJECT}
-  PRIVATE ${GTEST_LIBRARIES} ${GLOG_LIBRARIES} ${GFLAGS_LIBRARIES} pthread)
+  PRIVATE Catch2::Catch2 pthread)
 
-include(GoogleTest)
-gtest_discover_tests(${TEST_PROJECT} TEST_PREFIX "hsm:" TEST_LIST LIST_OF_TESTS)
-gtest_add_tests(
-  TARGET ${TEST_PROJECT}
-  TEST_LIST ${LIST_OF_TESTS}
-)
+include(CTest)
+include(Catch)
+catch_discover_tests(${TEST_PROJECT})
 
 # test coverage
 include(coverage)

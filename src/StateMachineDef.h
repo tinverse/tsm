@@ -149,8 +149,8 @@ struct StateMachineDef : public IHsmDef
         }
     }
 
-    auto& getTable() const { return table_; }
-    auto& getEvents() const { return eventSet_; }
+    StateTransitionTable& getTable() const { return table_; }
+    std::set<Event> const& getEvents() const { return eventSet_; }
 
   protected:
     StateTransitionTable table_;

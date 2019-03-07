@@ -1,25 +1,16 @@
 #include "EventQueue.h"
 #include "Event.h"
 
-#include <gtest/gtest.h>
-
+#include <catch2/catch.hpp>
 #include <future>
 
 using tsm::Event;
 using tsm::EventQueue;
 
-struct TestEventQueue : public testing::Test
+TEST_CASE("TestEventQueue - testSingleEvent")
 {
-    TestEventQueue()
-      : testing::Test()
-    {}
-
     EventQueue<Event> eq_;
     Event e1;
-};
-
-TEST_F(TestEventQueue, testSingleEvent)
-{
     auto f1 = std::async(&EventQueue<Event>::nextEvent, &eq_);
 
     std::thread t1(&EventQueue<Event>::addEvent, &eq_, e1);
@@ -27,10 +18,10 @@ TEST_F(TestEventQueue, testSingleEvent)
     // Use the same threads to retrieve events
     Event actualEvent1 = f1.get();
     t1.join();
-    EXPECT_EQ(actualEvent1.id, e1.id);
+    CHECK(actualEvent1.id == e1.id);
 }
 
-TEST_F(TestEventQueue, testAddFrom100Threads)
+TEST_CASE("TestEventQueue - testAddFrom100Threads")
 {
     EventQueue<Event> eq_;
     std::vector<Event> v;
@@ -53,7 +44,8 @@ TEST_F(TestEventQueue, testAddFrom100Threads)
 
     for (auto&& future : vtConsume) {
         Event const& e = future.get();
-        ASSERT_TRUE(std::find(v.begin(), v.end(), e) != v.end()) << e.id;
+        auto it = std::find(v.begin(), v.end(), e);
+        CHECK(it != v.end());
     }
 
     for (auto&& t : vtProduce) {
