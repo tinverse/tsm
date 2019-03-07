@@ -1,7 +1,7 @@
 #include "CdPlayerHSM.h"
 #include "Observer.h"
 
-#include <gtest/gtest.h>
+#include <catch2/catch.hpp>
 
 using tsmtest::CdPlayerController;
 using tsmtest::CdPlayerDef;
@@ -27,22 +27,14 @@ using CdPlayerHSMParentThread =
 // Model interruptions to workflow
 // For e.g. As door is opening or closing, one of the sensors
 // detects an obstacle.
-struct TestCdPlayerHSM : public testing::Test
-{
-    TestCdPlayerHSM()
-      : testing::Test()
-    {}
-    virtual ~TestCdPlayerHSM() {}
-};
-
-TEST_F(TestCdPlayerHSM, testTransitionsSeparateThreadPolicy)
+TEST_CASE("TestCdPlayerHSM - testTransitionsSeparateThreadPolicy")
 {
 
     CdPlayerHSMSeparateThread sm;
 
     auto& Playing = sm.Playing;
 
-    ASSERT_EQ(Playing.getParent(), &sm);
+    REQUIRE(Playing.getParent() == &sm);
 
     sm.startSM();
 
@@ -50,113 +42,114 @@ TEST_F(TestCdPlayerHSM, testTransitionsSeparateThreadPolicy)
     sm.sendEvent(sm.cd_detected);
 
     sm.wait();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
+    REQUIRE(sm.getCurrentState() == &sm.Stopped);
 
     sm.sendEvent(sm.play);
     sm.wait();
-    ASSERT_EQ(sm.getCurrentState(), &Playing);
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song1);
+    REQUIRE(sm.getCurrentState() == &Playing);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song1);
 
     sm.sendEvent(Playing.next_song);
     sm.wait();
-    ASSERT_EQ(sm.getCurrentState(), &Playing);
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song2);
+    REQUIRE(sm.getCurrentState() == &Playing);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song2);
 
     sm.sendEvent(sm.pause);
     sm.wait();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Paused);
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song2);
+    REQUIRE(sm.getCurrentState() == &sm.Paused);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song2);
 
     sm.sendEvent(sm.end_pause);
     sm.wait();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Playing);
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song2);
+    REQUIRE(sm.getCurrentState() == &sm.Playing);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song2);
 
     sm.sendEvent(Playing.next_song);
     sm.wait();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Playing);
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song3);
+    REQUIRE(sm.getCurrentState() == &sm.Playing);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song3);
 
     sm.sendEvent(sm.stop_event);
     sm.wait();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
-    ASSERT_EQ(Playing.getCurrentState(), nullptr);
+    REQUIRE(sm.getCurrentState() == &sm.Stopped);
+    REQUIRE(Playing.getCurrentState() == nullptr);
 
     sm.stopSM();
 }
 
-TEST_F(TestCdPlayerHSM, testTransitionsParentThreadPolicy)
+TEST_CASE("TestCdPlayerHSM - testTransitionsParentThreadPolicy")
 {
     CdPlayerHSMParentThread sm;
 
     auto& Playing = sm.Playing;
 
-    ASSERT_EQ(Playing.getParent(), (State*)&sm);
+    REQUIRE(Playing.getParent() == (State*)&sm);
 
     sm.startSM();
 
     sm.sendEvent(sm.cd_detected);
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
+    REQUIRE(sm.getCurrentState() == &sm.Stopped);
 
     sm.sendEvent(sm.play);
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &Playing);
+    REQUIRE(sm.getCurrentState() == &Playing);
 
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song1);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song1);
 
     sm.sendEvent(Playing.next_song);
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &Playing);
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song2);
+    REQUIRE(sm.getCurrentState() == &Playing);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song2);
 
     sm.sendEvent(sm.pause);
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Paused);
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song2);
+    REQUIRE(sm.getCurrentState() == &sm.Paused);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song2);
 
     sm.sendEvent(sm.end_pause);
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Playing);
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song2);
+    REQUIRE(sm.getCurrentState() == &sm.Playing);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song2);
 
     sm.sendEvent(Playing.next_song);
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Playing);
-    ASSERT_EQ(Playing.getCurrentState(), &Playing.Song3);
+    REQUIRE(sm.getCurrentState() == &sm.Playing);
+    REQUIRE(Playing.getCurrentState() == &Playing.Song3);
 
     sm.sendEvent(sm.stop_event);
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
-    ASSERT_EQ(Playing.getCurrentState(), nullptr);
+    REQUIRE(sm.getCurrentState() == &sm.Stopped);
+    REQUIRE(Playing.getCurrentState() == nullptr);
 
     sm.stopSM();
 }
 
-TEST_F(TestCdPlayerHSM, testCallingStepOnParentThreadPolicyEmptyEventQueue)
+TEST_CASE(
+  "TestCdPlayerHSM - testCallingStepOnParentThreadPolicyEmptyEventQueue")
 {
     CdPlayerHSMParentThread sm;
 
     sm.startSM();
     sm.sendEvent(sm.cd_detected);
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
+    REQUIRE(sm.getCurrentState() == &sm.Stopped);
 
     // Event queue is empty now. Nothing should change
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
+    REQUIRE(sm.getCurrentState() == &sm.Stopped);
 
     sm.stopSM();
 }
 
-TEST_F(TestCdPlayerHSM, testEventQueueInterruptedException)
+TEST_CASE("TestCdPlayerHSM - testEventQueueInterruptedException")
 {
     CdPlayerHSMParentThread sm;
 
     sm.startSM();
     sm.sendEvent(sm.cd_detected);
     sm.step();
-    ASSERT_EQ(sm.getCurrentState(), &sm.Stopped);
+    REQUIRE(sm.getCurrentState() == &sm.Stopped);
 
     sm.stopSM();
 }

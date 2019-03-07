@@ -13,24 +13,17 @@ using std::deque;
 
 namespace tsm {
 
-struct dummy_mutex
+struct null_mutex
 {
-    dummy_mutex() = default;
-    ~dummy_mutex() = default;
-    dummy_mutex(dummy_mutex&) = delete;
-    dummy_mutex(dummy_mutex const&) = delete;
-    dummy_mutex(dummy_mutex&&) = delete;
+    null_mutex() = default;
+    ~null_mutex() = default;
+    null_mutex(null_mutex&) = delete;
+    null_mutex(null_mutex const&) = delete;
+    null_mutex(null_mutex&&) = delete;
 
     void lock() {}
     void unlock() {}
     bool try_lock() { return true; }
-};
-
-struct EventQueueInterruptedException : public std::runtime_error
-{
-    explicit EventQueueInterruptedException(const std::string& what_arg)
-      : std::runtime_error(what_arg)
-    {}
 };
 
 // A thread safe event queue. Any thread can call addEvent if it has a pointer
@@ -59,7 +52,7 @@ struct EventQueueT : private deque<Event>
         cvEventAvailable_.wait(
           lock, [this] { return (!this->empty() || this->interrupt_); });
         if (interrupt_) {
-            throw EventQueueInterruptedException("Bailing from Event Queue");
+            return Event();
         } else {
             const Event e = std::move(front());
             DLOG(INFO) << "Thread:" << std::this_thread::get_id()
@@ -85,6 +78,8 @@ struct EventQueueT : private deque<Event>
         // Log the events that are going to get dumped if the queue is not empty
     }
 
+    bool interrupted() { return interrupt_; }
+
     void addFront(Event const& e)
     {
         std::lock_guard<LockType> lock(eventQueueMutex_);
@@ -99,7 +94,7 @@ struct EventQueueT : private deque<Event>
 };
 
 template<typename Event>
-using SimpleEventQueue = EventQueueT<Event, dummy_mutex>;
+using SimpleEventQueue = EventQueueT<Event, null_mutex>;
 
 template<typename Event>
 using EventQueue = EventQueueT<Event, std::mutex>;

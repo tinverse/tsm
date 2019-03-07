@@ -56,19 +56,14 @@ struct AsyncExecutionPolicy : public StateType
 
     void processEvent()
     {
-        try {
-            // This is a blocking wait
-            Event const& nextEvent = eventQueue_.nextEvent();
-            // go down the HSM hierarchy to handle the event as that is the
-            // "most active state"
+        // This is a blocking wait
+        Event const& nextEvent = eventQueue_.nextEvent();
+        // go down the HSM hierarchy to handle the event as that is the
+        // "most active state"
+        if (!eventQueue_.interrupted()) {
             this->dispatch(this)->execute(nextEvent);
-
-        } catch (EventQueueInterruptedException const& e) {
-            if (!interrupt_) {
-                throw e;
-            }
+        } else {
             DLOG(WARNING) << this->name << ": Exiting event loop on interrupt";
-            return;
         }
     }
 };

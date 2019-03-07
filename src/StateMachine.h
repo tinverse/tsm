@@ -17,7 +17,7 @@ struct StateMachine : public HSMDef
       : HSMDef(parent)
     {}
 
-    virtual ~StateMachine() = default;
+    virtual ~StateMachine() { stopSM(); }
     void startSM() { this->onEntry(tsm::dummy_event); }
     void stopSM() { this->onExit(tsm::dummy_event); }
 
@@ -36,8 +36,8 @@ struct StateMachine : public HSMDef
 
     void execute(Event const& nextEvent) override
     {
-        DLOG(INFO) << "Current State:" << this->currentState_->name
-                   << " Event:" << nextEvent.id;
+        // DLOG(INFO) << "Current State:" << this->currentState_->name
+        //             << " Event:" << nextEvent.id;
 
         Transition* t = this->next(*this->currentState_, nextEvent);
 
@@ -69,13 +69,14 @@ struct StateMachine : public HSMDef
                 // not performed
                 t->template doTransition<HSMDef>(this);
                 this->currentState_ = &t->toState;
-                DLOG(INFO) << "Next State:" << this->currentState_->name;
+                // DLOG(INFO) << "Next State:" << this->currentState_->name;
 
             } else {
                 DLOG(INFO) << "Guard prevented transition";
             }
             if (this->currentState_ == this->getStopState()) {
-                DLOG(INFO) << this->name << " Reached stop state. Exiting... ";
+                // DLOG(INFO) << this->name << " Reached stop state. Exiting...
+                // ";
                 this->onExit(tsm::dummy_event);
             }
         }

@@ -3,13 +3,9 @@
 #include <mutex>
 
 namespace tsm {
-constexpr auto
-counter_inc()
-{
-    return []() {
-        static uint64_t a = 0;
-        return ++a;
-    };
-}
+auto counter_inc = []() {
+    static uint64_t a = 0;
+    return ++a;
+};
 
 } // namespace tsm

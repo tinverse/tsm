@@ -71,8 +71,8 @@ struct OrthogonalStateMachine : public IHsmDef
     State* getStartState() override { return &hsm1_; }
     State* getStopState() override { return nullptr; }
 
-    auto& getHsm1() { return hsm1_; }
-    auto& getHsm2() { return hsm2_; }
+    SM1Type& getHsm1() { return hsm1_; }
+    SM2Type& getHsm2() { return hsm2_; }
 
     SM1Type hsm1_;
     SM2Type hsm2_;
