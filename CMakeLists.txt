@@ -82,15 +82,17 @@ if(BUILD_DOCUMENTATION)
       COMMENT "Generating API documentation with Doxygen"
       VERBATIM)
 
-if (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
+  if (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
     add_custom_command(TARGET tsm_doc POST_BUILD
          COMMAND ${CMAKE_COMMAND} -E copy_directory
                    ${CMAKE_CURRENT_BINARY_DIR}/docs/html
                    ${CMAKE_INSTALL_PREFIX}/share/doc
          COMMENT "Installing docs to ${CMAKE_INSTALL_PREFIX}/share/doc")
-endif (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
-endif()
 
-install(DIRECTORY src/ DESTINATION ${CMAKE_INSTALL_PREFIX} 
+  endif (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
+endif(BUILD_DOCUMENTATION)
+
+if (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
+    install(DIRECTORY src/ DESTINATION ${CMAKE_INSTALL_PREFIX} 
         FILES_MATCHING PATTERN "*.h")
-
+endif (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")

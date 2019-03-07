@@ -40,7 +40,7 @@ deploy:
   verbose: true
   on:
     branch: master
-
+    condition: -d "build/docs/html"
 
 after_failure:
   # show actions of the OOM killer
