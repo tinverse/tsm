@@ -3,7 +3,7 @@ PROJECT_NUMBER         = @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJEC
 STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@ \
                          @PROJECT_BINARY_DIR@
 INPUT                  = @doxy_main_page@ \
-                         @CMAKE_CURRENT_SOURCE_DIR@/src \
+                         @CMAKE_CURRENT_SOURCE_DIR@/include \
                          @CMAKE_CURRENT_SOURCE_DIR@/test
 INPUT                 += @PROJECT_SOURCE_DIR@/Documentation.dox
 EXTENSION_MAPPING     += dox=md
