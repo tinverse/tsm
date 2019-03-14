@@ -46,7 +46,7 @@ if (BUILD_DEPENDENCIES)
 
   #---------------------------- Catch2 --------------------------------------------
   if(BUILD_TESTS)
-    configure_file(cmake/superbuild/External-Catch2.txt.in ${INSTALL_DIR}/ThirdParty/Catch2/CMakeLists.txt)
+    configure_file(CMake/superbuild/External-Catch2.txt.in ${INSTALL_DIR}/ThirdParty/Catch2/CMakeLists.txt)
 
     execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" -Bbuild -H.
         WORKING_DIRECTORY "${INSTALL_DIR}/ThirdParty/Catch2" )

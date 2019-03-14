@@ -1,0 +1,7 @@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+
+Name: tsm
+Description: A modern, C++-native, header-only, hierarchical state machine framework for C++11
+URL: https://github.com/tinverse/tsm
+Version: @tsm_VERSION@
+Cflags: -I${includedir}
