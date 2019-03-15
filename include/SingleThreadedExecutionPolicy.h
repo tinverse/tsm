@@ -11,16 +11,16 @@
 ///
 namespace tsm {
 template<typename StateType>
-struct ParentThreadExecutionPolicy : public StateType
+struct SingleThreadedExecutionPolicy : public StateType
 {
     using EventQueue = EventQueueT<Event, null_mutex>;
 
-    ParentThreadExecutionPolicy()
+    SingleThreadedExecutionPolicy()
       : StateType()
       , interrupt_(false)
     {}
 
-    virtual ~ParentThreadExecutionPolicy() = default;
+    virtual ~SingleThreadedExecutionPolicy() = default;
 
     void onExit(Event const& e) override
     {
@@ -37,7 +37,7 @@ struct ParentThreadExecutionPolicy : public StateType
         }
         // This is a blocking wait
         Event const& nextEvent = eventQueue_.nextEvent();
-        // go down the HSM hierarchy to handle the event as that is the
+        // go down the Hsm hierarchy to handle the event as that is the
         // "most active state"
         if (!eventQueue_.interrupted()) {
             this->dispatch(this)->execute(nextEvent);
@@ -45,6 +45,7 @@ struct ParentThreadExecutionPolicy : public StateType
             DLOG(WARNING) << this->name << ": Exiting event loop on interrupt";
         }
     }
+
     void sendEvent(Event const& event) { eventQueue_.addEvent(event); }
 
   protected:

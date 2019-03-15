@@ -2,24 +2,24 @@
 
 #include "Event.h"
 #include "State.h"
-#include "StateMachine.h"
+#include "HsmExecutor.h"
 
 #include <memory>
 namespace tsm {
-template<typename HSMDef1, typename HSMDef2>
-struct OrthogonalStateMachine : public IHsmDef
+template<typename HsmDef1, typename HsmDef2>
+struct OrthogonalHsmExecutor : public IHsmDef
 {
-    using type = OrthogonalStateMachine<HSMDef1, HSMDef2>;
-    using SM1Type = StateMachine<HSMDef1>;
-    using SM2Type = StateMachine<HSMDef2>;
+    using type = OrthogonalHsmExecutor<HsmDef1, HsmDef2>;
+    using SM1Type = HsmExecutor<HsmDef1>;
+    using SM2Type = HsmExecutor<HsmDef2>;
 
-    OrthogonalStateMachine(std::string const& name, IHsmDef* parent = nullptr)
+    OrthogonalHsmExecutor(std::string const& name, IHsmDef* parent = nullptr)
       : IHsmDef(name, parent)
       , hsm1_(SM1Type(this))
       , hsm2_(SM2Type(this))
     {}
 
-    void startSM() { onEntry(tsm::dummy_event); }
+    void startSM() { onEntry(tsm::null_event); }
 
     void onEntry(Event const& e) override
     {
@@ -29,13 +29,13 @@ struct OrthogonalStateMachine : public IHsmDef
         hsm2_.onEntry(e);
     }
 
-    void stopSM() { onExit(tsm::dummy_event); }
+    void stopSM() { onExit(tsm::null_event); }
 
     void onExit(Event const& e) override
     {
         // TODO(sriram): hsm1->currentState_ = nullptr; etc.
 
-        // Stopping a HSM means stopping all of its sub HSMs
+        // Stopping a Hsm means stopping all of its sub Hsms
         hsm1_.onExit(e);
         hsm2_.onExit(e);
     }
@@ -53,12 +53,12 @@ struct OrthogonalStateMachine : public IHsmDef
             if (parent_) {
                 parent_->execute(nextEvent);
             } else {
-                LOG(ERROR) << "Reached top level HSM. Cannot handle event";
+                LOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         }
     }
 
-    IHsmDef* dispatch(IHsmDef*)
+    IHsmDef* dispatch(IHsmDef*) override
     {
         SM1Type* hsm = dynamic_cast<SM1Type*>(this->currentState_);
         if (hsm) {

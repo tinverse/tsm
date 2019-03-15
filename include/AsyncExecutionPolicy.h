@@ -5,7 +5,7 @@
 
 ///
 /// The default policy class for asynchronous event processing. This policy is
-/// mixed in with a StateMachineT class to create an AsyncStateMachine. The
+/// mixed in with a StateMachineT class to create an AsynchronousHsm. The
 /// client uses the sendEvent method to communicate with the state machine. A
 /// separate thread is created and blocks wating on events in the step method.
 ///
@@ -58,7 +58,7 @@ struct AsyncExecutionPolicy : public StateType
     {
         // This is a blocking wait
         Event const& nextEvent = eventQueue_.nextEvent();
-        // go down the HSM hierarchy to handle the event as that is the
+        // go down the Hsm hierarchy to handle the event as that is the
         // "most active state"
         if (!eventQueue_.interrupted()) {
             this->dispatch(this)->execute(nextEvent);
@@ -80,7 +80,6 @@ struct AsyncExecWithObserver
   , public Observer
 {
     using AsyncExecutionPolicy<StateType>::interrupt_;
-    using AsyncExecutionPolicy<StateType>::eventQueue_;
     using Observer::notify;
 
     AsyncExecWithObserver()

@@ -19,8 +19,8 @@ struct TransitionT
 
     virtual ~TransitionT() = default;
 
-    template<typename HSMType>
-    void doTransition(HSMType* hsm)
+    template<typename HsmType>
+    void doTransition(HsmType* hsm)
     {
         if (!hsm) {
             // throw NullPointerException;
@@ -56,8 +56,8 @@ struct InternalTransitionT : public TransitionT<State, Event, ActionFn, GuardFn>
       , action(action)
     {}
 
-    template<typename HSMType>
-    void doTransition(HSMType* hsm)
+    template<typename HsmType>
+    void doTransition(HsmType* hsm)
     {
         if (action) {
             (hsm->*action)();

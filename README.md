@@ -9,7 +9,7 @@ tsm is a flexible state machine framework with support for Hierarchical and Orth
 
 ### Features:
     * Hierarchical State machine.
-    * Thread safe event queue - Parent and Separate thread execution context.
+    * Thread safe event queue - Parent (or Single) and Separate (or Async) thread execution context.
     * Ease of installation/distribution - Header only, CMake and Nix support.
     * Policy Based - Ability to customize behavior by defining execution policies.
 
@@ -19,26 +19,26 @@ Assume you have a `CdPlayer` state machine. You can create an instance and send 
 ```
 #include <tsm.h>
 
-SimpleStateMachine<CdPlayer> sm;
+SingleThreadedHsm<CdPlayer> sm;
 sm.send_event(play);
-sm.step();
+sm.step(); // take the 'play' event from the event queue and transition to the next state
 ```
 
 or
 
 ```cpp
-AsyncStateMachine<CdPlayer> sm;
+AsynchronousHsm<CdPlayer> sm;
 sm.send_event(play);
 ```
 
-Note that the call to `sm.step()` is not required for the `AsyncStateMachine`. Events are processed in a separate thread.
+Note that the call to `sm.step()` is not required for the `AsynchronousHsm`. Events are processed in a separate thread.
 
-#### StateMachine Class Definition
-Your CdPlayer state machine will have States, Events, Actions, Guards and a Transition Table.  It could also  have sub HSMs or orthogonal state machines as states.
+#### HsmDefinition Class Definition
+Your CdPlayer state machine will have States, Events, Actions, Guards and a Transition Table.  It could also  have sub Hsms or orthogonal state machines as states.
 
 ##### States, Events, Actions and Guards
 ```cpp
-struct CdPlayer : public StateMachineDef<CdPlayer>
+struct CdPlayer : public HsmDefinition<CdPlayer>
 {
     // Actions
     void PlaySong()
@@ -54,7 +54,7 @@ struct CdPlayer : public StateMachineDef<CdPlayer>
     }
     // States
     State Stopped;
-    StateMachine<PlayingHSMDef> Playing;
+    HsmExecutor<PlayingHsmDef> Playing;
     State Paused;
     State Empty;
     State Open;
@@ -76,14 +76,14 @@ The state transition table is specified in `CdPlayer`'s constructor.
 
 ```csharp
 CdPlayer(IHsmDef* parent = nullptr)
-      : StateMachineDef<CdPlayer>("CD Player HSM", parent)
+      : HsmDefinition<CdPlayer>("CD Player Hsm", parent)
       , Stopped("Player Stopped")
       , Playing(this)
       , Paused("Player Paused")
       , Empty("Player Empty")
       , Open("Player Open")
     {
-        // TransitionTable for CdPlayer HSM
+        // TransitionTable for CdPlayer Hsm
         add(Stopped, play, Playing);
         add(Stopped, open_close, Open);
         add(Stopped, stop_event, Stopped);
@@ -151,5 +151,5 @@ cmake -GNinja .. && ninja
 
 ### TODOs
     * UML front end to define State Machine.
-    * Expand OrthogonalStateMachine support to arbitrary number of HSMs.
-    * Implement concurrent execution policy for OrthogonalStateMachine.
+    * Expand OrthogonalHsmExecutor support to arbitrary number of Hsms.
+    * Implement concurrent execution policy for OrthogonalHsmExecutor.

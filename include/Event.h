@@ -6,8 +6,8 @@ namespace tsm {
 
 struct Event
 {
-    Event()
-      : id(tsm::counter_inc())
+    Event(uint64_t id_ = tsm::counter_inc())
+      : id(id_)
     {}
     Event(Event const& other) = default;
     Event(Event&& other) = default;
@@ -32,5 +32,5 @@ struct Event
     uint64_t id;
 };
 
-Event const dummy_event = Event{};
+static Event const null_event = Event{};
 } // namespace tsm

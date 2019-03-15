@@ -3,10 +3,10 @@ using namespace tsm;
 
 namespace tsmtest {
 
-struct BHsmDef : public StateMachineDef<BHsmDef>
+struct BHsmDef : public HsmDefinition<BHsmDef>
 {
     BHsmDef(IHsmDef* parent)
-      : StateMachineDef<BHsmDef>("BHsmDef", parent)
+      : HsmDefinition<BHsmDef>("BHsmDef", parent)
       , s1("BS1")
     {
         add(s1, e1, s1);
@@ -22,10 +22,10 @@ struct BHsmDef : public StateMachineDef<BHsmDef>
     Event e1;
 };
 
-struct AHsmDef : public StateMachineDef<AHsmDef>
+struct AHsmDef : public HsmDefinition<AHsmDef>
 {
     AHsmDef(IHsmDef* parent = nullptr)
-      : StateMachineDef<AHsmDef>("AHsmDef", parent)
+      : HsmDefinition<AHsmDef>("AHsmDef", parent)
       , bHsmDef(this)
       , s1("s1")
       , s2("s2")
@@ -43,7 +43,7 @@ struct AHsmDef : public StateMachineDef<AHsmDef>
     State* getStopState() { return &s4; }
 
     // States
-    StateMachine<BHsmDef> bHsmDef;
+    HsmExecutor<BHsmDef> bHsmDef;
     State s1;
     State s2;
     State s3;

@@ -2,13 +2,13 @@ For a primer on UML state machines, look [here][1].
 
 #### Using tsm
 
-Create the state machine definition (HSMDef).
+Create the state machine definition (HsmDef).
    ```
-   struct GarageDoorDef : public StateMachineDef<GarageDoorDef>
+   struct GarageDoorDef : public HsmDefinition<GarageDoorDef>
    {
       GarageDoorDef(State* parent = nullptr)
-        : StateMachineDef<GarageDoorDef>(parent)
-        , name("Garage Door HSM")
+        : HsmDefinition<GarageDoorDef>(parent)
+        , name("Garage Door Hsm")
         , doorOpen("Door Open")
         ...
       {
@@ -32,18 +32,18 @@ Create the state machine definition (HSMDef).
       ...
    };
    ```
-Make sure that the getStartState and getStopState methods are overridden in the HSMDef.
+Make sure that the getStartState and getStopState methods are overridden in the HsmDef.
 
 Wrap the definition around a statemachine and then around an execution policy. Here we have two options.
 
 a. Create a state machine that executes in the context of the parent thread.
 ```
-      SimpleStateMachine<GarageDoorDef> sm;
+      SingleThreadedHsm<GarageDoorDef> sm;
 ```
 
 b. Create a state machine that processes incomming events in its own thread.
 ```
-      AsyncStateMachine<GarageDoorDef> sm;
+      AsyncExecutionPolicy<GarageDoorDef> sm;
 ```
 
 c. Send events to the state machine by using sendEvent method provided by the policy.
@@ -51,9 +51,9 @@ c. Send events to the state machine by using sendEvent method provided by the po
     sm.sendEvent(sm.doorOpen);
 ```
 
-d. If the state machine is running in parent thread context, invoke the `step` method to process the first event in the event queue. The `AsyncStateMachine` will immediately process an event on completion of prior event processing.
+d. If the state machine is running in parent thread context, invoke the `step` method to process the first event in the event queue. The `AsyncExecutionPolicy` will immediately process an event on completion of prior event processing.
 
-For a complete example see  [GarageDoorDef.h][2] and [GarageDoorDef.cpp][3]. Also look at [CdPlayerHSM.h][4] [CdPlayerHSM.cpp][5]
+For a complete example see  [GarageDoorDef.h][2] and [GarageDoorDef.cpp][3]. Also look at [CdPlayerHsm.h][4] [CdPlayerHsm.cpp][5]
 
 ```
     sm.step();
@@ -62,8 +62,8 @@ For a complete example see  [GarageDoorDef.h][2] and [GarageDoorDef.cpp][3]. Als
 [1]: https://en.wikipedia.org/wiki/UML_state_machine
 [2]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorDef.h
 [3]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorDef.cpp
-[4]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHSM.h
-[5]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHSM.cpp
+[4]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHsm.h
+[5]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHsm.cpp
 
 ### Architecture
 
@@ -82,54 +82,54 @@ Clients need to include tsm.h file and link against the libtsm library.
 
 The abstract base class `IHsmDef` forces all Hierarchical State Machines to override the `getStartState` and `getStopState` methods.
 
-The design uses CRTP to force Actions and Guards to be callbacks that are part of your HSM class. See the implementation of
+The design uses CRTP to force Actions and Guards to be callbacks that are part of your Hsm class. See the implementation of
 
 ```
     template <typename HsmDef>
-    struct StateMachineDef : public IHsmDef {
+    struct HsmDefinition : public IHsmDef {
     ...
   };
 
 ```
-#### HSMDef
-Place holder for your own application specific sate machine definition. For e.g. you might create your own HSM called `CdPlayerHSM`. This HSM should inherit from `StateMachineDef` using CRTP.
+#### HsmDef
+Place holder for your own application specific sate machine definition. For e.g. you might create your own Hsm called `CdPlayerHsm`. This Hsm should inherit from `HsmDefinition` using CRTP.
 
 ```
-    struct CdPlayerHSM : public StateMachineDef<CdPlayerHSM> {
+    struct CdPlayerHsm : public HsmDefinition<CdPlayerHsm> {
     ...
   };
 
 ```
 
-#### StateMachineDef
-StateMachineDef is a generic that takes a user defined HSM as a template type parameter. Inheriting from `StateMachineDef` gives your state machine type - in this case the `CdPlayerHSM`, a `StateTransitionTable` class and associated boiler plate functionality for performing state transitions.
+#### HsmDefinition
+HsmDefinition is a generic that takes a user defined Hsm as a template type parameter. Inheriting from `HsmDefinition` gives your state machine type - in this case the `CdPlayerHsm`, a `StateTransitionTable` class and associated boiler plate functionality for performing state transitions.
 
 #### StateMachine
-The `StateMachine` generic implements functionality that is common to all HSMs. It provides methods `startSM` and `stopSM` that are self explanatory. The `dispatch` method forwards the event to be processed to the innermost HSM. In one of he policy classes, `execute` is then invoked on that (innermost) HSM. See `AsyncExecutionPolicy::processEvent`.
+The `StateMachine` generic implements functionality that is common to all Hsms. It provides methods `startSM` and `stopSM` that are self explanatory. The `dispatch` method forwards the event to be processed to the innermost Hsm. In one of he policy classes, `execute` is then invoked on that (innermost) Hsm. See `AsyncExecutionPolicy::processEvent`.
 
 #### Policy Classes
-Policy classes like `AsyncExecutionPolicy` and `ParentThreadExecutionPolicy` are mixins that operate on `StateType`s i.e. any type with `onEntry` and `onExit` methods that can be overridden. Clients will typically interact with a Policy class at the bottom of the inheritance hierarcy. By convention, these Policy classes also provide a `sendEvent` method as a public interface to the state machine. The `ParentThreadExecutionPolicy` class also provides a `step` method for clients to initiate event processing.
+Policy classes like `AsyncExecutionPolicy` and `SingleThreadedExecutionPolicy` are mixins that operate on `StateType`s i.e. any type with `onEntry` and `onExit` methods that can be overridden. Clients will typically interact with a Policy class at the bottom of the inheritance hierarcy. By convention, these Policy classes also provide a `sendEvent` method as a public interface to the state machine. The `SingleThreadedExecutionPolicy` class also provides a `step` method for clients to initiate event processing.
 
-The `AsyncStateMachine` processes events in it's own thread. The processing of events is single threaded within all HSMs. So when a HSM is started using a call to `startSM`, the `StateMachine` will block on the call to `nextEvent` in the `execute` method. See tsm.h. The main advantage is that the only external interface to the StateMachine can be the EventQueue. Any "client" can asynchronously place an event in the event queue as long as they have a pointer to it. As soon as the StateMachine is done with its processing, it will pick up the first event in the queue and process it. This can be seen in the test/*.cpp files.
+The `AsyncExecutionPolicy` processes events in it's own thread. The processing of events is single threaded within all Hsms. So when a Hsm is started using a call to `startSM`, the `StateMachine` will block on the call to `nextEvent` in the `execute` method. See tsm.h. The main advantage is that the only external interface to the HsmDefinition can be the EventQueue. Any "client" can asynchronously place an event in the event queue as long as they have a pointer to it. As soon as the HsmDefinition is done with its processing, it will pick up the first event in the queue and process it. This can be seen in the test/*.cpp files.
 
 #### Putting it all together
-Create your own state machine definition that derives from `StateMachineDef`. The HSM hierarchy, its states (and sub-HSMs if any), events, actions and guards are all specified and defined in the definition. The relationships between HSMs and the state transition table is also specified here. All code related to your HSM lives here.
+Create your own state machine definition that derives from `HsmDefinition`. The Hsm hierarchy, its states (and sub-Hsms if any), events, actions and guards are all specified and defined in the definition. The relationships between Hsms and the state transition table is also specified here. All code related to your Hsm lives here.
 Then choose a policy class for your state machine. Create your own state machine type by wrapping the policy class around the `StateMachine` generic. The unit test provided below is illustrative.
 
 ```
 ///
-/// GarageDoorDef is the state machine definition. It has knowledge of the HSM
-/// hierarchy, its states, events and sub-HSMs if any. The relationships between
-/// HSMs (parentHsm_) is also setup here. Mix the Async observer and the
-/// GarageDoor StateMachine to get an asynchronous garage door state machine
+/// GarageDoorDef is the state machine definition. It has knowledge of the Hsm
+/// hierarchy, its states, events and sub-Hsms if any. The relationships between
+/// Hsms (parentHsm_) is also setup here. Mix the Async observer and the
+/// GarageDoor HsmDefinition to get an asynchronous garage door state machine
 /// that notifies a listener at the end of processing each event.
 ///
-using GarageDoorHSMSeparateThread =
-  AsyncBlockingObserver<StateMachine<GarageDoorDef>>;
+using GarageDoorHsmSeparateThread =
+  AsyncBlockingObserver<HsmExecutor<GarageDoorDef>>;
 
 TEST_F(TestGarageDoorSM, testGarageDoorSeparateThreadPolicy)
 {
-    auto sm = std::make_shared<GarageDoorHSMSeparateThread>();
+    auto sm = std::make_shared<GarageDoorHsmSeparateThread>();
     auto smDef = std::static_pointer_cast<GarageDoorDef>(sm);
 
     sm->startSM();
@@ -150,4 +150,4 @@ TEST_F(TestGarageDoorSM, testGarageDoorSeparateThreadPolicy)
 ```
 
 #### Testing
-For testing the `AsyncStateMachine`, the `AsyncExecWithObserver` class is used with a special `Observer` class that blocks the parent thread until the `AsyncStateMachine` finishes event processing. The state machine thread then calls a `notify` method that releases the mutex blocking the parent thread.
+For testing the `AsyncExecutionPolicy`, the `AsyncExecWithObserver` class is used with a special `Observer` class that blocks the parent thread until the `AsyncExecutionPolicy` finishes event processing. The state machine thread then calls a `notify` method that releases the mutex blocking the parent thread.
