@@ -3,14 +3,13 @@
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::State;
-using tsm::StateMachineDef;
+using tsm::HsmDefinition;
 
 namespace tsmtest {
-struct GarageDoorDef : public StateMachineDef<GarageDoorDef>
+struct GarageDoorDef : public HsmDefinition<GarageDoorDef>
 {
-
     GarageDoorDef(IHsmDef* parent = nullptr)
-      : StateMachineDef<GarageDoorDef>("Garage Door HSM", parent)
+      : HsmDefinition<GarageDoorDef>("Garage Door Hsm", parent)
       , doorOpen("Door Open")
       , doorOpening("Door Opening")
       , doorClosing("Door Closing")
@@ -50,5 +49,4 @@ struct GarageDoorDef : public StateMachineDef<GarageDoorDef>
     Event topSensor_event;
     Event obstruct_event;
 };
-
 } // namespace tsmtest

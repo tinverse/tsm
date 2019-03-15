@@ -8,7 +8,7 @@
 
 using tsm::Event;
 using tsm::State;
-using tsm::StateMachineDef;
+using tsm::HsmDefinition;
 
 using tsmtest::AHsmDef;
 using tsmtest::BHsmDef;
@@ -16,7 +16,7 @@ using tsmtest::BHsmDef;
 TEST_CASE("State machine drill")
 {
 
-    SimpleStateMachine<AHsmDef> sm;
+    SingleThreadedHsm<AHsmDef> sm;
     sm.startSM();
     REQUIRE(&sm.s1 == sm.getCurrentState());
     sm.sendEvent(sm.e1);
@@ -41,12 +41,12 @@ TEST_CASE("State machine drill")
 }
 
 // Above test written the "BDD way". Writing for practice.
-SCENARIO("Test that a state machine transitions through its states to sub-HSMs "
+SCENARIO("Test that a state machine transitions through its states to sub-Hsms "
          "and reaches its final state")
 {
     GIVEN("A simple state machine")
     {
-        SimpleStateMachine<AHsmDef> sm;
+        SingleThreadedHsm<AHsmDef> sm;
         WHEN("started")
         {
             sm.startSM();
@@ -67,7 +67,7 @@ SCENARIO("Test that a state machine transitions through its states to sub-HSMs "
                 {
                     sm.sendEvent(sm.e2_in);
                     sm.step();
-                    THEN("the state machine transitions to the sub HSM bHsmDef")
+                    THEN("the state machine transitions to the sub Hsm bHsmDef")
                     {
                         REQUIRE(&sm.bHsmDef == sm.getCurrentState());
                     }
@@ -75,7 +75,7 @@ SCENARIO("Test that a state machine transitions through its states to sub-HSMs "
                     {
                         sm.sendEvent(sm.e2_out);
                         sm.step();
-                        THEN("the state machine transitions out of sub HSM "
+                        THEN("the state machine transitions out of sub Hsm "
                              "bHsmDef into s3")
                         {
                             REQUIRE(&sm.s3 == sm.getCurrentState());

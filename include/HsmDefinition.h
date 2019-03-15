@@ -28,6 +28,7 @@ struct IHsmDef : public State
 
     virtual State* getStartState() = 0;
     virtual State* getStopState() = 0;
+    virtual IHsmDef* dispatch(IHsmDef*) = 0;
 
     State* getCurrentState()
     {
@@ -51,14 +52,14 @@ struct IHsmDef : public State
 
 ///
 /// Captures 'structural' aspects of the state machine and behavior specific to
-/// HSMDef. For e.g. the HSMDef can override the onEntry and onExit behaviors to
+/// HsmDef. For e.g. the HsmDef can override the onEntry and onExit behaviors to
 /// implement history preserving policy for specific events.
 ///
-template<typename HSMDef>
-struct StateMachineDef : public IHsmDef
+template<typename HsmDef>
+struct HsmDefinition : public IHsmDef
 {
-    using ActionFn = void (HSMDef::*)(void);
-    using GuardFn = bool (HSMDef::*)(void);
+    using ActionFn = void (HsmDef::*)(void);
+    using GuardFn = bool (HsmDef::*)(void);
     using Transition = TransitionT<State, Event, ActionFn, GuardFn>;
     using TransitionTableElement = std::pair<StateEventPair, Transition>;
     using TransitionTable =
@@ -75,7 +76,7 @@ struct StateMachineDef : public IHsmDef
       public:
         Transition* next(State& fromState, Event const& onEvent)
         {
-            // Check if event in HSM
+            // Check if event in Hsm
             StateEventPair pair(fromState, onEvent);
             auto it = find(pair);
             if (it != end()) {
@@ -96,13 +97,13 @@ struct StateMachineDef : public IHsmDef
         }
     };
 
-    StateMachineDef() = delete;
+    HsmDefinition() = delete;
 
-    StateMachineDef(std::string const& name, IHsmDef* parent = nullptr)
+    HsmDefinition(std::string const& name, IHsmDef* parent = nullptr)
       : IHsmDef(name, parent)
     {}
 
-    virtual ~StateMachineDef() = default;
+    virtual ~HsmDefinition() = default;
 
     void add(State& fromState,
              Event const& onEvent,
@@ -118,35 +119,6 @@ struct StateMachineDef : public IHsmDef
     Transition* next(State& currentState, Event const& nextEvent)
     {
         return table_.next(currentState, nextEvent);
-    }
-
-    void onEntry(Event const& e) override
-    {
-        DLOG(INFO) << "Entering: " << this->name;
-        currentState_ = this->getStartState();
-
-        if (this->parent_) {
-            this->parent_->setCurrentHsm(this);
-        }
-
-        this->currentState_->execute(e);
-    }
-
-    void onExit(Event const&) override
-    {
-        // TODO (sriram): Does the sub-HSM remember which state it was in at
-        // exit? This really depends on exit/history policy. Sometimes you
-        // want to retain state information when you exit a sub-HSM for
-        // certain events. Maybe adding a currenEvent_ variable would allow
-        // HSMDefs to override onExit appropriately. Currently as you see,
-        // the policy is to 'forget' on exit by setting the currentState_ to
-        // nullptr.
-        DLOG(INFO) << "Exiting: " << this->name;
-        this->currentState_ = nullptr;
-
-        if (this->parent_) {
-            this->parent_->setCurrentHsm(nullptr);
-        }
     }
 
     StateTransitionTable& getTable() const { return table_; }

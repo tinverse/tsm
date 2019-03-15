@@ -14,9 +14,9 @@ add_executable(${TEST_PROJECT}
   main.cpp
   TestMachines.cpp
   GarageDoorSM.cpp
-  CdPlayerHSM.cpp
+  CdPlayerHsm.cpp
   EventQueue.cpp
-  OrthogonalCdPlayerHSM.cpp
+  OrthogonalCdPlayerHsm.cpp
 )
 
 target_link_libraries(${TEST_PROJECT}

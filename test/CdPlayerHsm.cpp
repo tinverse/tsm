@@ -1,4 +1,4 @@
-#include "CdPlayerHSM.h"
+#include "CdPlayerHsm.h"
 #include "Observer.h"
 
 #include <catch2/catch.hpp>
@@ -7,30 +7,31 @@ using tsmtest::CdPlayerController;
 using tsmtest::CdPlayerDef;
 
 using tsm::AsyncExecWithObserver;
-using tsm::AsyncStateMachine;
+using tsm::AsynchronousHsm;
 using tsm::BlockingObserver;
-using tsm::SimpleStateMachine;
-using tsm::StateMachine;
+using tsm::HsmExecutor;
+using tsm::SingleThreadedHsm;
 
 /// A "Blocking" Observer with Async Execution Policy
 template<typename StateType>
 using AsyncBlockingObserver =
   tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
 
-using CdPlayerHSMSeparateThread =
-  AsyncBlockingObserver<StateMachine<CdPlayerDef<CdPlayerController>>>;
+using CdPlayerHsmDefinition = CdPlayerDef<CdPlayerController>;
 
-using CdPlayerHSMParentThread =
-  SimpleStateMachine<CdPlayerDef<CdPlayerController>>;
+using CdPlayerHsmSeparateThread =
+  AsyncBlockingObserver<HsmExecutor<CdPlayerHsmDefinition>>;
+
+using CdPlayerHsmSingleThread = SingleThreadedHsm<CdPlayerHsmDefinition>;
 
 // TODO(sriram): Test no end state
 // Model interruptions to workflow
 // For e.g. As door is opening or closing, one of the sensors
 // detects an obstacle.
-TEST_CASE("TestCdPlayerHSM - testTransitionsSeparateThreadPolicy")
+TEST_CASE("TestCdPlayerHsm - testTransitionsSeparateThreadPolicy")
 {
 
-    CdPlayerHSMSeparateThread sm;
+    CdPlayerHsmSeparateThread sm;
 
     auto& Playing = sm.Playing;
 
@@ -77,10 +78,9 @@ TEST_CASE("TestCdPlayerHSM - testTransitionsSeparateThreadPolicy")
     sm.stopSM();
 }
 
-TEST_CASE("TestCdPlayerHSM - testTransitionsParentThreadPolicy")
+TEST_CASE("TestCdPlayerHsm - testTransitionsSingleThreadPolicy")
 {
-    CdPlayerHSMParentThread sm;
-
+    CdPlayerHsmSingleThread sm;
     auto& Playing = sm.Playing;
 
     REQUIRE(Playing.getParent() == (State*)&sm);
@@ -126,9 +126,9 @@ TEST_CASE("TestCdPlayerHSM - testTransitionsParentThreadPolicy")
 }
 
 TEST_CASE(
-  "TestCdPlayerHSM - testCallingStepOnParentThreadPolicyEmptyEventQueue")
+  "TestCdPlayerHsm - testCallingStepOnSingleThreadPolicyEmptyEventQueue")
 {
-    CdPlayerHSMParentThread sm;
+    CdPlayerHsmSingleThread sm;
 
     sm.startSM();
     sm.sendEvent(sm.cd_detected);
@@ -142,9 +142,9 @@ TEST_CASE(
     sm.stopSM();
 }
 
-TEST_CASE("TestCdPlayerHSM - testEventQueueInterruptedException")
+TEST_CASE("TestCdPlayerHsm - testEventQueueInterruptedException")
 {
-    CdPlayerHSMParentThread sm;
+    CdPlayerHsmSingleThread sm;
 
     sm.startSM();
     sm.sendEvent(sm.cd_detected);

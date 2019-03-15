@@ -3,28 +3,28 @@
 #include "tsm.h"
 using tsm::Event;
 using tsm::EventQueue;
-using tsm::ParentThreadExecutionPolicy;
+using tsm::SingleThreadedExecutionPolicy;
 using tsm::AsyncExecutionPolicy;
 using tsm::State;
-using tsm::StateMachine;
+using tsm::HsmExecutor;
 
 namespace tsmtest {
 
-// All state machine HSMs should derive from the state machine test class. The
+// All state machine Hsms should derive from the state machine test class. The
 // only difference from the base class is that the getCurrentState method has
 // been overridden here in a particularly nasty way.
-template<typename DerivedHSM>
-struct StateMachineTest : public StateMachine<DerivedHSM>
+template<typename DerivedHsm>
+struct StateMachineTest : public HsmExecutor<DerivedHsm>
 {
     using type = StateMachineTest;
-    using base_type = StateMachine<DerivedHSM>;
+    using base_type = HsmExecutor<DerivedHsm>;
 
     StateMachineTest() = delete;
 
     StateMachineTest(std::string name,
                      EventQueue<Event>& eventQueue,
                      State* parent = nullptr)
-      : StateMachine<DerivedHSM>(name, eventQueue, parent)
+      : HsmExecutor<DerivedHsm>(name, eventQueue, parent)
     {}
 
     virtual ~StateMachineTest() = default;

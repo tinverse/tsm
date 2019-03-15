@@ -5,8 +5,8 @@
 
 using tsm::AsyncExecWithObserver;
 using tsm::BlockingObserver;
-using tsm::SimpleStateMachine;
-using tsm::StateMachine;
+using tsm::SingleThreadedHsm;
+using tsm::HsmExecutor;
 
 using tsmtest::GarageDoorDef;
 
@@ -16,18 +16,18 @@ using AsyncBlockingObserver =
   tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
 
 ///
-/// GarageDoorDef is the state machine definition. It has knowledge of the HSM
-/// hierarchy, its states, events and sub-HSMs if any. The relationships between
-/// HSMs (parentHsm_) is also setup here. Mix the Async observer and the
-/// GarageDoor StateMachine to get an asynchronous garage door state machine
+/// GarageDoorDef is the state machine definition. It has knowledge of the Hsm
+/// hierarchy, its states, events and sub-Hsms if any. The relationships between
+/// Hsms (parentHsm_) is also setup here. Mix the Async observer and the
+/// GarageDoor HsmDefinition to get an asynchronous garage door state machine
 /// that notifies a listener at the end of processing each event.
 ///
-using GarageDoorHSMSeparateThread =
-  AsyncBlockingObserver<StateMachine<GarageDoorDef>>;
+using GarageDoorHsmSeparateThread =
+  AsyncBlockingObserver<HsmExecutor<GarageDoorDef>>;
 
 TEST_CASE("TestGarageDoorSM - testGarageDoorSeparateThreadPolicy")
 {
-    auto sm = std::make_shared<GarageDoorHSMSeparateThread>();
+    auto sm = std::make_shared<GarageDoorHsmSeparateThread>();
     auto smDef = std::static_pointer_cast<GarageDoorDef>(sm);
 
     sm->startSM();
@@ -46,9 +46,9 @@ TEST_CASE("TestGarageDoorSM - testGarageDoorSeparateThreadPolicy")
     sm->stopSM();
 }
 
-TEST_CASE("TestGarageDoorSM - testGarageDoorParentThreadPolicy")
+TEST_CASE("TestGarageDoorSM - testGarageDoorSingleThreadPolicy")
 {
-    auto sm = std::make_shared<SimpleStateMachine<GarageDoorDef>>();
+    auto sm = std::make_shared<SingleThreadedHsm<GarageDoorDef>>();
     auto smDef = std::static_pointer_cast<GarageDoorDef>(sm);
 
     sm->sendEvent(smDef->click_event);

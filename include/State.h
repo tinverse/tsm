@@ -10,7 +10,7 @@
 namespace tsm {
 
 ///
-/// All StateMachineDef types inherit from State. This is the base class for all
+/// All HsmDefinition types inherit from State. This is the base class for all
 /// StateMachines.
 ///
 struct State

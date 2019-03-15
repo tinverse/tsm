@@ -2,11 +2,11 @@
 
 using namespace tsm;
 
-struct SocketSMDefinition : StateMachineDef<SocketSMDefinition>
+struct SocketSMDefinition : HsmDefinition<SocketSMDefinition>
 {
   public:
     SocketSMDefinition(IHsmDef* parent = nullptr)
-      : StateMachineDef<SocketSMDefinition>("Socket State Machine", parent)
+      : HsmDefinition<SocketSMDefinition>("Socket State Machine", parent)
       , Closed("closed")
       , Ready("ready")
       , Bound("bound")
@@ -41,12 +41,12 @@ struct SocketSMDefinition : StateMachineDef<SocketSMDefinition>
     State* getStopState() override { return nullptr; }
 };
 
-using SocketHSMParentThread = SimpleStateMachine<SocketSMDefinition>;
+using SocketHsm = SingleThreadedHsm<SocketSMDefinition>;
 
 int
 main()
 {
-    SocketHSMParentThread sm;
+    SocketHsm sm;
 
     // Important!!
     sm.startSM();
