@@ -3,6 +3,8 @@
 #include "AsyncExecutionPolicy.h"
 #include "Event.h"
 #include "EventQueue.h"
+#include "FsmDefinition.h"
+#include "FsmExecutor.h"
 #include "HsmDefinition.h"
 #include "HsmExecutor.h"
 #include "OrthogonalHsmExecutor.h"
@@ -33,6 +35,9 @@ namespace tsm {
 template<typename HsmDef>
 using SingleThreadedHsm = SingleThreadedExecutionPolicy<HsmExecutor<HsmDef>>;
 
+template<typename FsmDef>
+using SingleThreadedFsm = SingleThreadedExecutionPolicy<FsmExecutor<FsmDef>>;
+
 ///
 /// An Asynchronous state machine. Event processing is done in a separate
 /// thread. Usage is similar to SingleThreadedHsm above. The final call
@@ -45,6 +50,9 @@ using SingleThreadedHsm = SingleThreadedExecutionPolicy<HsmExecutor<HsmDef>>;
 ///
 template<typename HsmDef>
 using AsynchronousHsm = AsyncExecutionPolicy<HsmExecutor<HsmDef>>;
+
+template<typename FsmDef>
+using AsynchronousFsm = AsyncExecutionPolicy<FsmExecutor<FsmDef>>;
 
 }
 

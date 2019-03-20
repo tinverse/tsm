@@ -15,7 +15,7 @@ include (CMakePackageConfigHelpers)
 include (GNUInstallDirs)
 
 #Compiler MUST be at least CXX 11 compliant
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 if (NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")

@@ -1,22 +1,26 @@
 #pragma once
 
 #include "Event.h"
-#include "State.h"
 #include "HsmExecutor.h"
+#include "State.h"
 
 #include <memory>
 namespace tsm {
 template<typename HsmDef1, typename HsmDef2>
-struct OrthogonalHsmExecutor : public IHsmDef
+struct OrthogonalHsmExecutor
+  : public IHsmDef
+  , public State
 {
     using type = OrthogonalHsmExecutor<HsmDef1, HsmDef2>;
     using SM1Type = HsmExecutor<HsmDef1>;
     using SM2Type = HsmExecutor<HsmDef2>;
 
     OrthogonalHsmExecutor(std::string const& name, IHsmDef* parent = nullptr)
-      : IHsmDef(name, parent)
+      : IHsmDef(parent)
+      , State(name)
       , hsm1_(SM1Type(this))
       , hsm2_(SM2Type(this))
+      , currentState_(nullptr)
     {}
 
     void startSM() { onEntry(tsm::null_event); }
@@ -58,24 +62,25 @@ struct OrthogonalHsmExecutor : public IHsmDef
         }
     }
 
-    IHsmDef* dispatch(IHsmDef*) override
+    IHsmDef* dispatch() override
     {
         SM1Type* hsm = dynamic_cast<SM1Type*>(this->currentState_);
         if (hsm) {
-            return hsm1_.dispatch(&hsm1_);
+            return hsm1_.dispatch();
         } else {
-            return hsm2_.dispatch(&hsm2_);
+            return hsm2_.dispatch();
         }
     }
 
-    State* getStartState() override { return &hsm1_; }
-    State* getStopState() override { return nullptr; }
+    State* getStartState() { return &hsm1_; }
+    State* getStopState() { return nullptr; }
 
     SM1Type& getHsm1() { return hsm1_; }
     SM2Type& getHsm2() { return hsm2_; }
 
     SM1Type hsm1_;
     SM2Type hsm2_;
+    State* currentState_;
 };
 
 } // namespace tsm

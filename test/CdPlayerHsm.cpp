@@ -83,7 +83,7 @@ TEST_CASE("TestCdPlayerHsm - testTransitionsSingleThreadPolicy")
     CdPlayerHsmSingleThread sm;
     auto& Playing = sm.Playing;
 
-    REQUIRE(Playing.getParent() == (State*)&sm);
+    REQUIRE(Playing.getParent() == (IHsmDef*)&sm);
 
     sm.startSM();
 

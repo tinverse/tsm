@@ -49,56 +49,50 @@ struct HsmExecutor : public HsmDef
         }
     }
 
-    // traverse the hsm hierarchy down.
-    IHsmDef* dispatch(IHsmDef* state) override
+    // Here is an event. Give me the state that has a transition corresponding
+    // to it.
+    IHsmDef* dispatch() override
     {
-        IHsmDef* currentHsm = state->getCurrentHsm();
+        IHsmDef* currentHsm = this->getCurrentHsm();
         if (currentHsm) {
-            return currentHsm->dispatch(currentHsm);
+            return currentHsm->dispatch();
         } else {
-            return state;
+            return this;
         }
     }
 
     void execute(Event const& nextEvent) override
     {
-        // DLOG(INFO) << "Current State:" << this->currentState_->name
-        //             << " Event:" << nextEvent.id;
+        DLOG(INFO) << "Current State:" << this->currentState_->name
+                   << " Event:" << nextEvent.id;
 
         Transition* t = this->next(*this->currentState_, nextEvent);
 
         if (!t) {
             // If transition does not exist, pass event to parent Hsm
             if (this->parent_) {
-                // TODO(sriram) : should call onExit? UML spec seems to say yes
-                // invoking onExit() here will not work for Orthogonal state
-                // machines
-                // this->onExit(nextEvent);
-                this->parent_->execute(nextEvent);
+                // TODO(sriram) : should call onExit? UML spec *seems* to say
+                // yes! invoking onExit() here will not work for Orthogonal
+                // state machines this->onExit(nextEvent);
+                (this->parent_)->execute(nextEvent);
             } else {
                 DLOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         } else {
             // This call to the Simple state's execute method makes it
             // behave like a moore machine.
-            if (this->currentState_ != this->currentHsm_) {
+            if ((dynamic_cast<IHsmDef*>(this->currentState_)) == nullptr) {
                 this->currentState_->execute(nextEvent);
             }
 
-            // Evaluate guard if it exists
-            bool result = t->guard && (this->*(t->guard))();
+            // Perform entry and exit actions in the doTransition function.
+            // If just an internal transition, Entry and exit actions are
+            // not performed
+            t->template doTransition<HsmDef>(this);
 
-            if (!(t->guard) || result) {
-                // Perform entry and exit actions in the doTransition function.
-                // If just an internal transition, Entry and exit actions are
-                // not performed
-                t->template doTransition<HsmDef>(this);
-                this->currentState_ = &t->toState;
-                // DLOG(INFO) << "Next State:" << this->currentState_->name;
+            this->currentState_ = &t->toState;
+            // DLOG(INFO) << "Next State:" << this->currentState_->name;
 
-            } else {
-                DLOG(INFO) << "Guard prevented transition";
-            }
             if (this->currentState_ == this->getStopState()) {
                 // DLOG(INFO) << this->name << " Reached stop state. Exiting...
                 // ";
@@ -107,5 +101,4 @@ struct HsmExecutor : public HsmDef
         }
     }
 };
-
 } // namespace tsm
