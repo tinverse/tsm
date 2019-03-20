@@ -1,5 +1,5 @@
 #pragma once
-
+#define CALL_MEMBER_FN(object, ptrToMember) ((object)->*(ptrToMember))()
 namespace tsm {
 
 template<typename State, typename Event, typename ActionFn, typename GuardFn>
@@ -26,13 +26,23 @@ struct TransitionT
             // throw NullPointerException;
         }
 
-        this->fromState.onExit(onEvent);
-        if (action) {
-            (hsm->*action)();
-        }
-        this->toState.onEntry(onEvent);
-    }
+        // Evaluate guard if it exists
+        bool result = guard && CALL_MEMBER_FN(hsm, guard);
 
+        if (!guard || result) {
+            // Perform entry and exit actions in the doTransition function.
+            // If just an internal transition, Entry and exit actions are
+            // not performed
+
+            this->fromState.onExit(onEvent);
+            if (action) {
+                CALL_MEMBER_FN(hsm, action);
+            }
+            this->toState.onEntry(onEvent);
+        } else {
+            DLOG(INFO) << "Guard prevented transition";
+        }
+    }
     State& fromState;
     Event onEvent;
     State& toState;
@@ -53,17 +63,22 @@ struct InternalTransitionT : public TransitionT<State, Event, ActionFn, GuardFn>
                                                      fromState,
                                                      action,
                                                      guard)
-      , action(action)
     {}
 
     template<typename HsmType>
     void doTransition(HsmType* hsm)
     {
-        if (action) {
-            (hsm->*action)();
+        // Evaluate guard if it exists
+        bool result = this->guard && CALL_MEMBER_FN(hsm, this->guard);
+        if (!(this->guard) || result) {
+
+            if (this->action) {
+                CALL_MEMBER_FN(hsm, this->action);
+            }
+        } else {
+            DLOG(INFO) << "Guard prevented transition";
         }
     }
-    ActionFn action;
 };
 
 } // namespace tsm

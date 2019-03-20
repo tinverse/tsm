@@ -1,14 +1,14 @@
-#include "TestMachines.h"
-#include "tsm.h"
 #include "tsm_log.h"
+
+#include "TestMachines.h"
 
 #include <catch2/catch.hpp>
 
 #include <memory>
 
 using tsm::Event;
-using tsm::State;
 using tsm::HsmDefinition;
+using tsm::State;
 
 using tsmtest::AHsmDef;
 using tsmtest::BHsmDef;

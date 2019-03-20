@@ -66,7 +66,7 @@ struct EventQueueT : private deque<Event>
     {
         std::lock_guard<LockType> lock(eventQueueMutex_);
         DLOG(INFO) << "Thread:" << std::this_thread::get_id()
-                   << " Adding Event:" << e.id << "\n";
+                   << " Adding Event:" << e.id;
         push_back(e);
         cvEventAvailable_.notify_all();
     }

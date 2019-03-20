@@ -5,7 +5,7 @@ namespace tsmtest {
 
 struct BHsmDef : public HsmDefinition<BHsmDef>
 {
-    BHsmDef(IHsmDef* parent)
+    BHsmDef(IHsmDef* parent = nullptr)
       : HsmDefinition<BHsmDef>("BHsmDef", parent)
       , s1("BS1")
     {

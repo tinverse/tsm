@@ -2,14 +2,14 @@
 
 using tsm::Event;
 using tsm::EventQueue;
+using tsm::FsmDefinition;
 using tsm::State;
-using tsm::HsmDefinition;
 
 namespace tsmtest {
-struct GarageDoorDef : public HsmDefinition<GarageDoorDef>
+struct GarageDoorDef : public FsmDefinition<GarageDoorDef>
 {
-    GarageDoorDef(IHsmDef* parent = nullptr)
-      : HsmDefinition<GarageDoorDef>("Garage Door Hsm", parent)
+    GarageDoorDef()
+      : FsmDefinition<GarageDoorDef>("Garage Door Hsm")
       , doorOpen("Door Open")
       , doorOpening("Door Opening")
       , doorClosing("Door Closing")

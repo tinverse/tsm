@@ -27,11 +27,12 @@ include(Catch)
 
 # configure unit tests via CTest
 if (TSM_USE_VALGRIND)
-    add_test(NAME ValgrindRunTests COMMAND valgrind --leak-check=full --error-exitcode=1 $<TARGET_FILE:${TEST_PROJECT})
+    add_test(NAME ValgrindRunTests COMMAND valgrind --leak-check=full --error-exitcode=1 $<TARGET_FILE:${TEST_PROJECT}>)
+    set_tests_properties(ValgrindRunTests PROPERTIES PASS_REGULAR_EXPRESSION "no leaks are possible")
     add_test(NAME ValgrindListTests COMMAND valgrind --leak-check=full --error-exitcode=1 $<TARGET_FILE:${TEST_PROJECT}> --list-tests --verbosity high)
-    set_tests_properties(ValgrindListTests PROPERTIES PASS_REGULAR_EXPRESSION "definitely lost: 0 bytes in 0 blocks")
+    set_tests_properties(ValgrindListTests PROPERTIES PASS_REGULAR_EXPRESSION "no leaks are possible")
     add_test(NAME ValgrindListTags COMMAND valgrind --leak-check=full --error-exitcode=1 $<TARGET_FILE:${TEST_PROJECT}> --list-tags)
-    set_tests_properties(ValgrindListTags PROPERTIES PASS_REGULAR_EXPRESSION "definitely lost: 0 bytes in 0 blocks")
+    set_tests_properties(ValgrindListTags PROPERTIES PASS_REGULAR_EXPRESSION "no leaks are possible")
 endif()
 
 catch_discover_tests(${TEST_PROJECT})

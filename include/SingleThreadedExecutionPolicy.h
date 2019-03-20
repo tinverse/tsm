@@ -40,7 +40,7 @@ struct SingleThreadedExecutionPolicy : public StateType
         // go down the Hsm hierarchy to handle the event as that is the
         // "most active state"
         if (!eventQueue_.interrupted()) {
-            this->dispatch(this)->execute(nextEvent);
+            this->dispatch()->execute(nextEvent);
         } else {
             DLOG(WARNING) << this->name << ": Exiting event loop on interrupt";
         }
