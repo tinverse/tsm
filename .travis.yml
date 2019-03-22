@@ -30,7 +30,7 @@ script:
     - nix-shell --run ./build.sh
 after_success:
     # Uploading report to CodeCov
-    - bash <(curl -s https://codecov.io/bash) -f "test/tsm_test.profdata" || echo "Codecov did not collect coverage reports"
+    - bash <(curl -s https://codecov.io/bash) -f "build/test/tsm_test.profdata" || echo "Codecov did not collect coverage reports"
 
 deploy:
   provider: pages
