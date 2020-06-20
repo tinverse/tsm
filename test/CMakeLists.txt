@@ -39,5 +39,5 @@ catch_discover_tests(${TEST_PROJECT})
 
 # test coverage
 include(coverage)
-
+set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-*,readability-*)
 install(TARGETS ${TEST_PROJECT} RUNTIME DESTINATION test)

@@ -1,9 +1,9 @@
 #include "CdPlayerHsm.h"
 #include "Observer.h"
+#include "OrthogonalHsmExecutor.h"
 
 #include <catch2/catch.hpp>
 
-using tsm::AsyncExecutionPolicy;
 using tsm::BlockingObserver;
 using tsm::OrthogonalHsmExecutor;
 using tsm::SingleThreadedExecutionPolicy;
@@ -19,7 +19,7 @@ struct OrthogonalCdPlayerHsm
       : OrthogonalHsmExecutor<CdPlayerDef<CdPlayerController>, ErrorHsm>(
           "CD Player Orthogonal Hsm")
     {}
-    virtual ~OrthogonalCdPlayerHsm() = default;
+    ~OrthogonalCdPlayerHsm() override = default;
 };
 
 /// A "Blocking" Observer with Async Execution Policy
@@ -37,11 +37,11 @@ TEST_CASE("TestOrthogonalCdPlayerHsm - testOrthogonalHsmSeparateThread")
 {
     auto sm = std::make_shared<OrthogonalCdPlayerHsmSeparateThread>();
 
-    auto* cdPlayerHsm = &sm->getHsm1();
+    auto* cdPlayerHsm = &std::get<0>(sm->sms_);
 
     auto* Playing = &cdPlayerHsm->Playing;
 
-    auto* errorHsm = &sm->getHsm2();
+    auto* errorHsm = &std::get<1>(sm->sms_);
 
     REQUIRE(Playing->getParent() == cdPlayerHsm);
     REQUIRE(sm.get() == cdPlayerHsm->getParent());
@@ -101,11 +101,11 @@ TEST_CASE("TestOrthogonalCdPlayerHsm - testOrthogonalHsmSingleThread")
 
     auto sm = std::make_shared<OrthogonalCdPlayerHsmSingleThread>();
 
-    auto* cdPlayerHsm = &sm->getHsm1();
+    auto* cdPlayerHsm = &std::get<0>(sm->sms_);
 
     auto* Playing = &cdPlayerHsm->Playing;
 
-    auto* errorHsm = &sm->getHsm2();
+    auto* errorHsm = &std::get<1>(sm->sms_);
 
     REQUIRE(Playing->getParent() == cdPlayerHsm);
     REQUIRE(sm.get() == cdPlayerHsm->getParent());

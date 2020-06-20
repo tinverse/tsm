@@ -54,7 +54,7 @@ using AsynchronousHsm = AsyncExecutionPolicy<HsmExecutor<HsmDef>>;
 template<typename FsmDef>
 using AsynchronousFsm = AsyncExecutionPolicy<FsmExecutor<FsmDef>>;
 
-}
+} // namespace tsm
 
 // Provide a hash function for StateEventPair
 namespace std {

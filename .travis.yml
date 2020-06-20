@@ -1,48 +1,37 @@
 language: nix
-#nix: 2.0.4
-
 env:
   global:
-    # Ubuntu version
-    - LINUX_DIST=xenial
-    - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-
+  - LINUX_DIST=xenial
+  - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
+  - secure: ocNI0G9pmoC0b7ZTfCT0uFP+NLyqhmaKB3ZoDnfgqQ8DQ2VTwBn5hMefJToX7cfE7EpcBdqxuzEpEWJ2zfc2mRIClj8Ygq4O6VF6o1JR5zMcoIGr63WJl3+ZXCAaG29aZcncWm5kbZEE4BeAn61ZQ3I+XJbU1hJPYFW2VzyfKXusjhc1750MvqRUX7fjtrY9G9BQfL4TZm4iKzHeLD/VyUeXoGZUvY0S5UmUjn0I1JV/68WnI1F/WtyLw5bIfh08gHqo8oKgsme6fK7EVvOj0vvVmta4C4Ru1r4YDtBfJkxdubGqi4VIbcLvI6A8LzoYiUV3PkBxAbZaphjXsHlh+CcwrJEANcftFWMYQ5z4ANngtlEOfUJtykGZKqqA9lpnYwqv0CvgpeTK39lwOe1jcQUgtSjwK3ig+VW3saQDoR1QBuy6yfZflydX2EYSEaJOffT6VYaxUB814gsZtspNy+HBUk3z4Qn+kkIk3D+XMUm6coIYtfi3NPBOsOKlo/t112IayNh31tSqHBnfUHxEBl9Iok+DhF1Qt8OTWTEzfHYqTYTmO+0i7Q3jnKGzzeiqFnURTjXJUinMeFIpLnPOg8EJsETIeYaebZ9/vWECFpvVItbhGT/mHJhnF0L1pIvjMSmQzypZyCasa2yBXDvqXcpTk3thvFlMuAoaxzt7lmo=
 matrix:
   include:
-    - os: linux
-      dist: xenial
-      sudo: true
-      addons:
-       apt:
-         packages:
-           # Misc
-           - python-yaml
-         sources:
-
-before_install:
-
+  - os: linux
+    dist: xenial
+    sudo: true
+    addons:
+      apt:
+        packages:
+        - python-yaml
+        sources: 
+before_install: 
 install:
-    - sudo pip install codecov
+- sudo pip install codecov
 script:
-    ############################################################################
-    # Build main and tests
-    ############################################################################
-    - nix-shell --run ./build.sh
+- nix-shell --run ./build.sh
 after_success:
-    # Uploading report to CodeCov
-    - bash <(curl -s https://codecov.io/bash) -f "build/test/tsm_test.profdata" || echo "Codecov did not collect coverage reports"
-
+- bash <(curl -s https://codecov.io/bash) -f "build/test/tsm_test.profdata" || echo
+  "Codecov did not collect coverage reports"
 deploy:
   provider: pages
   skip_cleanup: true
   local_dir: build/docs/html
-  github_token: $GH_REPO_TOKEN
+  github_token: "$GH_REPO_TOKEN"
+  keep_history: true
   verbose: true
   on:
     branch: master
     condition: -d "build/docs/html"
-
 after_failure:
-  # show actions of the OOM killer
-  - echo pwd
-  - sudo dmesg
+- echo pwd
+- sudo dmesg

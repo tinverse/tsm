@@ -27,6 +27,8 @@ TEST_CASE("TestEventQueue - testAddFrom100Threads")
     std::vector<Event> v;
     const int NEVENTS = 100;
 
+    v.reserve(NEVENTS);
+
     for (int i = 0; i < NEVENTS; i++) {
         v.emplace_back();
     }
