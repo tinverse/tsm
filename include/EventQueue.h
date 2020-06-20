@@ -58,7 +58,7 @@ struct EventQueueT : private deque<Event>
             DLOG(INFO) << "Thread:" << std::this_thread::get_id()
                        << " Popping Event:" << e.id;
             pop_front();
-            return std::move(e);
+            return e;
         }
     }
 

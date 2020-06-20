@@ -7,11 +7,8 @@
 #include <memory>
 
 using tsm::Event;
-using tsm::HsmDefinition;
-using tsm::State;
 
 using tsmtest::AHsmDef;
-using tsmtest::BHsmDef;
 
 TEST_CASE("State machine drill")
 {

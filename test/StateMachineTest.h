@@ -1,12 +1,12 @@
 #pragma once
 
 #include "tsm.h"
+using tsm::AsyncExecutionPolicy;
 using tsm::Event;
 using tsm::EventQueue;
-using tsm::SingleThreadedExecutionPolicy;
-using tsm::AsyncExecutionPolicy;
-using tsm::State;
 using tsm::HsmExecutor;
+using tsm::SingleThreadedExecutionPolicy;
+using tsm::State;
 
 namespace tsmtest {
 
