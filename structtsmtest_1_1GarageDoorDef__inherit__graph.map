@@ -1,6 +1,6 @@
 <map id="tsmtest::GarageDoorDef" name="tsmtest::GarageDoorDef">
-<area shape="rect" id="node1" title=" " alt="" coords="5,868,168,1121"/>
-<area shape="rect" id="node2" href="$structtsm_1_1FsmDefinition.html" title=" " alt="" coords="19,580,154,819"/>
-<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="29,5,134,229"/>
-<area shape="rect" id="node4" href="$structtsm_1_1FsmDefinition.html" title=" " alt="" coords="103,279,236,517"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,868,171,1121"/>
+<area shape="rect" id="node2" href="$structtsm_1_1FsmDefinition.html" title=" " alt="" coords="19,580,157,819"/>
+<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="30,5,135,229"/>
+<area shape="rect" id="node4" href="$structtsm_1_1FsmDefinition.html" title=" " alt="" coords="105,279,239,517"/>
 </map>

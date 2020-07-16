@@ -1,9 +1,7 @@
 <map id="OrthogonalCdPlayerHsm" name="OrthogonalCdPlayerHsm">
-<area shape="rect" id="node1" title=" " alt="" coords="275,911,468,1003"/>
-<area shape="rect" id="node2" href="$structtsm_1_1OrthogonalHsmExecutor.html" title=" " alt="" coords="258,608,485,861"/>
-<area shape="rect" id="node3" href="$structtsm_1_1IHsmDef.html" title=" " alt="" coords="5,20,135,215"/>
-<area shape="rect" id="node7" href="$structtsm_1_1OrthogonalHsmExecutor.html" title=" " alt="" coords="97,292,291,531"/>
-<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="279,5,384,229"/>
-<area shape="rect" id="node5" href="$structtsm_1_1HsmExecutor.html" title=" " alt="" coords="517,321,727,501"/>
-<area shape="rect" id="node6" href="$structtsm_1_1HsmExecutor.html" title=" " alt="" coords="752,314,948,509"/>
+<area shape="rect" id="node1" title=" " alt="" coords="129,881,324,973"/>
+<area shape="rect" id="node2" href="$structtsm_1_1OrthogonalHsmExecutor.html" title=" " alt="" coords="111,593,342,832"/>
+<area shape="rect" id="node3" href="$structtsm_1_1IHsmDef.html" title=" " alt="" coords="5,20,136,215"/>
+<area shape="rect" id="node5" href="$structtsm_1_1OrthogonalHsmExecutor.html" title=" " alt="" coords="99,292,293,516"/>
+<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="283,5,389,229"/>
 </map>

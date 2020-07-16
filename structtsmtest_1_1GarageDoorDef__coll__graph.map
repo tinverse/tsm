@@ -1,8 +1,8 @@
 <map id="tsmtest::GarageDoorDef" name="tsmtest::GarageDoorDef">
-<area shape="rect" id="node1" title=" " alt="" coords="92,953,255,1075"/>
-<area shape="rect" id="node2" href="$structtsm_1_1FsmDefinition.html" title=" " alt="" coords="106,637,241,847"/>
-<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="121,5,226,229"/>
-<area shape="rect" id="node5" href="$structtsm_1_1FsmDefinition.html" title=" " alt="" coords="287,292,420,501"/>
-<area shape="rect" id="node4" href="$structtsm_1_1FsmDefinition_1_1StateTransitionTable.html" title=" " alt="" coords="338,57,526,178"/>
-<area shape="rect" id="node6" href="$structtsm_1_1Event.html" title=" " alt="" coords="265,652,370,832"/>
+<area shape="rect" id="node1" title=" " alt="" coords="90,953,256,1075"/>
+<area shape="rect" id="node2" href="$structtsm_1_1FsmDefinition.html" title=" " alt="" coords="104,637,242,847"/>
+<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="120,5,226,229"/>
+<area shape="rect" id="node5" href="$structtsm_1_1FsmDefinition.html" title=" " alt="" coords="287,292,422,501"/>
+<area shape="rect" id="node4" href="$structtsm_1_1FsmDefinition_1_1StateTransitionTable.html" title=" " alt="" coords="340,57,529,178"/>
+<area shape="rect" id="node6" href="$structtsm_1_1Event.html" title=" " alt="" coords="266,652,371,832"/>
 </map>
