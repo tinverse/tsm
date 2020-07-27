@@ -1,12 +1,13 @@
 #include <tsm.h>
 
-using namespace tsm;
+using tsm::State;
+using tsm::Event;
 
-struct SocketSMDefinition : HsmDefinition<SocketSMDefinition>
+struct SocketSM : tsm::Hsm<SocketSM>
 {
   public:
-    SocketSMDefinition(IHsmDef* parent = nullptr)
-      : HsmDefinition<SocketSMDefinition>("Socket State Machine", parent)
+    SocketSM()
+      : tsm::Hsm<SocketSM>("Socket State Machine")
       , Closed("closed")
       , Ready("ready")
       , Bound("bound")
@@ -41,7 +42,7 @@ struct SocketSMDefinition : HsmDefinition<SocketSMDefinition>
     State* getStopState() override { return nullptr; }
 };
 
-using SocketHsm = SingleThreadedHsm<SocketSMDefinition>;
+using SocketHsm = tsm::SingleThreadedHsm<SocketSM>;
 
 int
 main()

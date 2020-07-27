@@ -2,14 +2,14 @@
 
 using tsm::Event;
 using tsm::EventQueue;
-using tsm::FsmDefinition;
+using tsm::Hsm;
 using tsm::State;
 
 namespace tsmtest {
-struct GarageDoorDef : public FsmDefinition<GarageDoorDef>
+struct GarageDoorHsm : public Hsm<GarageDoorHsm>
 {
-    GarageDoorDef()
-      : FsmDefinition<GarageDoorDef>("Garage Door Hsm")
+    GarageDoorHsm()
+      : Hsm<GarageDoorHsm>("Garage Door Hsm")
       , doorOpen("Door Open")
       , doorOpening("Door Opening")
       , doorClosing("Door Closing")
@@ -30,7 +30,7 @@ struct GarageDoorDef : public FsmDefinition<GarageDoorDef>
         add(doorClosed, click_event, doorOpening);
     }
 
-    virtual ~GarageDoorDef() = default;
+    virtual ~GarageDoorHsm() = default;
 
     State* getStartState() override { return &doorClosed; }
     State* getStopState() override { return nullptr; }

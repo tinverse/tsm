@@ -3,11 +3,8 @@
 #include "AsyncExecutionPolicy.h"
 #include "Event.h"
 #include "EventQueue.h"
-#include "FsmDefinition.h"
-#include "FsmExecutor.h"
-#include "HsmDefinition.h"
-#include "HsmExecutor.h"
-#include "OrthogonalHsmExecutor.h"
+#include "Hsm.h"
+#include "OrthogonalHsm.h"
 #include "SingleThreadedExecutionPolicy.h"
 #include "State.h"
 #include "Transition.h"
@@ -32,11 +29,8 @@ namespace tsm {
 /// 5. To process the event, call the step method
 /// sm.step();
 ///
-template<typename HsmDef>
-using SingleThreadedHsm = SingleThreadedExecutionPolicy<HsmExecutor<HsmDef>>;
-
-template<typename FsmDef>
-using SingleThreadedFsm = SingleThreadedExecutionPolicy<FsmExecutor<FsmDef>>;
+template<typename Hsm>
+using SingleThreadedHsm = SingleThreadedExecutionPolicy<Hsm>;
 
 ///
 /// An Asynchronous state machine. Event processing is done in a separate
@@ -48,31 +42,7 @@ using SingleThreadedFsm = SingleThreadedExecutionPolicy<FsmExecutor<FsmDef>>;
 /// the HsmDefinition is done processing the previous event. It also simplifies
 /// the interface in that only one call to sendEvent is required.
 ///
-template<typename HsmDef>
-using AsynchronousHsm = AsyncExecutionPolicy<HsmExecutor<HsmDef>>;
-
-template<typename FsmDef>
-using AsynchronousFsm = AsyncExecutionPolicy<FsmExecutor<FsmDef>>;
+template<typename Hsm>
+using AsynchronousHsm = AsyncExecutionPolicy<Hsm>;
 
 } // namespace tsm
-
-// Provide a hash function for StateEventPair
-namespace std {
-using tsm::State;
-template<>
-struct hash<tsm::StateEventPair>
-{
-    size_t operator()(const tsm::StateEventPair& s) const
-    {
-        State* statePtr = &s.first;
-        uint64_t id_s = statePtr->id;
-        tsm::Event event = s.second;
-        auto address = reinterpret_cast<uintptr_t>(statePtr);
-        uint64_t id_e = event.id;
-        size_t hash_value = hash<uint64_t>{}(id_s) ^
-                            hash<uintptr_t>{}(address) ^
-                            (hash<uint64_t>{}(id_e) << 1);
-        return hash_value;
-    }
-};
-} // namespace std

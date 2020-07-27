@@ -1,3 +1,8 @@
+#pragma once
+#include "tsm_log.h"
+
+#include <condition_variable>
+#include <mutex>
 namespace tsm {
 ///
 /// A simple observer class. The notify method will be invoked by an

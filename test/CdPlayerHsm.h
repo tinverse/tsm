@@ -4,9 +4,8 @@
 
 using tsm::Event;
 using tsm::EventQueue;
-using tsm::HsmDefinition;
-using tsm::HsmExecutor;
-using tsm::IHsmDef;
+using tsm::Hsm;
+using tsm::IHsm;
 using tsm::State;
 
 namespace tsmtest {
@@ -28,17 +27,17 @@ struct CdPlayerController
 // The ControllerType is not strictly required. It doesn't have to be templated
 // as well. I think about it as the "context" associated with the state machine.
 // This way the CdPlayerController can encapsulate stuff like mp3 encodings,
-// hardware details etc. with the CdPlayerDef delegating all actions to the
+// hardware details etc. with the CdPlayerHsm delegating all actions to the
 // controller.
 template<typename ControllerType>
-struct CdPlayerDef : public HsmDefinition<CdPlayerDef<ControllerType>>
+struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
 {
-    using HsmDefinition<CdPlayerDef>::add;
+    using Hsm<CdPlayerHsm>::add;
 
     // Playing Hsm
-    struct PlayingHsmDef : public HsmDefinition<PlayingHsmDef>
+    struct PlayingHsm : public Hsm<PlayingHsm>
     {
-        using HsmDefinition<PlayingHsmDef>::add;
+        using Hsm<PlayingHsm>::add;
 
         struct Song1State : public State
         {
@@ -47,22 +46,22 @@ struct CdPlayerDef : public HsmDefinition<CdPlayerDef<ControllerType>>
             {}
             void execute(Event const&) override {}
         };
-        PlayingHsmDef(IHsmDef* parent = nullptr)
-          : HsmDefinition<PlayingHsmDef>("Playing Hsm", parent)
+        PlayingHsm()
+          : Hsm<PlayingHsm>("Playing Hsm")
           , Song1()
           , Song2("Playing Hsm -> Song2")
           , Song3("Playing Hsm -> Song3")
         {
 
             // clang-format off
-            add(Song1, next_song, Song2, &PlayingHsmDef::PlaySong, &PlayingHsmDef::PlaySongGuard);
+            add(Song1, next_song, Song2, &PlayingHsm::PlaySong, &PlayingHsm::PlaySongGuard);
             // clang-format on
             add(Song2, next_song, Song3);
             add(Song3, prev_song, Song2);
             add(Song2, prev_song, Song1);
         }
 
-        virtual ~PlayingHsmDef() = default;
+        virtual ~PlayingHsm() = default;
 
         State* getStartState() override { return &Song1; }
         State* getStopState() override { return nullptr; }
@@ -90,42 +89,36 @@ struct CdPlayerDef : public HsmDefinition<CdPlayerDef<ControllerType>>
             return true;
         }
 
-        CdPlayerController controller_;
-    };
-
-    struct PlayingHsmExecutor : public HsmExecutor<PlayingHsmDef>
-    {
-        PlayingHsmExecutor(IHsmDef* parent = nullptr)
-          : HsmExecutor<PlayingHsmDef>(parent)
-        {}
-
         // If the event is a pause, stay on the song that is playing. For all
         // other events, go back to the start state
         void onEntry(Event const& e) override
         {
-            auto parent = static_cast<CdPlayerDef*>(this->parent_);
+            auto parent = static_cast<CdPlayerHsm*>(this->parent_);
             if (parent->end_pause != e) {
-                HsmExecutor<PlayingHsmDef>::onEntry(e);
+                Hsm<PlayingHsm>::onEntry(e);
             }
         }
 
         void onExit(Event const& e) override
         {
-            auto parent = static_cast<CdPlayerDef*>(this->parent_);
+            auto parent = static_cast<CdPlayerHsm*>(this->parent_);
             if (parent->pause != e) {
-                HsmExecutor<PlayingHsmDef>::onExit(e);
+                Hsm<PlayingHsm>::onExit(e);
             }
         }
+
+        CdPlayerController controller_;
     };
 
-    CdPlayerDef(IHsmDef* parent = nullptr)
-      : HsmDefinition<CdPlayerDef>("CD Player Hsm", parent)
+    CdPlayerHsm()
+      : Hsm<CdPlayerHsm>("CD Player Hsm")
       , Stopped("Player Stopped")
-      , Playing(this)
       , Paused("Player Paused")
       , Empty("Player Empty")
       , Open("Player Open")
     {
+        Playing.setParent(this);
+
         // TransitionTable for GarageDoor Hsm
         add(Stopped, play, Playing);
         add(Stopped, open_close, Open);
@@ -146,7 +139,7 @@ struct CdPlayerDef : public HsmDefinition<CdPlayerDef<ControllerType>>
         add(Paused, open_close, Open);
     }
 
-    virtual ~CdPlayerDef() = default;
+    virtual ~CdPlayerHsm() = default;
 
     State* getStartState() { return &Empty; }
     State* getStopState() { return nullptr; }
@@ -155,7 +148,8 @@ struct CdPlayerDef : public HsmDefinition<CdPlayerDef<ControllerType>>
     // States
     State Stopped;
 
-    PlayingHsmExecutor Playing;
+    // Playing is a Hsm and a State
+    PlayingHsm Playing;
 
     State Paused;
     State Empty;
@@ -172,10 +166,10 @@ struct CdPlayerDef : public HsmDefinition<CdPlayerDef<ControllerType>>
     ControllerType controller_;
 };
 
-struct ErrorHsm : public HsmDefinition<ErrorHsm>
+struct ErrorHsm : public Hsm<ErrorHsm>
 {
-    ErrorHsm(IHsmDef* parent = nullptr)
-      : HsmDefinition<ErrorHsm>("Error Hsm", parent)
+    ErrorHsm()
+      : Hsm<ErrorHsm>("Error Hsm")
       , AllOk("All Ok")
       , ErrorMode("Error Mode")
     {

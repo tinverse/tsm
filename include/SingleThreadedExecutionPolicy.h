@@ -20,6 +20,10 @@ struct SingleThreadedExecutionPolicy : public StateType
       , interrupt_(false)
     {}
 
+    SingleThreadedExecutionPolicy(SingleThreadedExecutionPolicy const&) =
+      delete;
+    SingleThreadedExecutionPolicy(SingleThreadedExecutionPolicy&&) = delete;
+
     virtual ~SingleThreadedExecutionPolicy() = default;
 
     void onExit(Event const& e) override
@@ -31,10 +35,6 @@ struct SingleThreadedExecutionPolicy : public StateType
 
     void step()
     {
-        if (eventQueue_.empty()) {
-            DLOG(WARNING) << "Event Queue is empty!";
-            return;
-        }
         // This is a blocking wait
         Event const& nextEvent = eventQueue_.nextEvent();
         // go down the Hsm hierarchy to handle the event as that is the
