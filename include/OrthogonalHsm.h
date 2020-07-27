@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Event.h"
-#include "HsmExecutor.h"
 #include "State.h"
+#include "Hsm.h"
 
 #include <memory>
 #include <tuple>
@@ -61,17 +61,16 @@ perform(Tuple&& tuple, size_t index, Action action)
       });
 }
 
-template<typename... HsmDefs>
-struct OrthogonalHsmExecutor
-  : public IHsmDef
+template<typename... Hsms>
+struct OrthogonalHsm
+  : public IHsm
   , public State
 {
-    using type = OrthogonalHsmExecutor<HsmExecutor<HsmDefs>...>;
-    static constexpr size_t HSM_COUNT = sizeof...(HsmDefs);
+    using type = OrthogonalHsm<Hsms...>;
+    static constexpr size_t HSM_COUNT = sizeof...(Hsms);
 
-    explicit OrthogonalHsmExecutor(std::string const& name,
-                                   IHsmDef* parent = nullptr)
-      : IHsmDef(parent)
+    explicit OrthogonalHsm(std::string const& name, IHsm* parent = nullptr)
+      : IHsm(parent)
       , State(name)
       , currentState_(nullptr)
     {
@@ -112,21 +111,21 @@ struct OrthogonalHsmExecutor
         } else {
             // Try sending the event up to parent
             if (parent_) {
-                parent_->execute(nextEvent);
+                dynamic_cast<State*>(this->parent_)->execute(nextEvent);
             } else {
                 LOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         }
     }
 
-    IHsmDef* dispatch() override
+    State* dispatch() override
     {
         auto sm_index = find_if(sms_, [&](auto& sm) {
             auto sm_cast = dynamic_cast<decltype(&sm)>(this->currentState_);
             return sm_cast != nullptr;
         });
 
-        IHsmDef* dispatch_candidate = nullptr;
+        IHsm* dispatch_candidate = nullptr;
         if (sm_index < HSM_COUNT) {
             perform(
               sms_, sm_index, [&](auto& sm) { dispatch_candidate = &sm; });
@@ -138,7 +137,7 @@ struct OrthogonalHsmExecutor
     State* getStartState() { return &std::get<0>(sms_); }
     State* getStopState() { return nullptr; }
 
-    std::tuple<HsmExecutor<HsmDefs>...> sms_;
+    std::tuple<Hsms...> sms_;
     State* currentState_;
 };
 } // namespace tsm

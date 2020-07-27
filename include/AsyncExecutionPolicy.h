@@ -22,6 +22,9 @@ struct AsyncExecutionPolicy : public StateType
       , interrupt_(false)
     {}
 
+    AsyncExecutionPolicy(AsyncExecutionPolicy const&) = delete;
+    AsyncExecutionPolicy(AsyncExecutionPolicy&&) = delete;
+
     virtual ~AsyncExecutionPolicy() = default;
 
     void onEntry(Event const& e) override
@@ -34,7 +37,9 @@ struct AsyncExecutionPolicy : public StateType
     {
         interrupt_ = true;
         eventQueue_.stop();
-        smThread_.join();
+        if (smThread_.joinable()) {
+            smThread_.join();
+        }
 
         StateType::onExit(e);
     }
@@ -86,6 +91,9 @@ struct AsyncExecWithObserver
       : AsyncExecutionPolicy<StateType>()
       , Observer()
     {}
+
+    AsyncExecWithObserver(AsyncExecWithObserver const&) = delete;
+    AsyncExecWithObserver(AsyncExecWithObserver&&) = delete;
 
     virtual ~AsyncExecWithObserver() = default;
 

@@ -3,15 +3,16 @@
 [![Coverity Scan](https://scan.coverity.com/projects/17873/badge.svg)](https://scan.coverity.com/projects/tinverse-tsm)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-The [C++ API documentation](https://tinverse.github.io/tsm/index.html).
+The [C++ API documentation](https://tinverse.github.io/tsm/index.html) has an overview of usage, architecture and a discussion of drawbacks.
 
 ### What is tsm?
-tsm is a flexible state machine framework with support for Hierarchical and Orthogonal State Machines.
+tsm is a state machine framework with support for Hierarchical and Orthogonal State Machines.
 
 ### Features:
     * Hierarchical State machine.
-    * Thread safe event queue - Parent (or Single) and Separate (or Async) thread execution context.
-    * Ease of installation/distribution - Header only, CMake and Nix support.
+    * Thread safe event queue.
+    * Single Threaded or Asynchronous execution.
+    * Ease of installation and integration - Header only, CMake and Nix support.
     * Policy Based - Ability to customize behavior by defining execution policies.
 
 ### Usage
@@ -21,7 +22,7 @@ Assume you have a `CdPlayer` state machine. You can create an instance and send 
 #include <tsm.h>
 
 SingleThreadedHsm<CdPlayer> sm;
-sm.send_event(play);
+sm.sendEvent(play);
 sm.step(); // take the 'play' event from the event queue and transition to the next state
 ```
 
@@ -29,7 +30,7 @@ or
 
 ```cpp
 AsynchronousHsm<CdPlayer> sm;
-sm.send_event(play);
+sm.sendEvent(play);
 ```
 
 Note that the call to `sm.step()` is not required for the `AsynchronousHsm`. Events are processed in a separate thread.
@@ -39,7 +40,7 @@ Your CdPlayer state machine will have States, Events, Actions, Guards and a Tran
 
 ##### States, Events, Actions and Guards
 ```cpp
-struct CdPlayer : public HsmDefinition<CdPlayer>
+struct CdPlayer : public Hsm<CdPlayer>
 {
     // Actions
     void PlaySong()
@@ -55,7 +56,7 @@ struct CdPlayer : public HsmDefinition<CdPlayer>
     }
     // States
     State Stopped;
-    HsmExecutor<PlayingHsmDef> Playing;
+    PlayingHsm Playing;
     State Paused;
     State Empty;
     State Open;
@@ -75,15 +76,17 @@ Actions and Guards are member functions with the above signatures. States and Ev
 ##### State Transition Table
 The state transition table is specified in `CdPlayer`'s constructor.
 
-```csharp
-CdPlayer(IHsmDef* parent = nullptr)
-      : HsmDefinition<CdPlayer>("CD Player Hsm", parent)
+```cpp
+CdPlayer()
+      : Hsm<CdPlayer>("CD Player Hsm")
       , Stopped("Player Stopped")
-      , Playing(this)
       , Paused("Player Paused")
       , Empty("Player Empty")
       , Open("Player Open")
     {
+        // setup parent/child relationship
+        Playing.setParent(this);
+
         // TransitionTable for CdPlayer Hsm
         add(Stopped, play, Playing);
         add(Stopped, open_close, Open);

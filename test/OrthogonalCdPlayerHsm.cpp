@@ -1,22 +1,22 @@
 #include "CdPlayerHsm.h"
 #include "Observer.h"
-#include "OrthogonalHsmExecutor.h"
+#include "OrthogonalHsm.h"
 
 #include <catch2/catch.hpp>
 
 using tsm::BlockingObserver;
-using tsm::OrthogonalHsmExecutor;
+using tsm::OrthogonalHsm;
 using tsm::SingleThreadedExecutionPolicy;
 
 using tsmtest::CdPlayerController;
-using tsmtest::CdPlayerDef;
+using tsmtest::CdPlayerHsm;
 using tsmtest::ErrorHsm;
 
 struct OrthogonalCdPlayerHsm
-  : public OrthogonalHsmExecutor<CdPlayerDef<CdPlayerController>, ErrorHsm>
+  : public OrthogonalHsm<CdPlayerHsm<CdPlayerController>, ErrorHsm>
 {
     OrthogonalCdPlayerHsm()
-      : OrthogonalHsmExecutor<CdPlayerDef<CdPlayerController>, ErrorHsm>(
+      : OrthogonalHsm<CdPlayerHsm<CdPlayerController>, ErrorHsm>(
           "CD Player Orthogonal Hsm")
     {}
     ~OrthogonalCdPlayerHsm() override = default;
@@ -82,7 +82,7 @@ TEST_CASE("TestOrthogonalCdPlayerHsm - testOrthogonalHsmSeparateThread")
     REQUIRE(cdPlayerHsm->getCurrentState() == &cdPlayerHsm->Stopped);
     REQUIRE(Playing->getCurrentState() == nullptr);
 
-    // same as TestCdPlayerDef::testTransitions upto this point
+    // same as TestCdPlayerHsm::testTransitions upto this point
     sm->sendEvent(errorHsm->error);
     sm->wait();
     REQUIRE(cdPlayerHsm->getCurrentState() == &cdPlayerHsm->Stopped);
@@ -145,7 +145,7 @@ TEST_CASE("TestOrthogonalCdPlayerHsm - testOrthogonalHsmSingleThread")
     REQUIRE(cdPlayerHsm->getCurrentState() == &cdPlayerHsm->Stopped);
     REQUIRE(Playing->getCurrentState() == nullptr);
 
-    // same as TestCdPlayerDef::testTransitions upto this point
+    // same as TestCdPlayerHsm::testTransitions upto this point
     sm->sendEvent(errorHsm->error);
     sm->step();
     REQUIRE(cdPlayerHsm->getCurrentState() == &cdPlayerHsm->Stopped);

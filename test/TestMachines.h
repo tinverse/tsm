@@ -3,10 +3,10 @@ using namespace tsm;
 
 namespace tsmtest {
 
-struct BHsmDef : public HsmDefinition<BHsmDef>
+struct BHsm : public Hsm<BHsm>
 {
-    BHsmDef(IHsmDef* parent = nullptr)
-      : HsmDefinition<BHsmDef>("BHsmDef", parent)
+    BHsm()
+      : Hsm<BHsm>("BHsm")
       , s1("BS1")
     {
         add(s1, e1, s1);
@@ -22,19 +22,22 @@ struct BHsmDef : public HsmDefinition<BHsmDef>
     Event e1;
 };
 
-struct AHsmDef : public HsmDefinition<AHsmDef>
+struct AHsm : public Hsm<AHsm>
 {
-    AHsmDef(IHsmDef* parent = nullptr)
-      : HsmDefinition<AHsmDef>("AHsmDef", parent)
-      , bHsmDef(this)
+    AHsm()
+      : Hsm<AHsm>("AHsm")
       , s1("s1")
       , s2("s2")
       , s3("s3")
       , s4("s4")
     {
+        // Establish Parent - Child Relationships
+        bHsm.setParent(this);
+
+        // Create State Transition Table
         add(s1, e1, s2);
-        add(s2, e2_in, bHsmDef);
-        add(bHsmDef, e2_out, s3);
+        add(s2, e2_in, bHsm);
+        add(bHsm, e2_out, s3);
         add(s3, e3, s1);
         add(s3, end_event, s4);
     }
@@ -43,7 +46,7 @@ struct AHsmDef : public HsmDefinition<AHsmDef>
     State* getStopState() { return &s4; }
 
     // States
-    HsmExecutor<BHsmDef> bHsmDef;
+    BHsm bHsm;
     State s1;
     State s2;
     State s3;
@@ -56,4 +59,4 @@ struct AHsmDef : public HsmDefinition<AHsmDef>
     Event e3;
     Event end_event;
 };
-}
+} // namespace tsmtest

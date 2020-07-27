@@ -6,15 +6,22 @@ namespace tsm {
 
 struct Event
 {
-    Event(uint64_t id_ = tsm::counter_inc())
+    Event()
+      : id(tsm::counter_inc())
+    {}
+
+    Event(uint64_t id_)
       : id(id_)
     {}
+
     Event(Event const& other) = default;
     Event(Event&& other) = default;
 
     Event& operator=(Event const& e)
     {
-        this->id = e.id;
+        if (this != &e) {
+            this->id = e.id;
+        }
         return *this;
     }
 

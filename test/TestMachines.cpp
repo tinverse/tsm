@@ -8,12 +8,12 @@
 
 using tsm::Event;
 
-using tsmtest::AHsmDef;
+using tsmtest::AHsm;
 
 TEST_CASE("State machine drill")
 {
 
-    SingleThreadedHsm<AHsmDef> sm;
+    SingleThreadedHsm<AHsm> sm;
     sm.startSM();
     REQUIRE(&sm.s1 == sm.getCurrentState());
     sm.sendEvent(sm.e1);
@@ -21,7 +21,7 @@ TEST_CASE("State machine drill")
     REQUIRE(&sm.s2 == sm.getCurrentState());
     sm.sendEvent(sm.e2_in);
     sm.step();
-    REQUIRE(&sm.bHsmDef == sm.getCurrentState());
+    REQUIRE(&sm.bHsm == sm.getCurrentState());
     sm.sendEvent(sm.e2_out);
     sm.step();
     REQUIRE(&sm.s3 == sm.getCurrentState());
@@ -43,7 +43,7 @@ SCENARIO("Test that a state machine transitions through its states to sub-Hsms "
 {
     GIVEN("A simple state machine")
     {
-        SingleThreadedHsm<AHsmDef> sm;
+        SingleThreadedHsm<AHsm> sm;
         WHEN("started")
         {
             sm.startSM();
@@ -64,16 +64,16 @@ SCENARIO("Test that a state machine transitions through its states to sub-Hsms "
                 {
                     sm.sendEvent(sm.e2_in);
                     sm.step();
-                    THEN("the state machine transitions to the sub Hsm bHsmDef")
+                    THEN("the state machine transitions to the sub Hsm bHsm")
                     {
-                        REQUIRE(&sm.bHsmDef == sm.getCurrentState());
+                        REQUIRE(&sm.bHsm == sm.getCurrentState());
                     }
                     WHEN(" Event e2_out is sent")
                     {
                         sm.sendEvent(sm.e2_out);
                         sm.step();
                         THEN("the state machine transitions out of sub Hsm "
-                             "bHsmDef into s3")
+                             "bHsm into s3")
                         {
                             REQUIRE(&sm.s3 == sm.getCurrentState());
                         }

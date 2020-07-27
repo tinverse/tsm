@@ -4,12 +4,11 @@
 #include <catch2/catch.hpp>
 
 using tsmtest::CdPlayerController;
-using tsmtest::CdPlayerDef;
+using tsmtest::CdPlayerHsm;
 
 using tsm::AsyncExecWithObserver;
 using tsm::AsynchronousHsm;
 using tsm::BlockingObserver;
-using tsm::HsmExecutor;
 using tsm::SingleThreadedHsm;
 
 /// A "Blocking" Observer with Async Execution Policy
@@ -17,12 +16,11 @@ template<typename StateType>
 using AsyncBlockingObserver =
   tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
 
-using CdPlayerHsmDefinition = CdPlayerDef<CdPlayerController>;
-
 using CdPlayerHsmSeparateThread =
-  AsyncBlockingObserver<HsmExecutor<CdPlayerHsmDefinition>>;
+  AsyncBlockingObserver<CdPlayerHsm<CdPlayerController>>;
 
-using CdPlayerHsmSingleThread = SingleThreadedHsm<CdPlayerHsmDefinition>;
+using CdPlayerHsmSingleThread =
+  SingleThreadedHsm<CdPlayerHsm<CdPlayerController>>;
 
 // TODO(sriram): Test no end state
 // Model interruptions to workflow
@@ -83,7 +81,7 @@ TEST_CASE("TestCdPlayerHsm - testTransitionsSingleThreadPolicy")
     CdPlayerHsmSingleThread sm;
     auto& Playing = sm.Playing;
 
-    REQUIRE(Playing.getParent() == (IHsmDef*)&sm);
+    REQUIRE(Playing.getParent() == (IHsm*)&sm);
 
     sm.startSM();
 
@@ -132,10 +130,6 @@ TEST_CASE(
 
     sm.startSM();
     sm.sendEvent(sm.cd_detected);
-    sm.step();
-    REQUIRE(sm.getCurrentState() == &sm.Stopped);
-
-    // Event queue is empty now. Nothing should change
     sm.step();
     REQUIRE(sm.getCurrentState() == &sm.Stopped);
 
