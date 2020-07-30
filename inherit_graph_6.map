@@ -1,6 +1,25 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,78,63,105"/>
-<area shape="rect" id="node2" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="111,5,293,47"/>
-<area shape="rect" id="node3" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="111,71,293,112"/>
-<area shape="rect" id="node4" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="111,136,293,177"/>
+<area shape="rect" id="node1" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="140,261,224,288"/>
+<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="321,355,461,381"/>
+<area shape="rect" id="node4" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="321,405,462,432"/>
+<area shape="rect" id="node6" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="304,457,479,498"/>
+<area shape="rect" id="node8" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="311,523,471,549"/>
+<area shape="rect" id="node10" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="290,123,493,149"/>
+<area shape="rect" id="node12" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="304,173,479,200"/>
+<area shape="rect" id="node14" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="294,224,489,251"/>
+<area shape="rect" id="node16" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="272,275,511,331"/>
+<area shape="rect" id="node18" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="315,5,468,32"/>
+<area shape="rect" id="node19" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="320,57,463,98"/>
+<area shape="rect" id="node3" href="$structtsmtest_1_1AHsm.html" title=" " alt="" coords="608,355,719,381"/>
+<area shape="rect" id="node5" href="$structtsmtest_1_1BHsm.html" title=" " alt="" coords="608,405,719,432"/>
+<area shape="rect" id="node7" href="$structtsmtest_1_1CdPlayerHsm.html" title=" " alt="" coords="585,457,741,498"/>
+<area shape="rect" id="node9" href="$structtsmtest_1_1ErrorHsm.html" title=" " alt="" coords="598,523,729,549"/>
+<area shape="rect" id="node11" href="$structtsmtest_1_1GarageDoorHsm.html" title=" " alt="" coords="577,115,749,141"/>
+<area shape="rect" id="node13" href="$structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm.html" title=" " alt="" coords="559,166,768,207"/>
+<area shape="rect" id="node15" href="$structtsmtest_1_1TrafficLightHsm.html" title=" " alt="" coords="580,232,747,259"/>
+<area shape="rect" id="node17" href="$structOrthogonalCdPlayerHsm.html" title=" " alt="" coords="580,289,747,316"/>
+<area shape="rect" id="node20" href="$structtsm_1_1IState.html" title=" " alt="" coords="5,319,92,345"/>
+<area shape="rect" id="node21" href="$structtsm_1_1State.html" title=" " alt="" coords="141,319,223,345"/>
+<area shape="rect" id="node22" href="$structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm_1_1Song1State.html" title=" " alt="" coords="301,573,482,629"/>
+<area shape="rect" id="node23" href="$structtsmtest_1_1TrafficLightHsm_1_1LightState.html" title=" " alt="" coords="308,654,475,695"/>
 </map>

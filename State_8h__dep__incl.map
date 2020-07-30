@@ -1,9 +1,7 @@
 <map id="include/State.h" name="include/State.h">
-<area shape="rect" id="node1" title=" " alt="" coords="382,5,491,32"/>
-<area shape="rect" id="node2" href="$FsmDefinition_8h.html" title=" " alt="" coords="137,80,296,107"/>
-<area shape="rect" id="node4" href="$tsm_8h.html" title=" " alt="" coords="225,379,325,405"/>
-<area shape="rect" id="node5" href="$HsmDefinition_8h.html" title=" " alt="" coords="237,155,399,181"/>
-<area shape="rect" id="node6" href="$HsmExecutor_8h.html" title=" " alt="" coords="289,229,448,256"/>
-<area shape="rect" id="node7" href="$OrthogonalHsmExecutor_8h.html" title=" " alt="" coords="338,304,559,331"/>
-<area shape="rect" id="node3" href="$FsmExecutor_8h.html" title=" " alt="" coords="5,229,161,256"/>
+<area shape="rect" id="node1" title=" " alt="" coords="130,5,239,32"/>
+<area shape="rect" id="node2" href="$Hsm_8h.html" title=" " alt="" coords="119,155,226,181"/>
+<area shape="rect" id="node3" href="$OrthogonalHsm_8h.html" title=" " alt="" coords="5,229,175,256"/>
+<area shape="rect" id="node4" href="$tsm_8h.html" title=" " alt="" coords="188,304,288,331"/>
+<area shape="rect" id="node5" href="$Transition_8h.html" title=" " alt="" coords="171,80,305,107"/>
 </map>

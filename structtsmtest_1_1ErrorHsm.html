@@ -81,11 +81,11 @@ Inheritance diagram for tsmtest::ErrorHsm:</div>
 <div class="dyncontent">
 <div class="center"><img src="structtsmtest_1_1ErrorHsm__inherit__graph.png" border="0" usemap="#tsmtest_1_1ErrorHsm_inherit__map" alt="Inheritance graph"/></div>
 <map name="tsmtest_1_1ErrorHsm_inherit__map" id="tsmtest_1_1ErrorHsm_inherit__map">
-<area shape="rect" title=" " alt="" coords="95,736,225,916"/>
-<area shape="rect" href="structtsm_1_1HsmDefinition.html" title=" " alt="" coords="93,565,227,687"/>
-<area shape="rect" href="structtsm_1_1IHsmDef.html" title=" " alt="" coords="5,5,136,215"/>
-<area shape="rect" href="structtsm_1_1HsmDefinition.html" title=" " alt="" coords="93,323,227,444"/>
-<area shape="rect" href="structtsm_1_1FsmDefinition.html" title=" " alt="" coords="251,264,386,503"/>
+<area shape="rect" title=" " alt="" coords="63,883,193,1063"/>
+<area shape="rect" href="structtsm_1_1Hsm.html" title=" " alt="" coords="48,595,208,833"/>
+<area shape="rect" href="structtsm_1_1IHsm.html" title=" " alt="" coords="5,13,136,237"/>
+<area shape="rect" href="structtsm_1_1Hsm.html" title=" " alt="" coords="51,293,205,532"/>
+<area shape="rect" href="structtsm_1_1State.html" title=" " alt="" coords="175,5,281,244"/>
 </map>
 </div>
 <div class="dynheader">
@@ -93,20 +93,20 @@ Collaboration diagram for tsmtest::ErrorHsm:</div>
 <div class="dyncontent">
 <div class="center"><img src="structtsmtest_1_1ErrorHsm__coll__graph.png" border="0" usemap="#tsmtest_1_1ErrorHsm_coll__map" alt="Collaboration graph"/></div>
 <map name="tsmtest_1_1ErrorHsm_coll__map" id="tsmtest_1_1ErrorHsm_coll__map">
-<area shape="rect" title=" " alt="" coords="333,836,464,972"/>
-<area shape="rect" href="structtsm_1_1HsmDefinition.html" title=" " alt="" coords="134,608,269,729"/>
-<area shape="rect" href="structtsm_1_1IHsmDef.html" title=" " alt="" coords="5,20,136,215"/>
-<area shape="rect" href="structtsm_1_1HsmDefinition.html" title=" " alt="" coords="67,336,202,457"/>
-<area shape="rect" href="structtsm_1_1FsmDefinition.html" title=" " alt="" coords="226,292,361,501"/>
-<area shape="rect" href="structtsm_1_1State.html" title=" " alt="" coords="313,5,418,229"/>
-<area shape="rect" href="structtsm_1_1Event.html" title=" " alt="" coords="437,579,542,759"/>
+<area shape="rect" title=" " alt="" coords="108,909,239,1045"/>
+<area shape="rect" href="structtsm_1_1Hsm.html" title=" " alt="" coords="94,608,254,832"/>
+<area shape="rect" href="structtsm_1_1IHsm.html" title=" " alt="" coords="450,20,580,229"/>
+<area shape="rect" href="structtsm_1_1Hsm.html" title=" " alt="" coords="229,307,382,531"/>
+<area shape="rect" href="structtsm_1_1State.html" title=" " alt="" coords="62,5,168,244"/>
+<area shape="rect" href="structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="407,351,578,487"/>
+<area shape="rect" href="structtsm_1_1Event.html" title=" " alt="" coords="278,623,384,817"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aae4f8ac9825654b193e76f8660fe9eb3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsmtest_1_1ErrorHsm.html#aae4f8ac9825654b193e76f8660fe9eb3">ErrorHsm</a> (<a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *parent=nullptr)</td></tr>
-<tr class="separator:aae4f8ac9825654b193e76f8660fe9eb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af53ccffb6f396ef36d484dace11d0c44"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsmtest_1_1ErrorHsm.html#af53ccffb6f396ef36d484dace11d0c44">ErrorHsm</a> ()</td></tr>
+<tr class="separator:af53ccffb6f396ef36d484dace11d0c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a871cda984e73f0348ca73bf96ec6aad3"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsmtest_1_1ErrorHsm.html#a871cda984e73f0348ca73bf96ec6aad3">~ErrorHsm</a> ()=default</td></tr>
 <tr class="separator:a871cda984e73f0348ca73bf96ec6aad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a202ced7156b6963e2edd13bf048cf87f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsmtest_1_1ErrorHsm.html#a202ced7156b6963e2edd13bf048cf87f">recovery</a> ()</td></tr>
@@ -115,47 +115,58 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4772b4bcc5e1d310715080803717a319"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae97d061c194ffcf9a1a7c204b6ac005d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1State.html">State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsmtest_1_1ErrorHsm.html#ae97d061c194ffcf9a1a7c204b6ac005d">getStopState</a> ()</td></tr>
 <tr class="separator:ae97d061c194ffcf9a1a7c204b6ac005d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_structtsm_1_1HsmDefinition"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structtsm_1_1HsmDefinition')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structtsm_1_1HsmDefinition.html">tsm::HsmDefinition&lt; ErrorHsm &gt;</a></td></tr>
-<tr class="memitem:a36af565ba58f3bce3c9e6b2d791ab6df inherit pub_methods_structtsm_1_1HsmDefinition"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1HsmDefinition.html#a36af565ba58f3bce3c9e6b2d791ab6df">HsmDefinition</a> ()=delete</td></tr>
-<tr class="separator:a36af565ba58f3bce3c9e6b2d791ab6df inherit pub_methods_structtsm_1_1HsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af43469b4ff94f2bad836a37eb630b205 inherit pub_methods_structtsm_1_1HsmDefinition"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1HsmDefinition.html#af43469b4ff94f2bad836a37eb630b205">HsmDefinition</a> (std::string const &amp;<a class="el" href="structtsm_1_1State.html#a29207205de5d98261cdd2ab6c489ac08">name</a>, <a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *parent=nullptr)</td></tr>
-<tr class="separator:af43469b4ff94f2bad836a37eb630b205 inherit pub_methods_structtsm_1_1HsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf719e1e60f43fb8e8583928740b6005 inherit pub_methods_structtsm_1_1HsmDefinition"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1HsmDefinition.html#acf719e1e60f43fb8e8583928740b6005">~HsmDefinition</a> ()=default</td></tr>
-<tr class="separator:acf719e1e60f43fb8e8583928740b6005 inherit pub_methods_structtsm_1_1HsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_structtsm_1_1IHsmDef"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structtsm_1_1IHsmDef')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structtsm_1_1IHsmDef.html">tsm::IHsmDef</a></td></tr>
-<tr class="memitem:af8dbfae847116a8b6a8aa677367c7e36 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#af8dbfae847116a8b6a8aa677367c7e36">IHsmDef</a> ()=delete</td></tr>
-<tr class="separator:af8dbfae847116a8b6a8aa677367c7e36 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a805e7288841e63c046dd49102a47f1ee inherit pub_methods_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#a805e7288841e63c046dd49102a47f1ee">IHsmDef</a> (<a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *parent)</td></tr>
-<tr class="separator:a805e7288841e63c046dd49102a47f1ee inherit pub_methods_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5d77369d71cec52e12a9a97c3043771 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#ad5d77369d71cec52e12a9a97c3043771">~IHsmDef</a> ()=default</td></tr>
-<tr class="separator:ad5d77369d71cec52e12a9a97c3043771 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35c213705afc3555a07ed19feafa03c6 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#a35c213705afc3555a07ed19feafa03c6">getCurrentHsm</a> ()</td></tr>
-<tr class="separator:a35c213705afc3555a07ed19feafa03c6 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2a6d212b19e95990b34a1547235f1bf inherit pub_methods_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#af2a6d212b19e95990b34a1547235f1bf">setCurrentHsm</a> (<a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *currentHsm)</td></tr>
-<tr class="separator:af2a6d212b19e95990b34a1547235f1bf inherit pub_methods_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a014936e1911c036beb4c564a11b57509 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#a014936e1911c036beb4c564a11b57509">getParent</a> () const</td></tr>
-<tr class="separator:a014936e1911c036beb4c564a11b57509 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e2af600ad935e9d4d2079bca9cbd0c9 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#a7e2af600ad935e9d4d2079bca9cbd0c9">dispatch</a> ()=0</td></tr>
-<tr class="separator:a7e2af600ad935e9d4d2079bca9cbd0c9 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33c5de7f9b8b2785f7dda8c751472018 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#a33c5de7f9b8b2785f7dda8c751472018">execute</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;)=0</td></tr>
-<tr class="separator:a33c5de7f9b8b2785f7dda8c751472018 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2d95fb0aa5c83b6132d9177b2b7bb02 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#ab2d95fb0aa5c83b6132d9177b2b7bb02">setParent</a> (<a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *parent)</td></tr>
-<tr class="separator:ab2d95fb0aa5c83b6132d9177b2b7bb02 inherit pub_methods_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_structtsm_1_1FsmDefinition"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structtsm_1_1FsmDefinition')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structtsm_1_1FsmDefinition.html">tsm::FsmDefinition&lt; ErrorHsm &gt;</a></td></tr>
-<tr class="memitem:a5dab65f46e9b23a3240c4b41c2a96f83 inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#a5dab65f46e9b23a3240c4b41c2a96f83">FsmDefinition</a> (std::string const &amp;<a class="el" href="structtsm_1_1State.html#a29207205de5d98261cdd2ab6c489ac08">name</a>)</td></tr>
-<tr class="separator:a5dab65f46e9b23a3240c4b41c2a96f83 inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13e86e3872214e19a16ea6c76653514d inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#a13e86e3872214e19a16ea6c76653514d">~FsmDefinition</a> ()=default</td></tr>
-<tr class="separator:a13e86e3872214e19a16ea6c76653514d inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adcfc986a8eadaaab8a0d25b6a9c70c8f inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#adcfc986a8eadaaab8a0d25b6a9c70c8f">add</a> (<a class="el" href="structtsm_1_1State.html">State</a> &amp;fromState, <a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;onEvent, <a class="el" href="structtsm_1_1State.html">State</a> &amp;toState, <a class="el" href="structtsm_1_1FsmDefinition.html#a3de54f51376193b158866a4c18cf2938">ActionFn</a> action=nullptr, <a class="el" href="structtsm_1_1FsmDefinition.html#abdbf35284ceda37d63e0d14621846bc9">GuardFn</a> guard=nullptr)</td></tr>
-<tr class="separator:adcfc986a8eadaaab8a0d25b6a9c70c8f inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40a066703fe2e7107f5c577db8078a48 inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1FsmDefinition.html#aa6c001c502b3dc6c37b9333d81288e59">Transition</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#a40a066703fe2e7107f5c577db8078a48">next</a> (<a class="el" href="structtsm_1_1State.html">State</a> &amp;currentState, <a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;nextEvent)</td></tr>
-<tr class="separator:a40a066703fe2e7107f5c577db8078a48 inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d92ba6e9c69baa73fc7f9104655993b inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1State.html">State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#a6d92ba6e9c69baa73fc7f9104655993b">getCurrentState</a> ()</td></tr>
-<tr class="separator:a6d92ba6e9c69baa73fc7f9104655993b inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50ee2ea90538cbf9b2b2eab657962c0a inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">StateTransitionTable &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#a50ee2ea90538cbf9b2b2eab657962c0a">getTable</a> () const</td></tr>
-<tr class="separator:a50ee2ea90538cbf9b2b2eab657962c0a inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0145d8a1f5f6bc98a1f276eddc3cbf9 inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">std::set&lt; <a class="el" href="structtsm_1_1Event.html">Event</a> &gt; const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#af0145d8a1f5f6bc98a1f276eddc3cbf9">getEvents</a> () const</td></tr>
-<tr class="separator:af0145d8a1f5f6bc98a1f276eddc3cbf9 inherit pub_methods_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_structtsm_1_1Hsm"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structtsm_1_1Hsm')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structtsm_1_1Hsm.html">tsm::Hsm&lt; ErrorHsm &gt;</a></td></tr>
+<tr class="memitem:a23e2eb43fedc27f2e5221feb7b05fe7c inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a23e2eb43fedc27f2e5221feb7b05fe7c">Hsm</a> (std::string const &amp;<a class="el" href="structtsm_1_1State.html#a29207205de5d98261cdd2ab6c489ac08">name</a>)</td></tr>
+<tr class="separator:a23e2eb43fedc27f2e5221feb7b05fe7c inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a906c9040ef344ebd181b1f007e35cfbd inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a906c9040ef344ebd181b1f007e35cfbd">Hsm</a> (std::string const &amp;<a class="el" href="structtsm_1_1State.html#a29207205de5d98261cdd2ab6c489ac08">name</a>, <a class="el" href="structtsm_1_1IHsm.html">IHsm</a> *parent)</td></tr>
+<tr class="separator:a906c9040ef344ebd181b1f007e35cfbd inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec5cedf465d6c3f17a80ab9bd8246973 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#aec5cedf465d6c3f17a80ab9bd8246973">Hsm</a> (<a class="el" href="structtsm_1_1IHsm.html">IHsm</a> const &amp;)=delete</td></tr>
+<tr class="separator:aec5cedf465d6c3f17a80ab9bd8246973 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56875a6d9e73bbd98e764cf1e3a85ec0 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a56875a6d9e73bbd98e764cf1e3a85ec0">Hsm</a> (<a class="el" href="structtsm_1_1IHsm.html">IHsm</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a56875a6d9e73bbd98e764cf1e3a85ec0 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a799a5c3bb2937b2194ff06efd1f2a580 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a799a5c3bb2937b2194ff06efd1f2a580">~Hsm</a> ()</td></tr>
+<tr class="separator:a799a5c3bb2937b2194ff06efd1f2a580 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12368d6542ca8af78e5c5b4fa91d3ea3 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a12368d6542ca8af78e5c5b4fa91d3ea3">startSM</a> ()</td></tr>
+<tr class="separator:a12368d6542ca8af78e5c5b4fa91d3ea3 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3e1392fe881793dc3e837c727de47d9 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#ab3e1392fe881793dc3e837c727de47d9">stopSM</a> ()</td></tr>
+<tr class="separator:ab3e1392fe881793dc3e837c727de47d9 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae65734c0c4ccdf4341236fd0405beee2 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#ae65734c0c4ccdf4341236fd0405beee2">onEntry</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;e) override</td></tr>
+<tr class="separator:ae65734c0c4ccdf4341236fd0405beee2 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a308c9f62efd7ba3ad34332aa66dcf5c8 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a308c9f62efd7ba3ad34332aa66dcf5c8">onExit</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;) override</td></tr>
+<tr class="separator:a308c9f62efd7ba3ad34332aa66dcf5c8 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae093e1aeb82c7d31cb376ad18f7c157 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1State.html">State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#aae093e1aeb82c7d31cb376ad18f7c157">dispatch</a> () override</td></tr>
+<tr class="separator:aae093e1aeb82c7d31cb376ad18f7c157 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae8ac9372d308703f393d9280805d937 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#aae8ac9372d308703f393d9280805d937">execute</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;nextEvent) override</td></tr>
+<tr class="separator:aae8ac9372d308703f393d9280805d937 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa83288b6fbe8eecd4c07d949909d9049 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#aa83288b6fbe8eecd4c07d949909d9049">add</a> (<a class="el" href="structtsm_1_1State.html">State</a> &amp;fromState, <a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;onEvent, <a class="el" href="structtsm_1_1State.html">State</a> &amp;toState, <a class="el" href="structtsm_1_1Hsm.html#ac9850b681d288324dbea32517855fc02">ActionFn</a> action=nullptr, <a class="el" href="structtsm_1_1Hsm.html#a3ea708490e876b809f16b7f7f41b1e22">GuardFn</a> guard=nullptr)</td></tr>
+<tr class="separator:aa83288b6fbe8eecd4c07d949909d9049 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61f30c8f1ec6b5a1d15bfa13881c873a inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1Hsm.html#a77fbf5c23a5a9f20de2c6ca047b4e1da">Transition</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a61f30c8f1ec6b5a1d15bfa13881c873a">next</a> (<a class="el" href="structtsm_1_1State.html">State</a> &amp;currentState, <a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;nextEvent)</td></tr>
+<tr class="separator:a61f30c8f1ec6b5a1d15bfa13881c873a inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfa3fc821786b949c82823a8d02efcfc inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1State.html">State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#adfa3fc821786b949c82823a8d02efcfc">getCurrentState</a> ()</td></tr>
+<tr class="separator:adfa3fc821786b949c82823a8d02efcfc inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d3af770b72f2fbac9e7ec91ce70c6cc inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1Hsm.html#ac07aa4257896cc177f167db540cdcacc">StateTransitionTable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a1d3af770b72f2fbac9e7ec91ce70c6cc">getTable</a> () const</td></tr>
+<tr class="separator:a1d3af770b72f2fbac9e7ec91ce70c6cc inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fa3774657d41e205989cc979c0f3960 inherit pub_methods_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">std::set&lt; <a class="el" href="structtsm_1_1Event.html">Event</a> &gt; const &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a7fa3774657d41e205989cc979c0f3960">getEvents</a> () const</td></tr>
+<tr class="separator:a7fa3774657d41e205989cc979c0f3960 inherit pub_methods_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_structtsm_1_1IHsm"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structtsm_1_1IHsm')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structtsm_1_1IHsm.html">tsm::IHsm</a></td></tr>
+<tr class="memitem:ab0131a9c5ea6a99e2657f592fc97a2ec inherit pub_methods_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#ab0131a9c5ea6a99e2657f592fc97a2ec">IHsm</a> ()=delete</td></tr>
+<tr class="separator:ab0131a9c5ea6a99e2657f592fc97a2ec inherit pub_methods_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72c1c644103cda7af8e3669c3eb38150 inherit pub_methods_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#a72c1c644103cda7af8e3669c3eb38150">IHsm</a> (<a class="el" href="structtsm_1_1IHsm.html">IHsm</a> *parent)</td></tr>
+<tr class="separator:a72c1c644103cda7af8e3669c3eb38150 inherit pub_methods_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05e4b27380ceada75270b6e843cd7f2b inherit pub_methods_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#a05e4b27380ceada75270b6e843cd7f2b">IHsm</a> (<a class="el" href="structtsm_1_1IHsm.html">IHsm</a> const &amp;)=delete</td></tr>
+<tr class="separator:a05e4b27380ceada75270b6e843cd7f2b inherit pub_methods_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac14cefa592edd191c20c16ac4f2eaa39 inherit pub_methods_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#ac14cefa592edd191c20c16ac4f2eaa39">IHsm</a> (<a class="el" href="structtsm_1_1IHsm.html">IHsm</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:ac14cefa592edd191c20c16ac4f2eaa39 inherit pub_methods_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58559110427a8fbd58d8851b2b7b6aad inherit pub_methods_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#a58559110427a8fbd58d8851b2b7b6aad">~IHsm</a> ()=default</td></tr>
+<tr class="separator:a58559110427a8fbd58d8851b2b7b6aad inherit pub_methods_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2c97fda7464bd4dfd98979128ca620c inherit pub_methods_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1IHsm.html">IHsm</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#ac2c97fda7464bd4dfd98979128ca620c">getCurrentHsm</a> ()</td></tr>
+<tr class="separator:ac2c97fda7464bd4dfd98979128ca620c inherit pub_methods_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dd84b6c42fcbf2396e72d1280881c56 inherit pub_methods_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#a5dd84b6c42fcbf2396e72d1280881c56">setCurrentHsm</a> (<a class="el" href="structtsm_1_1IHsm.html">IHsm</a> *currentHsm)</td></tr>
+<tr class="separator:a5dd84b6c42fcbf2396e72d1280881c56 inherit pub_methods_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1031aa3905e546f857e216bdf1cd6c10 inherit pub_methods_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1IHsm.html">IHsm</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#a1031aa3905e546f857e216bdf1cd6c10">getParent</a> () const</td></tr>
+<tr class="separator:a1031aa3905e546f857e216bdf1cd6c10 inherit pub_methods_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33cd0d6a1b0a35403b15bdfd7b8e2c63 inherit pub_methods_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#a33cd0d6a1b0a35403b15bdfd7b8e2c63">setParent</a> (<a class="el" href="structtsm_1_1IHsm.html">IHsm</a> *parent)</td></tr>
+<tr class="separator:a33cd0d6a1b0a35403b15bdfd7b8e2c63 inherit pub_methods_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structtsm_1_1State"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structtsm_1_1State')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structtsm_1_1State.html">tsm::State</a></td></tr>
 <tr class="memitem:a8ff39690dca48c1ff9aa4e8240928b23 inherit pub_methods_structtsm_1_1State"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1State.html#a8ff39690dca48c1ff9aa4e8240928b23">State</a> ()=delete</td></tr>
 <tr class="separator:a8ff39690dca48c1ff9aa4e8240928b23 inherit pub_methods_structtsm_1_1State"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,12 +182,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa660843ca1fcf1ae35f12fa58f47ce8b inherit pub_methods_structtsm_1_1State"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97edecc53bc3923d6dc3c6bd9172f24b inherit pub_methods_structtsm_1_1State"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1State.html#a97edecc53bc3923d6dc3c6bd9172f24b">operator!=</a> (<a class="el" href="structtsm_1_1State.html">State</a> &amp;rhs)</td></tr>
 <tr class="separator:a97edecc53bc3923d6dc3c6bd9172f24b inherit pub_methods_structtsm_1_1State"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae298c4c03b865e40be659e2fddc38173 inherit pub_methods_structtsm_1_1State"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1State.html#ae298c4c03b865e40be659e2fddc38173">execute</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;nextEvent)</td></tr>
-<tr class="separator:ae298c4c03b865e40be659e2fddc38173 inherit pub_methods_structtsm_1_1State"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7bc4fa4f86ae30307e0301bd09126a0 inherit pub_methods_structtsm_1_1State"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1State.html#ae7bc4fa4f86ae30307e0301bd09126a0">onEntry</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;)</td></tr>
-<tr class="separator:ae7bc4fa4f86ae30307e0301bd09126a0 inherit pub_methods_structtsm_1_1State"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab455a503d929a5d3e01bf7218fae3a72 inherit pub_methods_structtsm_1_1State"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1State.html#ab455a503d929a5d3e01bf7218fae3a72">onExit</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;)</td></tr>
-<tr class="separator:ab455a503d929a5d3e01bf7218fae3a72 inherit pub_methods_structtsm_1_1State"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31ab8986d7f1e895d1bc4ef9ca83359a inherit pub_methods_structtsm_1_1State"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1State.html#a31ab8986d7f1e895d1bc4ef9ca83359a">operator&lt;&lt;</a> (std::ostream &amp;os)</td></tr>
+<tr class="separator:a31ab8986d7f1e895d1bc4ef9ca83359a inherit pub_methods_structtsm_1_1State"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -196,36 +203,29 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_types_structtsm_1_1HsmDefinition"><td colspan="2" onclick="javascript:toggleInherit('pub_types_structtsm_1_1HsmDefinition')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="structtsm_1_1HsmDefinition.html">tsm::HsmDefinition&lt; ErrorHsm &gt;</a></td></tr>
-<tr class="memitem:a76d30f7d8ae179d7306a7f61533f88eb inherit pub_types_structtsm_1_1HsmDefinition"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1HsmDefinition.html#a76d30f7d8ae179d7306a7f61533f88eb">Transition</a> = typename <a class="el" href="structtsm_1_1FsmDefinition.html">FsmDefinition</a>&lt; ErrorHsm &gt;::<a class="el" href="structtsm_1_1FsmDefinition.html#aa6c001c502b3dc6c37b9333d81288e59">Transition</a></td></tr>
-<tr class="separator:a76d30f7d8ae179d7306a7f61533f88eb inherit pub_types_structtsm_1_1HsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_types_structtsm_1_1FsmDefinition"><td colspan="2" onclick="javascript:toggleInherit('pub_types_structtsm_1_1FsmDefinition')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="structtsm_1_1FsmDefinition.html">tsm::FsmDefinition&lt; ErrorHsm &gt;</a></td></tr>
-<tr class="memitem:a3de54f51376193b158866a4c18cf2938 inherit pub_types_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#a3de54f51376193b158866a4c18cf2938">ActionFn</a> = void(FsmDef::*)(void)</td></tr>
-<tr class="separator:a3de54f51376193b158866a4c18cf2938 inherit pub_types_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdbf35284ceda37d63e0d14621846bc9 inherit pub_types_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#abdbf35284ceda37d63e0d14621846bc9">GuardFn</a> = bool(FsmDef::*)(void)</td></tr>
-<tr class="separator:abdbf35284ceda37d63e0d14621846bc9 inherit pub_types_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6c001c502b3dc6c37b9333d81288e59 inherit pub_types_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#aa6c001c502b3dc6c37b9333d81288e59">Transition</a> = <a class="el" href="structtsm_1_1TransitionT.html">TransitionT</a>&lt; <a class="el" href="structtsm_1_1State.html">State</a>, <a class="el" href="structtsm_1_1Event.html">Event</a>, <a class="el" href="structtsm_1_1FsmDefinition.html#a3de54f51376193b158866a4c18cf2938">ActionFn</a>, <a class="el" href="structtsm_1_1FsmDefinition.html#abdbf35284ceda37d63e0d14621846bc9">GuardFn</a> &gt;</td></tr>
-<tr class="separator:aa6c001c502b3dc6c37b9333d81288e59 inherit pub_types_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed007bf736caa3f66361fd5162dfd69c inherit pub_types_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#aed007bf736caa3f66361fd5162dfd69c">TransitionTableElement</a> = std::pair&lt; <a class="el" href="namespacetsm.html#a68c68c2d5d64e59c916e53fcd4165895">StateEventPair</a>, <a class="el" href="structtsm_1_1FsmDefinition.html#aa6c001c502b3dc6c37b9333d81288e59">Transition</a> &gt;</td></tr>
-<tr class="separator:aed007bf736caa3f66361fd5162dfd69c inherit pub_types_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c79156c715c239910fc3c2f0b3eaec0 inherit pub_types_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#a6c79156c715c239910fc3c2f0b3eaec0">TransitionTable</a> = std::unordered_map&lt; typename TransitionTableElement::first_type, typename TransitionTableElement::second_type &gt;</td></tr>
-<tr class="separator:a6c79156c715c239910fc3c2f0b3eaec0 inherit pub_types_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_structtsm_1_1IHsmDef"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_structtsm_1_1IHsmDef')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="structtsm_1_1IHsmDef.html">tsm::IHsmDef</a></td></tr>
-<tr class="memitem:a1f108adb499e392e335e3088d8e2989a inherit pro_attribs_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#a1f108adb499e392e335e3088d8e2989a">parent_</a></td></tr>
-<tr class="separator:a1f108adb499e392e335e3088d8e2989a inherit pro_attribs_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae136e77d0d61e61c4fbcf793160907e2 inherit pro_attribs_structtsm_1_1IHsmDef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsmDef.html#ae136e77d0d61e61c4fbcf793160907e2">currentHsm_</a></td></tr>
-<tr class="separator:ae136e77d0d61e61c4fbcf793160907e2 inherit pro_attribs_structtsm_1_1IHsmDef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_structtsm_1_1FsmDefinition"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_structtsm_1_1FsmDefinition')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="structtsm_1_1FsmDefinition.html">tsm::FsmDefinition&lt; ErrorHsm &gt;</a></td></tr>
-<tr class="memitem:ac7117e155568abc8759d559b34102d09 inherit pro_attribs_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">StateTransitionTable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#ac7117e155568abc8759d559b34102d09">table_</a></td></tr>
-<tr class="separator:ac7117e155568abc8759d559b34102d09 inherit pro_attribs_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45432135a78bddd8080461311a56e3ed inherit pro_attribs_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top">std::set&lt; <a class="el" href="structtsm_1_1Event.html">Event</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#a45432135a78bddd8080461311a56e3ed">eventSet_</a></td></tr>
-<tr class="separator:a45432135a78bddd8080461311a56e3ed inherit pro_attribs_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02bfde5ac6bf7872e54bf80801e38397 inherit pro_attribs_structtsm_1_1FsmDefinition"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1State.html">State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FsmDefinition.html#a02bfde5ac6bf7872e54bf80801e38397">currentState_</a></td></tr>
-<tr class="separator:a02bfde5ac6bf7872e54bf80801e38397 inherit pro_attribs_structtsm_1_1FsmDefinition"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_types_structtsm_1_1Hsm"><td colspan="2" onclick="javascript:toggleInherit('pub_types_structtsm_1_1Hsm')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="structtsm_1_1Hsm.html">tsm::Hsm&lt; ErrorHsm &gt;</a></td></tr>
+<tr class="memitem:ac07aa4257896cc177f167db540cdcacc inherit pub_types_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#ac07aa4257896cc177f167db540cdcacc">StateTransitionTable</a> = <a class="el" href="structtsm_1_1StateTransitionTableT.html">StateTransitionTableT</a>&lt; ErrorHsm &gt;</td></tr>
+<tr class="separator:ac07aa4257896cc177f167db540cdcacc inherit pub_types_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77fbf5c23a5a9f20de2c6ca047b4e1da inherit pub_types_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a77fbf5c23a5a9f20de2c6ca047b4e1da">Transition</a> = typename <a class="el" href="structtsm_1_1StateTransitionTableT.html">StateTransitionTableT</a>&lt; ErrorHsm &gt;::<a class="el" href="structtsm_1_1Hsm.html#a77fbf5c23a5a9f20de2c6ca047b4e1da">Transition</a></td></tr>
+<tr class="separator:a77fbf5c23a5a9f20de2c6ca047b4e1da inherit pub_types_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9850b681d288324dbea32517855fc02 inherit pub_types_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#ac9850b681d288324dbea32517855fc02">ActionFn</a> = void(HsmDef::*)()</td></tr>
+<tr class="separator:ac9850b681d288324dbea32517855fc02 inherit pub_types_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ea708490e876b809f16b7f7f41b1e22 inherit pub_types_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#a3ea708490e876b809f16b7f7f41b1e22">GuardFn</a> = bool(HsmDef::*)()</td></tr>
+<tr class="separator:a3ea708490e876b809f16b7f7f41b1e22 inherit pub_types_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_structtsm_1_1Hsm"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_structtsm_1_1Hsm')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="structtsm_1_1Hsm.html">tsm::Hsm&lt; ErrorHsm &gt;</a></td></tr>
+<tr class="memitem:ab82045d6c9da44a39f45daab0abc0864 inherit pro_attribs_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1Hsm.html#ac07aa4257896cc177f167db540cdcacc">StateTransitionTable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#ab82045d6c9da44a39f45daab0abc0864">table_</a></td></tr>
+<tr class="separator:ab82045d6c9da44a39f45daab0abc0864 inherit pro_attribs_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb26909fd84eb59e6aea5d1340f149d6 inherit pro_attribs_structtsm_1_1Hsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1State.html">State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html#abb26909fd84eb59e6aea5d1340f149d6">currentState_</a></td></tr>
+<tr class="separator:abb26909fd84eb59e6aea5d1340f149d6 inherit pro_attribs_structtsm_1_1Hsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_structtsm_1_1IHsm"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_structtsm_1_1IHsm')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="structtsm_1_1IHsm.html">tsm::IHsm</a></td></tr>
+<tr class="memitem:ab2f81b611a8cb347e7fdabc81433ab9c inherit pro_attribs_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1IHsm.html">IHsm</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#ab2f81b611a8cb347e7fdabc81433ab9c">parent_</a></td></tr>
+<tr class="separator:ab2f81b611a8cb347e7fdabc81433ab9c inherit pro_attribs_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab23d4e1765ac98add514e9109c8ffc8b inherit pro_attribs_structtsm_1_1IHsm"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1IHsm.html">IHsm</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html#ab23d4e1765ac98add514e9109c8ffc8b">currentHsm_</a></td></tr>
+<tr class="separator:ab23d4e1765ac98add514e9109c8ffc8b inherit pro_attribs_structtsm_1_1IHsm"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aae4f8ac9825654b193e76f8660fe9eb3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae4f8ac9825654b193e76f8660fe9eb3">&#9670;&nbsp;</a></span>ErrorHsm()</h2>
+<a id="af53ccffb6f396ef36d484dace11d0c44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af53ccffb6f396ef36d484dace11d0c44">&#9670;&nbsp;</a></span>ErrorHsm()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -236,8 +236,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">tsmtest::ErrorHsm::ErrorHsm </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structtsm_1_1IHsmDef.html">IHsmDef</a> *&#160;</td>
-          <td class="paramname"><em>parent</em> = <code>nullptr</code></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -299,7 +298,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="structtsm_1_1FsmDefinition.html#a6380cde79f7b9eb473929bfb76bd401e">tsm::FsmDefinition&lt; ErrorHsm &gt;</a>.</p>
+<p>Implements <a class="el" href="structtsm_1_1Hsm.html#a4346f240501979f74cd7b8da7ea3a80b">tsm::Hsm&lt; ErrorHsm &gt;</a>.</p>
 
 </div>
 </div>
@@ -326,7 +325,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="structtsm_1_1FsmDefinition.html#a33e3d3004bbb49ef2b55d01a87840ed8">tsm::FsmDefinition&lt; ErrorHsm &gt;</a>.</p>
+<p>Implements <a class="el" href="structtsm_1_1Hsm.html#a77fd52115f9931ec5d4e72840f3a77b9">tsm::Hsm&lt; ErrorHsm &gt;</a>.</p>
 
 </div>
 </div>

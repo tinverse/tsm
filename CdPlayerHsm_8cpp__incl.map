@@ -1,7 +1,10 @@
 <map id="test/CdPlayerHsm.cpp" name="test/CdPlayerHsm.cpp">
-<area shape="rect" id="node1" title=" " alt="" coords="111,5,265,32"/>
-<area shape="rect" id="node2" href="$CdPlayerHsm_8h.html" title=" " alt="" coords="5,80,120,107"/>
-<area shape="rect" id="node4" href="$Observer_8h.html" title=" " alt="" coords="145,80,231,107"/>
-<area shape="rect" id="node5" title=" " alt="" coords="256,80,379,107"/>
-<area shape="rect" id="node3" href="$tsm_8h.html" title=" " alt="" coords="35,155,90,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="149,5,303,32"/>
+<area shape="rect" id="node2" href="$CdPlayerHsm_8h.html" title=" " alt="" coords="21,80,135,107"/>
+<area shape="rect" id="node4" href="$Observer_8h.html" title=" " alt="" coords="183,80,269,107"/>
+<area shape="rect" id="node8" title=" " alt="" coords="294,80,417,107"/>
+<area shape="rect" id="node3" href="$tsm_8h.html" title=" " alt="" coords="5,155,60,181"/>
+<area shape="rect" id="node5" href="$tsm__log_8h.html" title=" " alt="" coords="84,155,163,181"/>
+<area shape="rect" id="node6" title=" " alt="" coords="187,155,313,181"/>
+<area shape="rect" id="node7" title=" " alt="" coords="338,155,397,181"/>
 </map>

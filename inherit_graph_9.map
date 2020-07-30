@@ -1,5 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,13,100,39"/>
-<area shape="rect" id="node2" href="$structtsm_1_1HsmExecutor.html" title=" " alt="" coords="148,5,337,47"/>
-<area shape="rect" id="node3" href="$structtsmtest_1_1StateMachineTest.html" title=" " alt="" coords="385,5,564,47"/>
+<area shape="rect" id="node1" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="5,5,176,47"/>
 </map>

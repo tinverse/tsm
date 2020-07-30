@@ -1,7 +1,6 @@
 <map id="include/Transition.h" name="include/Transition.h">
-<area shape="rect" id="node1" title=" " alt="" coords="251,5,385,32"/>
-<area shape="rect" id="node2" href="$FsmDefinition_8h.html" title=" " alt="" coords="180,80,339,107"/>
-<area shape="rect" id="node4" href="$tsm_8h.html" title=" " alt="" coords="208,229,308,256"/>
-<area shape="rect" id="node3" href="$FsmExecutor_8h.html" title=" " alt="" coords="5,155,161,181"/>
-<area shape="rect" id="node5" href="$HsmDefinition_8h.html" title=" " alt="" coords="237,155,399,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="151,5,285,32"/>
+<area shape="rect" id="node2" href="$Hsm_8h.html" title=" " alt="" coords="119,80,226,107"/>
+<area shape="rect" id="node4" href="$tsm_8h.html" title=" " alt="" coords="163,229,263,256"/>
+<area shape="rect" id="node3" href="$OrthogonalHsm_8h.html" title=" " alt="" coords="5,155,175,181"/>
 </map>
