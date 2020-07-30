@@ -41,8 +41,6 @@ struct SingleThreadedExecutionPolicy : public StateType
         // "most active state"
         if (!eventQueue_.interrupted()) {
             this->dispatch()->execute(nextEvent);
-        } else {
-            DLOG(WARNING) << this->name << ": Exiting event loop on interrupt";
         }
     }
 
