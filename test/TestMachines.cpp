@@ -35,6 +35,60 @@ TEST_CASE("State machine drill")
     sm.sendEvent(sm.end_event);
     sm.step();
     REQUIRE(nullptr == sm.getCurrentState());
+    sm.stopSM();
+}
+
+TEST_CASE("State machine drill - Exit before processing all events")
+{
+
+    SingleThreadedHsm<AHsm> sm;
+    sm.startSM();
+    REQUIRE(&sm.s1 == sm.getCurrentState());
+    sm.sendEvent(sm.e1);
+    sm.step();
+    REQUIRE(&sm.s2 == sm.getCurrentState());
+    sm.sendEvent(sm.e2_in);
+    sm.step();
+    REQUIRE(&sm.bHsm == sm.getCurrentState());
+    sm.sendEvent(sm.e2_out);
+    sm.step();
+    REQUIRE(&sm.s3 == sm.getCurrentState());
+    sm.sendEvent(sm.e2_out);
+    sm.step();
+    REQUIRE(&sm.s3 == sm.getCurrentState());
+    Event randomEvent;
+    sm.sendEvent(randomEvent);
+    sm.step();
+    REQUIRE(&sm.s3 == sm.getCurrentState());
+    sm.sendEvent(sm.end_event);
+    sm.stopSM();
+}
+
+TEST_CASE("State machine drill - Asynchronous")
+{
+
+    using namespace std::chrono_literals;
+    AsynchronousHsm<AHsm> sm;
+    sm.startSM();
+    REQUIRE(&sm.s1 == sm.getCurrentState());
+    sm.sendEvent(sm.e1);
+    sm.sendEvent(sm.e2_in);
+    sm.sendEvent(sm.e2_out);
+    sm.sendEvent(sm.e2_out);
+    Event randomEvent;
+    sm.sendEvent(randomEvent);
+    sm.sendEvent(sm.end_event);
+    // Not much of a test, but the asynchronous SM should
+    // process the events and terminate. We need *some* test
+    // code that exercises AsynchronousHsm even though there
+    // are several tests that use a BlockingObserver, essentially
+    // turning an AsynchronousHsm into a Synchronous one for
+    // testing purposes.
+    while (nullptr != sm.getCurrentState()) {
+        std::this_thread::sleep_for(1ms);
+    }
+    REQUIRE(nullptr == sm.getCurrentState());
+    sm.stopSM();
 }
 
 // Above test written the "BDD way". Writing for practice.

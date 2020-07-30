@@ -17,7 +17,7 @@ add_executable(${TEST_PROJECT}
   CdPlayerHsm.cpp
   EventQueue.cpp
   OrthogonalCdPlayerHsm.cpp
-  TrafficLight.cpp
+  TrafficLightHsm.cpp
 )
 
 if(MSVC)

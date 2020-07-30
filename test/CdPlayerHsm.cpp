@@ -132,7 +132,6 @@ TEST_CASE(
     sm.sendEvent(sm.cd_detected);
     sm.step();
     REQUIRE(sm.getCurrentState() == &sm.Stopped);
-
     sm.stopSM();
 }
 
