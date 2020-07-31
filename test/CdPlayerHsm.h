@@ -2,13 +2,12 @@
 
 #include "tsm.h"
 
+namespace tsmtest {
+
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::Hsm;
-using tsm::IHsm;
 using tsm::State;
-
-namespace tsmtest {
 
 struct CdPlayerController
 {
@@ -119,7 +118,7 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
     {
         Playing.setParent(this);
 
-        // TransitionTable for GarageDoor Hsm
+        // State Transition Table
         add(Stopped, play, Playing);
         add(Stopped, open_close, Open);
         add(Stopped, stop_event, Stopped);

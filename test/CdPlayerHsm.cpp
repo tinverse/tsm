@@ -9,6 +9,7 @@ using tsmtest::CdPlayerHsm;
 using tsm::AsyncExecWithObserver;
 using tsm::AsynchronousHsm;
 using tsm::BlockingObserver;
+using tsm::IHsm;
 using tsm::SingleThreadedHsm;
 
 /// A "Blocking" Observer with Async Execution Policy

@@ -104,11 +104,10 @@ struct Hsm
     State* dispatch() override
     {
         IHsm* currentHsm = this->getCurrentHsm();
-        if (currentHsm) {
+        if (currentHsm != nullptr) {
             return currentHsm->dispatch();
-        } else {
-            return this;
         }
+        return this;
     }
 
     void execute(Event const& nextEvent) override
@@ -124,14 +123,17 @@ struct Hsm
                 // TODO(sriram) : should call onExit? UML spec *seems* to say
                 // yes! invoking onExit() here will not work for Orthogonal
                 // state machines this->onExit(nextEvent);
-                dynamic_cast<State*>(this->parent_)->execute(nextEvent);
+                auto* parent = dynamic_cast<State*>(this->parent_);
+                parent->execute(nextEvent);
             } else {
                 DLOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         } else {
             // This call to the Simple state's execute method makes it
             // behave like a moore machine.
-            if (dynamic_cast<IHsm*>(this->currentState_) == nullptr) {
+            bool isAtomicState =
+              (dynamic_cast<IHsm*>(this->currentState_) == nullptr);
+            if (isAtomicState) {
                 this->currentState_->execute(nextEvent);
             }
 
@@ -140,7 +142,11 @@ struct Hsm
             // not performed
             if (t->doTransition(static_cast<HsmDef*>(this))) {
                 this->currentState_ = &t->toState;
+                IHsm* currentHsm = dynamic_cast<IHsm*>(this->currentState_);
                 // DLOG(INFO) << "Next State:" << this->currentState_->name;
+                if (currentHsm != nullptr) {
+                    setCurrentHsm(currentHsm);
+                }
             }
 
             if (this->currentState_ == this->getStopState()) {

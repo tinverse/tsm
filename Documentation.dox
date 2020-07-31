@@ -60,8 +60,8 @@ For a complete example see  [GarageDoorHsm.h][2] and [GarageDoorHsm.cpp][3]. Als
 ```
 
 [1]: https://en.wikipedia.org/wiki/UML_state_machine
-[2]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorHsm.h
-[3]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorHsm.cpp
+[2]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorSM.h
+[3]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorSM.cpp
 [4]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHsm.h
 [5]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHsm.cpp
 
