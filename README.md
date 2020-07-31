@@ -42,7 +42,8 @@ struct Switch : Hsm<Switch>
 ```
 
 So there you have it. Unfortunately, with tsm (this framework), it doesn't get any simpler than this. Trade-offs. We are not done yet. There is one more thing. How do you expect clients to interact with this state machine? There are two obvious choices.
-    * Single Threaded Execution Policy
+
+##### Single Threaded Execution Policy
 
 ```cpp
 using SwitchFsm = SingleThreadedHsm<Switch>;
@@ -56,7 +57,7 @@ int main() {
 }
 ```
 
-    * Asynchronous Execution Policy
+##### Asynchronous Execution Policy
 
 ```cpp
 using SwitchFsm = AsynchronousHsm<Switch>;
@@ -91,7 +92,7 @@ struct CdPlayer : public Hsm<CdPlayer>
     }
     // States
     State Stopped;
-    <b>PlayingHsm Playing;</b>
+    PlayingHsm Playing; // <-------- Note
     State Paused;
     State Empty;
     State Open;
@@ -147,7 +148,7 @@ CdPlayerHsm::CdPlayerHsm()
         Playing.setParent(this);
 
         // State Transition Table
-        add(Stopped, play, <b>Playing</b>);
+        add(Stopped, play, Playing); // <-------- Note
         add(Stopped, open_close, Open);
         add(Stopped, stop_event, Stopped);
         //-------------------------------------------------
@@ -155,20 +156,20 @@ CdPlayerHsm::CdPlayerHsm()
         //-------------------------------------------------
         add(Empty, open_close, Open);
         add(Empty, cd_detected, Stopped);
-        add(Empty, cd_detected, <b>Playing</b>);
+        add(Empty, cd_detected, Playing);
         //-------------------------------------------------
-        add(<b>Playing</b>, stop_event, Stopped);
-        add(<b>Playing</b>, pause, Paused);
-        add(<b>Playing</b>, open_close, Open);
+        add(Playing, stop_event, Stopped);
+        add(Playing, pause, Paused);
+        add(Playing, open_close, Open);
         //-------------------------------------------------
-        add(Paused, end_pause, <b>Playing</b>);
+        add(Paused, end_pause, Playing);
         add(Paused, stop_event, Stopped);
         add(Paused, open_close, Open);
     }
 
 ```
 
-`Playing` is just treated just as any other (atomic) state. A transition like `add(Stopped, play, <b>Playing</b>);`, is read as "When the machine is `Stopped` and gets a `play` event, it transitions to the `Playing` state". Is that all there is to the state transition table?
+`Playing` is just treated just as any other (atomic) state. A transition like `add(Stopped, play, Playing);`, is read as "When the machine is `Stopped` and gets a `play` event, it transitions to the `Playing` state". Is that all there is to the state transition table? No. transitions can have actions and guards attached to them.
 
 ##### Actions and Guards
 Looking at `Playing`'s state transition table,
@@ -180,10 +181,7 @@ PlayingHsm()
   , Song2("Playing Hsm -> Song2")
   , Song3("Playing Hsm -> Song3")
 {
-
-    // clang-format off
-    add(Song1, next_song, Song2, <b>&PlayingHsm::PlaySong, &PlayingHsm::PlaySongGuard</b>);
-    // clang-format on
+    add(Song1, next_song, Song2, &PlayingHsm::PlaySong, &PlayingHsm::PlaySongGuard);  // <-------- Note
     add(Song2, next_song, Song3);
     add(Song3, prev_song, Song2);
     add(Song2, prev_song, Song1);
@@ -230,7 +228,8 @@ sm.sendEvent(play);
 Note that the call to `sm.step()` is not required for the `AsynchronousHsm`. Events are processed in a separate thread.
 
 ##### Start and Stop States
-Also specify the start and stop states within `CdPlayer`
+
+Also, specify the start and stop states within `CdPlayer` or any Hsm definition. This is required.
 
 ```cpp
 State* getStartState() override { return &Song1; }
@@ -238,8 +237,9 @@ State* getStopState() override { return nullptr; }
 ```
 
 
-#### Timer Driven State Machine
-A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. The problem is to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). The signal stays on for the amount of time indicated in the brackets adjacent to the signal before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :).
+#### TimedExecutionPolicy
+
+A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :).
 
 ```cpp
 struct TrafficLightHsm : public Hsm<TrafficLightHsm>
@@ -263,12 +263,12 @@ struct TrafficLightHsm : public Hsm<TrafficLightHsm>
 };
 ```
 
-To make it useful,
+To turn it into a timer driven state machine,
 
 ```cpp
 #include <tsm.h>
 using AsyncTrafficLightTimedHsm =
-  TimedExecutionPolicy<AsynchronousHsm<TrafficLightHsm>,
+  TimedExecutionPolicy<AsynchronousHsm<TrafficLightHsm>,  // <----- Note use of AsynchronousHsm
                        tsm::ThreadSleepTimer>;
 int main() {
     using namespace std::chrono_literals;
@@ -288,7 +288,7 @@ We could just as well have created a timer driven traffic light in this manner:
 ```cpp
 #include <tsm.h>
 using TrafficLightTimedHsm =
-  TimedExecutionPolicy<<b>SingleThreadedHsm</b><TrafficLightHsm>,
+  TimedExecutionPolicy<SingleThreadedHsm<TrafficLightHsm>, // <----- Note use of SingleThreadedHsm
                        tsm::ThreadSleepTimer>;
 int main() {
     using namespace std::chrono_literals;
@@ -300,10 +300,12 @@ int main() {
 ```
 
 The only difference is that we are creating a TrafficLightTimedHsm where we have to drive the state machine with `t.step()` for event processing. That is flexible... and powerful. We can also write policies to
+
     * Persist state changes to log file
     * Calculate statistics on transitions
     * Write 'watchers' for particular conditions
     * Notify observers on events
+
 Like it? Try it.
 
 ### Build
