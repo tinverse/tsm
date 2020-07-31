@@ -1,11 +1,12 @@
 #include "tsm.h"
 
+namespace tsmtest {
+
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::Hsm;
 using tsm::State;
 
-namespace tsmtest {
 struct GarageDoorHsm : public Hsm<GarageDoorHsm>
 {
     GarageDoorHsm()

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Event.h"
-#include "State.h"
 #include "Hsm.h"
+#include "State.h"
 
 #include <memory>
 #include <tuple>
@@ -69,7 +69,16 @@ struct OrthogonalHsm
     using type = OrthogonalHsm<Hsms...>;
     static constexpr size_t HSM_COUNT = sizeof...(Hsms);
 
-    explicit OrthogonalHsm(std::string const& name, IHsm* parent = nullptr)
+    OrthogonalHsm(std::string const& name)
+      : IHsm(nullptr)
+      , State(name)
+      , currentState_(nullptr)
+    {
+
+        for_each_hsm(sms_, [&](auto& sm) { sm.setParent(this); });
+    }
+
+    OrthogonalHsm(std::string const& name, IHsm* parent)
       : IHsm(parent)
       , State(name)
       , currentState_(nullptr)
@@ -113,29 +122,25 @@ struct OrthogonalHsm
             if (parent_) {
                 dynamic_cast<State*>(this->parent_)->execute(nextEvent);
             } else {
-                LOG(ERROR) << "Reached top level Hsm. Cannot handle event";
+                DLOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         }
     }
 
     State* dispatch() override
     {
-        auto sm_index = find_if(sms_, [&](auto& sm) {
-            auto sm_cast = dynamic_cast<decltype(&sm)>(this->currentState_);
-            return sm_cast != nullptr;
-        });
 
-        IHsm* dispatch_candidate = nullptr;
-        if (sm_index < HSM_COUNT) {
-            perform(
-              sms_, sm_index, [&](auto& sm) { dispatch_candidate = &sm; });
-            return dispatch_candidate->dispatch();
+        auto* currentHsm = dynamic_cast<IHsm*>(this->getCurrentState());
+        if (currentHsm != nullptr) {
+            return currentHsm->dispatch();
         }
         return this;
     }
 
     State* getStartState() { return &std::get<0>(sms_); }
     State* getStopState() { return nullptr; }
+
+    State* getCurrentState() { return currentState_; }
 
     std::tuple<Hsms...> sms_;
     State* currentState_;

@@ -6,7 +6,9 @@
 
 #include <memory>
 
+using tsm::AsynchronousHsm;
 using tsm::Event;
+using tsm::SingleThreadedHsm;
 
 using tsmtest::AHsm;
 
@@ -91,7 +93,9 @@ TEST_CASE("State machine drill - Asynchronous")
     sm.stopSM();
 }
 
-// Above test written the "BDD way". Writing for practice.
+// Above test written the "BDD way". Writing for practice. The test itself
+// looks a lot more verbose than it needs to be. However, *reading* through it
+// makes a lot of sense. On closer examination, it looks very useful.
 SCENARIO("Test that a state machine transitions through its states to sub-Hsms "
          "and reaches its final state")
 {
@@ -157,4 +161,50 @@ SCENARIO("Test that a state machine transitions through its states to sub-Hsms "
             }
         }
     }
+}
+
+using tsmtest::DHsm;
+
+// Create an OrthogonalHsm that is also a child Hsm of some other Hsm
+TEST_CASE("State machine drill - Synchronous OrthogonalHsm that is a child of "
+          "another Hsm")
+{
+    SingleThreadedHsm<DHsm> sm;
+    sm.startSM();
+    REQUIRE(&sm.ds1 == sm.getCurrentState());
+
+    sm.sendEvent(sm.e1);
+    sm.step();
+    REQUIRE(&sm.ds2 == sm.getCurrentState());
+
+    sm.sendEvent(sm.e2_in);
+    sm.step();
+    REQUIRE(&sm.bHsm == sm.getCurrentState());
+
+    sm.sendEvent(sm.e2_out);
+    sm.step();
+    REQUIRE(&sm.ds3 == sm.getCurrentState());
+
+    sm.sendEvent(sm.o_in);
+    sm.step();
+    REQUIRE(&sm.oHsm == sm.getCurrentState());
+    // Should be AHsm
+    auto* aHsm = dynamic_cast<AHsm*>(sm.oHsm.getCurrentState());
+    REQUIRE(aHsm == &std::get<0>(sm.oHsm.sms_));
+    REQUIRE(aHsm->getCurrentState() == &aHsm->s1);
+
+    sm.sendEvent(aHsm->e1);
+    sm.step();
+    REQUIRE(&aHsm->s2 == aHsm->getCurrentState());
+    REQUIRE(&sm.oHsm == sm.getCurrentState());
+
+    sm.sendEvent(sm.o_out);
+    sm.step();
+    REQUIRE(&sm.ds4 == sm.getCurrentState());
+
+    sm.sendEvent(sm.end_Devent);
+    sm.step();
+    REQUIRE(nullptr == sm.getCurrentState());
+
+    sm.stopSM();
 }

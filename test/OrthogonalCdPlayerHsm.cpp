@@ -5,6 +5,7 @@
 #include <catch2/catch.hpp>
 
 using tsm::BlockingObserver;
+using tsm::Event;
 using tsm::OrthogonalHsm;
 using tsm::SingleThreadedExecutionPolicy;
 
@@ -127,6 +128,14 @@ TEST_CASE("TestOrthogonalCdPlayerHsm - testOrthogonalHsmSingleThread")
 
     sm->sendEvent(Playing->next_song);
     sm->step();
+    REQUIRE(cdPlayerHsm->getCurrentState() == Playing);
+    REQUIRE(Playing->getCurrentState() == &Playing->Song2);
+
+    // Should get dropped
+    Event randomEvent;
+    sm->sendEvent(randomEvent);
+    sm->step();
+    // Everything should remain as is
     REQUIRE(cdPlayerHsm->getCurrentState() == Playing);
     REQUIRE(Playing->getCurrentState() == &Playing->Song2);
 

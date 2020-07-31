@@ -6,6 +6,15 @@ using tsm::Hsm;
 using tsm::State;
 
 namespace tsmtest {
+///
+/// The problem is to model traffic lights at a 2-way crossing. The states are
+/// G1(30s), Y1(5s), G2(60s), Y2(5s). The signal stays on for the amount of time
+/// indicated in the brackets adjacent to the signal before moving on to the
+/// next. The added complication is that G2 has a walk signal. If the walk
+/// signal is pressed, G2 stays on for only 30s instead of 60s before
+/// transitioning to Y2. The trick is to realize that there is only one event
+/// for this state machine: The expiry of a timer at say, 1s granularity.
+///
 struct TrafficLightHsm : public Hsm<TrafficLightHsm>
 {
     static const int G2WALK = 30;

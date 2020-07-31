@@ -17,7 +17,7 @@ using AsyncBlockingObserver =
   tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
 
 ///
-/// GarageDoorHsm is the state machine definition. It has knowledge of the Hsm
+/// TrafficLightHsm is the state machine definition. It has knowledge of the Hsm
 /// hierarchy, its states, events and sub-Hsms if any. The relationships between
 /// Hsms (parentHsm_) is also setup here. Mix the Async observer and the
 /// TrafficLight Hsm to get an asynchronous traffic light state machine
