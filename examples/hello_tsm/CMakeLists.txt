@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.10)
 project(hello_tsm VERSION 0.1.0)
 
 # This is key. Set tsm_DIR to a folder that contains tsmConfig.cmake

@@ -92,7 +92,7 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
         // other events, go back to the start state
         void onEntry(Event const& e) override
         {
-            auto parent = static_cast<CdPlayerHsm*>(this->parent_);
+            auto parent = static_cast<CdPlayerHsm*>(this->getParent());
             if (parent->end_pause != e) {
                 Hsm<PlayingHsm>::onEntry(e);
             }
@@ -100,7 +100,7 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
 
         void onExit(Event const& e) override
         {
-            auto parent = static_cast<CdPlayerHsm*>(this->parent_);
+            auto parent = static_cast<CdPlayerHsm*>(this->getParent());
             if (parent->pause != e) {
                 Hsm<PlayingHsm>::onExit(e);
             }

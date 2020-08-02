@@ -68,7 +68,6 @@ struct StateTransitionTableT
     {
         InternalTransition(State& fromState,
                            Event const& event,
-                           State& toState,
                            ActionFn action,
                            GuardFn guard)
           : Transition(fromState, event, fromState, action, guard)

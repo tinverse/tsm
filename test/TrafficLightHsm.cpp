@@ -30,7 +30,7 @@ using AsyncTrafficLightTimedHsm =
 TEST_CASE("AsyncTrafficLightTimedHsm - testTrafficLightStatesNoWalk")
 {
     using namespace std::chrono_literals;
-    auto sm = std::make_shared<AsyncTrafficLightTimedHsm>(1ms);
+    auto sm = std::make_shared<AsyncTrafficLightTimedHsm>(1us);
     std::vector<AsyncTrafficLightTimedHsm::LightState*> states{
         &sm->G1, &sm->Y1, &sm->G2, &sm->Y2
     };
@@ -38,7 +38,7 @@ TEST_CASE("AsyncTrafficLightTimedHsm - testTrafficLightStatesNoWalk")
     // are we cycling through all states?
     for (auto* state : states) {
         REQUIRE(sm->getCurrentState()->id == state->id);
-        for (uint64_t i = 1; i <= state->getLimit(); i++) {
+        for (uint64_t i = 0; i <= state->getLimit(); i++) {
             sm->wait();
         }
         sm->wait();
@@ -49,7 +49,7 @@ TEST_CASE("AsyncTrafficLightTimedHsm - testTrafficLightStatesNoWalk")
 TEST_CASE("AsyncTrafficLightTimedHsm - testTrafficLightStatesWithWalkPressed")
 {
     using namespace std::chrono_literals;
-    auto sm = std::make_shared<AsyncTrafficLightTimedHsm>(1ms);
+    auto sm = std::make_shared<AsyncTrafficLightTimedHsm>(1us);
     std::vector<AsyncTrafficLightTimedHsm::LightState*> states{
         &sm->G1, &sm->Y1, &sm->G2, &sm->Y2
     };
@@ -57,7 +57,7 @@ TEST_CASE("AsyncTrafficLightTimedHsm - testTrafficLightStatesWithWalkPressed")
     // are we cycling through all states?
     for (auto* state : states) {
         REQUIRE(sm->getCurrentState()->id == state->id);
-        for (uint64_t i = 1; i <= state->getLimit(); i++) {
+        for (uint64_t i = 0; i <= state->getLimit(); i++) {
             // Press the walk signal 28 ticks into G1
             if ((state->name == "G1") && (sm->ticks_ == 28)) {
                 sm->pressWalk();
@@ -80,7 +80,7 @@ using TrafficLightTimedHsm =
 TEST_CASE("TrafficLightTimedHsm - testTrafficLightStatesNoWalk")
 {
     using namespace std::chrono_literals;
-    auto sm = std::make_shared<TrafficLightTimedHsm>(1ms);
+    auto sm = std::make_shared<TrafficLightTimedHsm>(1us);
     std::vector<TrafficLightTimedHsm::LightState*> states{
         &sm->G1, &sm->Y1, &sm->G2, &sm->Y2
     };
@@ -88,7 +88,7 @@ TEST_CASE("TrafficLightTimedHsm - testTrafficLightStatesNoWalk")
     // are we cycling through all states?
     for (auto* state : states) {
         REQUIRE(sm->getCurrentState() == state);
-        for (uint64_t i = 1; i <= state->getLimit(); i++) {
+        for (uint64_t i = 0; i <= state->getLimit(); i++) {
             sm->step();
         }
         sm->step();
@@ -99,7 +99,7 @@ TEST_CASE("TrafficLightTimedHsm - testTrafficLightStatesNoWalk")
 TEST_CASE("TrafficLightTimedHsm - testTrafficLightStatesWithWalkPressed")
 {
     using namespace std::chrono_literals;
-    auto sm = std::make_shared<TrafficLightTimedHsm>(1ms);
+    auto sm = std::make_shared<TrafficLightTimedHsm>(1us);
     std::vector<TrafficLightTimedHsm::LightState*> states{
         &sm->G1, &sm->Y1, &sm->G2, &sm->Y2
     };
@@ -107,7 +107,7 @@ TEST_CASE("TrafficLightTimedHsm - testTrafficLightStatesWithWalkPressed")
     // are we cycling through all states?
     for (auto* state : states) {
         REQUIRE(sm->getCurrentState()->id == state->id);
-        for (uint64_t i = 1; i <= state->getLimit(); i++) {
+        for (uint64_t i = 0; i <= state->getLimit(); i++) {
             // Press the walk signal 15 ticks into G1
             if ((state->name == "G1") && (sm->ticks_ == 15)) {
                 sm->pressWalk();

@@ -14,7 +14,7 @@ namespace tsm {
 ///
 struct ThreadSleepTimer
 {
-    explicit ThreadSleepTimer(std::chrono::milliseconds period,
+    explicit ThreadSleepTimer(std::chrono::microseconds period,
                               std::function<void()>&& cb)
       : period_(period)
       , interrupt_(false)
@@ -48,7 +48,7 @@ struct ThreadSleepTimer
     void stop() { interrupt_ = true; }
 
   private:
-    std::chrono::duration<double, std::milli> period_;
+    std::chrono::duration<double, std::micro> period_;
     bool interrupt_;
     std::function<void()> cb_;
     std::thread timerThread_;
@@ -62,8 +62,7 @@ struct ThreadSleepTimer
 template<typename StateType, typename TimerType>
 struct TimedExecutionPolicy : public StateType
 {
-
-    explicit TimedExecutionPolicy(std::chrono::milliseconds period)
+    explicit TimedExecutionPolicy(std::chrono::microseconds period)
       : StateType()
       , timer_(period, std::bind(&TimedExecutionPolicy::onTimerExpired, this))
     {}
