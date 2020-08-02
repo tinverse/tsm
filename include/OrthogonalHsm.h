@@ -72,7 +72,6 @@ struct OrthogonalHsm
     OrthogonalHsm(std::string const& name)
       : IHsm(nullptr)
       , State(name)
-      , currentState_(nullptr)
     {
 
         for_each_hsm(sms_, [&](auto& sm) { sm.setParent(this); });
@@ -81,7 +80,6 @@ struct OrthogonalHsm
     OrthogonalHsm(std::string const& name, IHsm* parent)
       : IHsm(parent)
       , State(name)
-      , currentState_(nullptr)
     {
 
         for_each_hsm(sms_, [&](auto& sm) { sm.setParent(this); });
@@ -93,7 +91,7 @@ struct OrthogonalHsm
     {
         DLOG(INFO) << "Entering: " << this->name;
         for_each_hsm(sms_, [&](auto& sm) { sm.onEntry(e); });
-        currentState_ = &std::get<0>(sms_);
+        this->setCurrentHsm(&std::get<0>(sms_));
     }
 
     void stopSM() { onExit(tsm::null_event); }
@@ -104,7 +102,7 @@ struct OrthogonalHsm
         // Stopping a Hsm means stopping all of its sub Hsms
         for_each_hsm(sms_, [&](auto& sm) { sm.onExit(e); });
 
-        currentState_ = nullptr;
+        this->setCurrentHsm(nullptr);
     }
 
     void execute(Event const& nextEvent) override
@@ -119,30 +117,19 @@ struct OrthogonalHsm
             perform(sms_, sm_index, [&](auto& sm) { sm.execute(nextEvent); });
         } else {
             // Try sending the event up to parent
-            if (parent_) {
-                dynamic_cast<State*>(this->parent_)->execute(nextEvent);
+            if (this->getParent()) {
+                (this->getParent())->execute(nextEvent);
             } else {
                 DLOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         }
     }
 
-    State* dispatch() override
+    State* getCurrentState()
     {
-
-        auto* currentHsm = dynamic_cast<IHsm*>(this->getCurrentState());
-        if (currentHsm != nullptr) {
-            return currentHsm->dispatch();
-        }
-        return this;
+        return dynamic_cast<State*>(this->getCurrentHsm());
     }
 
-    State* getStartState() { return &std::get<0>(sms_); }
-    State* getStopState() { return nullptr; }
-
-    State* getCurrentState() { return currentState_; }
-
     std::tuple<Hsms...> sms_;
-    State* currentState_;
 };
 } // namespace tsm

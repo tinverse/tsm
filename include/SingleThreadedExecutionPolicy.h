@@ -46,7 +46,7 @@ struct SingleThreadedExecutionPolicy : public StateType
 
     void sendEvent(Event const& event) { eventQueue_.addEvent(event); }
 
-  protected:
+  private:
     EventQueue eventQueue_;
     bool interrupt_;
 };

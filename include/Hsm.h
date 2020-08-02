@@ -6,7 +6,7 @@
 
 namespace tsm {
 ///
-/// Interface for any Hierarchical SM.
+/// Interface for any Hierarchical State Machine.
 ///
 struct IHsm
 {
@@ -29,18 +29,26 @@ struct IHsm
     // can be dispatched to it. This provides a level of indirection
     // which could be used to our advantage. For e.g. take a look at
     // how OrthogonalHsm and Hsm override this method.
-    virtual State* dispatch() = 0;
+    virtual IHsm* dispatch()
+    {
+        if (currentHsm_ != nullptr) {
+            return currentHsm_->dispatch();
+        }
+        return this;
+    }
+
+    virtual void execute(Event const&) = 0;
 
     IHsm* getParent() const { return parent_; }
     void setParent(IHsm* parent) { parent_ = parent; }
 
-  protected:
+  private:
     IHsm* parent_;
     IHsm* currentHsm_;
 };
 
 ///
-/// Supports Mealy and Moore machines
+/// Implements a Hierarchical State Machine.
 ///
 template<typename HsmDef>
 struct Hsm
@@ -64,22 +72,20 @@ struct Hsm
       , currentState_(nullptr)
     {}
 
-    Hsm(IHsm const&) = delete;
-    Hsm(IHsm&&) = delete;
+    Hsm(Hsm const&) = delete;
+    Hsm(Hsm&&) = delete;
 
     virtual ~Hsm() { stopSM(); }
     void startSM() { this->onEntry(tsm::null_event); }
     void stopSM() { this->onExit(tsm::null_event); }
-    void onEntry(Event const& e) override
+    void onEntry(Event const&) override
     {
         DLOG(INFO) << "Entering: " << this->name;
         this->currentState_ = this->getStartState();
 
-        if (this->parent_) {
-            this->parent_->setCurrentHsm(this);
+        if (this->getParent() != nullptr) {
+            this->getParent()->setCurrentHsm(this);
         }
-
-        this->currentState_->execute(e);
     }
 
     void onExit(Event const&) override
@@ -94,20 +100,9 @@ struct Hsm
         DLOG(INFO) << "Exiting: " << this->name;
         this->currentState_ = nullptr;
 
-        if (this->parent_) {
-            this->parent_->setCurrentHsm(nullptr);
+        if (this->getParent()) {
+            this->getParent()->setCurrentHsm(nullptr);
         }
-    }
-
-    // Here is an event. Give me the state that has a transition corresponding
-    // to it.
-    State* dispatch() override
-    {
-        IHsm* currentHsm = this->getCurrentHsm();
-        if (currentHsm != nullptr) {
-            return currentHsm->dispatch();
-        }
-        return this;
     }
 
     void execute(Event const& nextEvent) override
@@ -119,21 +114,17 @@ struct Hsm
 
         if (!t) {
             // If transition does not exist, pass event to parent Hsm
-            if (this->parent_) {
+            if (this->getParent() != nullptr) {
                 // TODO(sriram) : should call onExit? UML spec *seems* to say
                 // yes! invoking onExit() here will not work for Orthogonal
                 // state machines this->onExit(nextEvent);
-                auto* parent = dynamic_cast<State*>(this->parent_);
-                parent->execute(nextEvent);
+                this->getParent()->execute(nextEvent);
             } else {
                 DLOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         } else {
-            // This call to the Simple state's execute method makes it
-            // behave like a moore machine.
-            bool isAtomicState =
-              (dynamic_cast<IHsm*>(this->currentState_) == nullptr);
-            if (isAtomicState) {
+
+            if (dynamic_cast<IHsm*>(currentState_) == nullptr) {
                 this->currentState_->execute(nextEvent);
             }
 
@@ -142,7 +133,8 @@ struct Hsm
             // not performed
             if (t->doTransition(static_cast<HsmDef*>(this))) {
                 this->currentState_ = &t->toState;
-                IHsm* currentHsm = dynamic_cast<IHsm*>(this->currentState_);
+
+                auto* currentHsm = dynamic_cast<IHsm*>(this->currentState_);
                 // DLOG(INFO) << "Next State:" << this->currentState_->name;
                 if (currentHsm != nullptr) {
                     setCurrentHsm(currentHsm);
@@ -150,8 +142,7 @@ struct Hsm
             }
 
             if (this->currentState_ == this->getStopState()) {
-                // DLOG(INFO) << this->name << " Reached stop state. Exiting...
-                // ";
+                // DLOG(INFO) << this->name << " Reached stop state. Exiting.";
                 this->onExit(tsm::null_event);
             }
         }

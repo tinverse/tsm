@@ -15,8 +15,8 @@ struct BHsm : public Hsm<BHsm>
         add(s1, e1, s1);
     }
 
-    State* getStartState() { return &s1; }
-    State* getStopState() { return nullptr; }
+    State* getStartState() override { return &s1; }
+    State* getStopState() override { return nullptr; }
 
     // States
     State s1;
