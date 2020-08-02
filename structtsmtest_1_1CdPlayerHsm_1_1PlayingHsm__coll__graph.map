@@ -1,7 +1,7 @@
 <map id="tsmtest::CdPlayerHsm&lt; ControllerType &gt;::PlayingHsm" name="tsmtest::CdPlayerHsm&lt; ControllerType &gt;::PlayingHsm">
 <area shape="rect" id="node1" title=" " alt="" coords="290,608,499,803"/>
 <area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="307,307,482,531"/>
-<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="502,20,633,229"/>
+<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="502,13,633,237"/>
 <area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="160,5,266,244"/>
 <area shape="rect" id="node8" href="$structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm_1_1Song1State.html" title=" " alt="" coords="101,358,282,479"/>
 <area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="308,57,478,193"/>
