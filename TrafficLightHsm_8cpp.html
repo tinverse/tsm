@@ -105,17 +105,15 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ae57d06a5df1d9f530d9c04965f52b12f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="TrafficLightHsm_8cpp.html#ae57d06a5df1d9f530d9c04965f52b12f">AsyncBlockingObserver</a> = <a class="el" href="structtsm_1_1AsyncExecWithObserver.html">tsm::AsyncExecWithObserver</a>&lt; StateType, <a class="el" href="structtsm_1_1BlockingObserver.html">BlockingObserver</a> &gt;</td></tr>
 <tr class="memdesc:ae57d06a5df1d9f530d9c04965f52b12f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A "Blocking" Observer with Async Execution Policy.  <a href="TrafficLightHsm_8cpp.html#ae57d06a5df1d9f530d9c04965f52b12f">More...</a><br /></td></tr>
 <tr class="separator:ae57d06a5df1d9f530d9c04965f52b12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3566eb4782249a67b32bb4f96b2210bc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TrafficLightHsm_8cpp.html#a3566eb4782249a67b32bb4f96b2210bc">AsyncTrafficLightTimedHsm</a> = <a class="el" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a>&lt; <a class="el" href="CdPlayerHsm_8cpp.html#ae57d06a5df1d9f530d9c04965f52b12f">AsyncBlockingObserver</a>&lt; <a class="el" href="structtsmtest_1_1TrafficLightHsm.html">TrafficLightHsm</a> &gt;, <a class="el" href="structtsm_1_1ThreadSleepTimer.html">tsm::ThreadSleepTimer</a> &gt;</td></tr>
-<tr class="separator:a3566eb4782249a67b32bb4f96b2210bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9562198a86b8582ef5c4778b7a190f7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TrafficLightHsm_8cpp.html#ad9562198a86b8582ef5c4778b7a190f7">TrafficLightTimedHsm</a> = <a class="el" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a>&lt; SingleThreadedHsm&lt; <a class="el" href="structtsmtest_1_1TrafficLightHsm.html">TrafficLightHsm</a> &gt;, <a class="el" href="structtsm_1_1ThreadSleepTimer.html">tsm::ThreadSleepTimer</a> &gt;</td></tr>
 <tr class="separator:ad9562198a86b8582ef5c4778b7a190f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:add884789190fa1d4bea04f18659d7d15"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TrafficLightHsm_8cpp.html#add884789190fa1d4bea04f18659d7d15">TEST_CASE</a> (&quot;AsyncTrafficLightTimedHsm - testTrafficLightStatesNoWalk&quot;)</td></tr>
-<tr class="separator:add884789190fa1d4bea04f18659d7d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a773272d6e4e0831df0efc5563889d705"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TrafficLightHsm_8cpp.html#a773272d6e4e0831df0efc5563889d705">TEST_CASE</a> (&quot;AsyncTrafficLightTimedHsm - testTrafficLightStatesWithWalkPressed&quot;)</td></tr>
-<tr class="separator:a773272d6e4e0831df0efc5563889d705"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02edee28570e712cd2fea9af7cdde6fb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TrafficLightHsm_8cpp.html#a02edee28570e712cd2fea9af7cdde6fb">TEST_CASE</a> (&quot;TrafficLightTimedHsm - testTrafficLightStatesNoWalk&quot;)</td></tr>
+<tr class="separator:a02edee28570e712cd2fea9af7cdde6fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8202dd1abb83491e881b3634217714d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TrafficLightHsm_8cpp.html#a8202dd1abb83491e881b3634217714d6">TEST_CASE</a> (&quot;TrafficLightTimedHsm - testTrafficLightStatesWithWalkPressed&quot;)</td></tr>
+<tr class="separator:a8202dd1abb83491e881b3634217714d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="ae57d06a5df1d9f530d9c04965f52b12f"></a>
@@ -136,21 +134,6 @@ template&lt;typename StateType &gt; </div>
 
 </div>
 </div>
-<a id="a3566eb4782249a67b32bb4f96b2210bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3566eb4782249a67b32bb4f96b2210bc">&#9670;&nbsp;</a></span>AsyncTrafficLightTimedHsm</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="TrafficLightHsm_8cpp.html#a3566eb4782249a67b32bb4f96b2210bc">AsyncTrafficLightTimedHsm</a> =  <a class="el" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a>&lt;<a class="el" href="CdPlayerHsm_8cpp.html#ae57d06a5df1d9f530d9c04965f52b12f">AsyncBlockingObserver</a>&lt;<a class="el" href="structtsmtest_1_1TrafficLightHsm.html">TrafficLightHsm</a>&gt;, <a class="el" href="structtsm_1_1ThreadSleepTimer.html">tsm::ThreadSleepTimer</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>TrafficLightHsm is the state machine definition. It has knowledge of the Hsm hierarchy, its states, events and sub-Hsms if any. The relationships between Hsms (parentHsm_) is also setup here. Mix the Async observer and the TrafficLight Hsm to get an asynchronous traffic light state machine that notifies a listener at the end of processing each event. </p>
-
-</div>
-</div>
 <a id="ad9562198a86b8582ef5c4778b7a190f7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad9562198a86b8582ef5c4778b7a190f7">&#9670;&nbsp;</a></span>TrafficLightTimedHsm</h2>
 
@@ -162,12 +145,13 @@ template&lt;typename StateType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>TrafficLightHsm is the state machine definition. It has knowledge of the Hsm hierarchy, its states, events and sub-Hsms if any. The relationships between Hsms (parentHsm_) is also setup here. Mix the Async observer and the TrafficLight Hsm to get an asynchronous traffic light state machine that notifies a listener at the end of processing each event. </p>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="add884789190fa1d4bea04f18659d7d15"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add884789190fa1d4bea04f18659d7d15">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[1/2]</span></h2>
+<a id="a02edee28570e712cd2fea9af7cdde6fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02edee28570e712cd2fea9af7cdde6fb">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -175,7 +159,7 @@ template&lt;typename StateType &gt; </div>
         <tr>
           <td class="memname">TEST_CASE </td>
           <td>(</td>
-          <td class="paramtype">&quot;AsyncTrafficLightTimedHsm - testTrafficLightStatesNoWalk&quot;&#160;</td>
+          <td class="paramtype">&quot;TrafficLightTimedHsm - testTrafficLightStatesNoWalk&quot;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -184,8 +168,8 @@ template&lt;typename StateType &gt; </div>
 
 </div>
 </div>
-<a id="a773272d6e4e0831df0efc5563889d705"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a773272d6e4e0831df0efc5563889d705">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[2/2]</span></h2>
+<a id="a8202dd1abb83491e881b3634217714d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8202dd1abb83491e881b3634217714d6">&#9670;&nbsp;</a></span>TEST_CASE() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -193,7 +177,7 @@ template&lt;typename StateType &gt; </div>
         <tr>
           <td class="memname">TEST_CASE </td>
           <td>(</td>
-          <td class="paramtype">&quot;AsyncTrafficLightTimedHsm - testTrafficLightStatesWithWalkPressed&quot;&#160;</td>
+          <td class="paramtype">&quot;TrafficLightTimedHsm - testTrafficLightStatesWithWalkPressed&quot;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
