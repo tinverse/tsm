@@ -23,6 +23,7 @@ using AsyncBlockingObserver =
 /// TrafficLight Hsm to get an asynchronous traffic light state machine
 /// that notifies a listener at the end of processing each event.
 ///
+/*
 using AsyncTrafficLightTimedHsm =
   TimedExecutionPolicy<AsyncBlockingObserver<TrafficLightHsm>,
                        tsm::ThreadSleepTimer>;
@@ -73,6 +74,7 @@ TEST_CASE("AsyncTrafficLightTimedHsm - testTrafficLightStatesWithWalkPressed")
     }
     sm->stopSM();
 }
+*/
 using TrafficLightTimedHsm =
   TimedExecutionPolicy<SingleThreadedHsm<TrafficLightHsm>,
                        tsm::ThreadSleepTimer>;
