@@ -8,83 +8,32 @@ namespace tsm {
 ///
 /// Interface for any Hierarchical State Machine.
 ///
-struct IHsm
+struct IHsm : public State
 {
     IHsm() = delete;
 
-    explicit IHsm(IHsm* parent)
-      : parent_(parent)
+    explicit IHsm(std::string const& name, IHsm* parent)
+      : State(name)
+      , parent_(parent)
       , currentHsm_(nullptr)
+      , currentState_(nullptr)
+      , startState_(nullptr)
+      , stopState_(nullptr)
     {}
 
     IHsm(IHsm const&) = delete;
     IHsm(IHsm&&) = delete;
 
-    virtual ~IHsm() = default;
+    ~IHsm() override = default;
 
-    IHsm* getCurrentHsm() { return currentHsm_; }
-    void setCurrentHsm(IHsm* currentHsm) { currentHsm_ = currentHsm; }
-
-    // The Hsm has some level of freedom to pick a state so an event
-    // can be dispatched to it. This provides a level of indirection
-    // which could be used to our advantage. For e.g. take a look at
-    // how OrthogonalHsm and Hsm override this method.
-    virtual IHsm* dispatch()
-    {
-        if (currentHsm_ != nullptr) {
-            return currentHsm_->dispatch();
-        }
-        return this;
-    }
-
-    virtual void execute(Event const&) = 0;
-
-    IHsm* getParent() const { return parent_; }
-    void setParent(IHsm* parent) { parent_ = parent; }
-
-  private:
-    IHsm* parent_;
-    IHsm* currentHsm_;
-};
-
-///
-/// Implements a Hierarchical State Machine.
-///
-template<typename HsmDef>
-struct Hsm
-  : public IHsm
-  , public State
-{
-    using StateTransitionTable = StateTransitionTableT<HsmDef>;
-    using Transition = typename StateTransitionTableT<HsmDef>::Transition;
-    using ActionFn = void (HsmDef::*)();
-    using GuardFn = bool (HsmDef::*)();
-
-    Hsm(std::string const& name)
-      : IHsm(nullptr)
-      , State(name)
-      , currentState_(nullptr)
-    {}
-
-    Hsm(std::string const& name, IHsm* parent)
-      : IHsm(parent)
-      , State(name)
-      , currentState_(nullptr)
-    {}
-
-    Hsm(Hsm const&) = delete;
-    Hsm(Hsm&&) = delete;
-
-    virtual ~Hsm() { stopSM(); }
     void startSM() { this->onEntry(tsm::null_event); }
     void stopSM() { this->onExit(tsm::null_event); }
     void onEntry(Event const&) override
     {
-        DLOG(INFO) << "Entering: " << this->name;
-        this->currentState_ = this->getStartState();
+        currentState_ = this->getStartState();
 
-        if (this->getParent() != nullptr) {
-            this->getParent()->setCurrentHsm(this);
+        if (parent_ != nullptr) {
+            parent_->setCurrentHsm(this);
         }
     }
 
@@ -97,15 +46,74 @@ struct Hsm
         // HsmDefs to override onExit appropriately. Currently as you see,
         // the policy is to 'forget' on exit by setting the currentState_ to
         // nullptr.
-        DLOG(INFO) << "Exiting: " << this->name;
-        this->currentState_ = nullptr;
+        currentState_ = nullptr;
+        if (parent_ != nullptr) {
+            parent_->setCurrentHsm(nullptr);
+        }
+        startState_ = nullptr;
+    }
 
-        if (this->getParent()) {
-            this->getParent()->setCurrentHsm(nullptr);
+    IHsm* getCurrentHsm() { return currentHsm_; }
+    void setCurrentHsm(IHsm* currentHsm) { currentHsm_ = currentHsm; }
+
+    void dispatch(Event const& e)
+    {
+        if (currentHsm_ != nullptr) {
+            currentHsm_->dispatch(e);
+        } else {
+            this->handle(e);
         }
     }
 
-    void execute(Event const& nextEvent) override
+    virtual void handle(Event const&) = 0;
+
+    IHsm* getParent() const { return parent_; }
+    void setParent(IHsm* parent) { parent_ = parent; }
+
+    State* getCurrentState() { return currentState_; }
+
+
+    State* getStartState() { return startState_; }
+    void setStartState(State* s) { startState_ = s; }
+
+    State* getStopState() { return stopState_; }
+    void setStopState(State* s) { stopState_ = s; }
+
+  private:
+    IHsm* parent_;
+    IHsm* currentHsm_;
+  protected:
+    State* currentState_;
+    State* startState_;
+    State* stopState_;
+};
+
+///
+/// Implements a Hierarchical State Machine.
+///
+template<typename HsmDef>
+struct Hsm
+  : public IHsm
+{
+    using StateTransitionTable = StateTransitionTableT<HsmDef>;
+    using Transition = typename StateTransitionTableT<HsmDef>::Transition;
+    using ActionFn = void (HsmDef::*)();
+    using GuardFn = bool (HsmDef::*)();
+
+    Hsm(std::string const& name)
+      : IHsm(name, nullptr)
+    {}
+
+    Hsm(std::string const& name, IHsm* parent)
+      : IHsm(name, parent)
+    {}
+
+    Hsm(Hsm const&) = delete;
+    Hsm(Hsm&&) = delete;
+
+    ~Hsm() override { IHsm::stopSM(); }
+
+    void handle(Event const& nextEvent) override
     {
         DLOG(INFO) << "Current State:" << this->currentState_->name
                    << " Event:" << nextEvent.id;
@@ -118,15 +126,11 @@ struct Hsm
                 // TODO(sriram) : should call onExit? UML spec *seems* to say
                 // yes! invoking onExit() here will not work for Orthogonal
                 // state machines this->onExit(nextEvent);
-                this->getParent()->execute(nextEvent);
+                this->getParent()->handle(nextEvent);
             } else {
                 DLOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         } else {
-
-            if (dynamic_cast<IHsm*>(currentState_) == nullptr) {
-                this->currentState_->execute(nextEvent);
-            }
 
             // Perform entry and exit actions in the doTransition function.
             // If just an internal transition, Entry and exit actions are
@@ -162,21 +166,40 @@ struct Hsm
         return table_.next(currentState, nextEvent);
     }
 
-    State* getCurrentState()
-    {
-        DLOG(INFO) << "Get Current State: "
-                   << ((currentState_) ? currentState_->name : "nullptr");
-        return currentState_;
-    }
+
 
     StateTransitionTable& getTable() const { return table_; }
     std::set<Event> const& getEvents() const { return table_.getEvents(); }
 
-    virtual State* getStartState() = 0;
-    virtual State* getStopState() = 0;
 
   protected:
     StateTransitionTable table_;
-    State* currentState_;
 };
+
+template<typename HsmDef>
+struct MooreHsm
+  : public IHsm
+{
+    MooreHsm(std::string const& name)
+      : IHsm(name, nullptr)
+    {}
+
+    MooreHsm(std::string const& name, IHsm* parent)
+      : IHsm(name, parent)
+    {}
+
+    MooreHsm(MooreHsm const&) = delete;
+    MooreHsm(MooreHsm&&) = delete;
+
+    ~MooreHsm() override { IHsm::stopSM(); }
+
+    void handle(Event const& nextEvent) override
+    {
+        currentState_ = currentState_->execute(nextEvent);
+        if (currentState_ == this->getStopState()) {
+            this->onExit(tsm::null_event);
+        }
+    }
+};
+
 } // namespace tsm

@@ -64,22 +64,19 @@ perform(Tuple&& tuple, size_t index, Action action)
 template<typename... Hsms>
 struct OrthogonalHsm
   : public IHsm
-  , public State
 {
     using type = OrthogonalHsm<Hsms...>;
     static constexpr size_t HSM_COUNT = sizeof...(Hsms);
 
     OrthogonalHsm(std::string const& name)
-      : IHsm(nullptr)
-      , State(name)
+      : IHsm(name, nullptr)
     {
 
         for_each_hsm(sms_, [&](auto& sm) { sm.setParent(this); });
     }
 
     OrthogonalHsm(std::string const& name, IHsm* parent)
-      : IHsm(parent)
-      , State(name)
+      : IHsm(name, parent)
     {
 
         for_each_hsm(sms_, [&](auto& sm) { sm.setParent(this); });
@@ -105,7 +102,7 @@ struct OrthogonalHsm
         this->setCurrentHsm(nullptr);
     }
 
-    void execute(Event const& nextEvent) override
+    void handle(Event const& nextEvent) override
     {
         // Get the first hsm that handles the event
         auto sm_index = find_if(sms_, [&](auto& hsm) {
@@ -114,11 +111,12 @@ struct OrthogonalHsm
             return (event_it != supported_events.end());
         });
         if (sm_index < HSM_COUNT) {
-            perform(sms_, sm_index, [&](auto& sm) { sm.execute(nextEvent); });
+            perform(sms_, sm_index, [&](auto& sm) { sm.dispatch(nextEvent); });
         } else {
             // Try sending the event up to parent
             if (this->getParent()) {
-                (this->getParent())->execute(nextEvent);
+                // Don't dispatch, directly handle here.
+                this->getParent()->handle(nextEvent);
             } else {
                 DLOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }

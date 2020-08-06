@@ -18,6 +18,9 @@ struct GarageDoorHsm : public Hsm<GarageDoorHsm>
       , doorStoppedClosing("Door Stopped Closing")
       , doorStoppedOpening("Door Stopped Opening")
     {
+        // Start State
+        setStartState(&doorClosed);
+
         // TransitionTable
         add(doorClosed, click_event, doorOpening);
         add(doorOpening, topSensor_event, doorOpen);
@@ -32,9 +35,6 @@ struct GarageDoorHsm : public Hsm<GarageDoorHsm>
     }
 
     virtual ~GarageDoorHsm() = default;
-
-    State* getStartState() override { return &doorClosed; }
-    State* getStopState() override { return nullptr; }
 
     // States
     State doorOpen;

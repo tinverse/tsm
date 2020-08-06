@@ -7,6 +7,7 @@ namespace tsmtest {
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::Hsm;
+using tsm::IHsm;
 using tsm::State;
 
 struct CdPlayerController
@@ -43,7 +44,6 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
             Song1State()
               : State("Playing Hsm -> Song1")
             {}
-            void execute(Event const&) override {}
         };
         PlayingHsm()
           : Hsm<PlayingHsm>("Playing Hsm")
@@ -51,6 +51,7 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
           , Song2("Playing Hsm -> Song2")
           , Song3("Playing Hsm -> Song3")
         {
+            IHsm::setStartState(&Song1);
 
             // clang-format off
             add(Song1, next_song, Song2, &PlayingHsm::PlaySong, &PlayingHsm::PlaySongGuard);
@@ -61,9 +62,6 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
         }
 
         virtual ~PlayingHsm() = default;
-
-        State* getStartState() override { return &Song1; }
-        State* getStopState() override { return nullptr; }
 
         // States
         Song1State Song1;
@@ -116,6 +114,8 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
       , Empty("Player Empty")
       , Open("Player Open")
     {
+        IHsm::setStartState(&Empty);
+
         Playing.setParent(this);
 
         // State Transition Table
@@ -139,9 +139,6 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
     }
 
     virtual ~CdPlayerHsm() = default;
-
-    State* getStartState() { return &Empty; }
-    State* getStopState() { return nullptr; }
 
     // CdPlayer Hsm
     // States
@@ -172,6 +169,8 @@ struct ErrorHsm : public Hsm<ErrorHsm>
       , AllOk("All Ok")
       , ErrorMode("Error Mode")
     {
+        IHsm::setStartState(&AllOk);
+
         add(AllOk, error, ErrorMode);
         // Potentially transition to a recovery Hsm
         add(ErrorMode, recover, AllOk, &ErrorHsm::recovery);
@@ -188,9 +187,6 @@ struct ErrorHsm : public Hsm<ErrorHsm>
 
     // Actions
     void recovery() { DLOG(INFO) << "Recovering from Error:"; }
-
-    State* getStartState() { return &AllOk; }
-    State* getStopState() { return nullptr; }
 };
 
 } // namespace tsmtest

@@ -12,11 +12,10 @@ struct BHsm : public Hsm<BHsm>
       : Hsm<BHsm>("BHsm")
       , s1("BS1")
     {
+        IHsm::setStartState(&s1);
+
         add(s1, e1, s1);
     }
-
-    State* getStartState() override { return &s1; }
-    State* getStopState() override { return nullptr; }
 
     // States
     State s1;
@@ -34,6 +33,10 @@ struct AHsm : public Hsm<AHsm>
       , s3("s3")
       , s4("s4")
     {
+
+        IHsm::setStartState(&s1);
+        IHsm::setStopState(&s4);
+
         // Establish Parent - Child Relationships
         bHsm.setParent(this);
 
@@ -44,9 +47,6 @@ struct AHsm : public Hsm<AHsm>
         add(s3, e3, s1);
         add(s3, end_event, s4);
     }
-
-    State* getStartState() { return &s1; }
-    State* getStopState() { return &s4; }
 
     // States
     BHsm bHsm;
@@ -72,6 +72,9 @@ struct CHsm : public Hsm<CHsm>
       , s3("s3")
       , s4("s4")
     {
+        IHsm::setStartState(&s1);
+        IHsm::setStopState(&s4);
+
         // Establish Parent - Child Relationships
         bHsm.setParent(this);
 
@@ -82,9 +85,6 @@ struct CHsm : public Hsm<CHsm>
         add(s3, e3, s1);
         add(s3, end_event, s4);
     }
-
-    State* getStartState() { return &s1; }
-    State* getStopState() { return &s4; }
 
     // States
     BHsm bHsm;
@@ -119,6 +119,9 @@ struct DHsm : Hsm<DHsm>
       , ds4("ds4")
       , ds5("ds5")
     {
+        IHsm::setStartState(&ds1);
+        IHsm::setStopState(&ds5);
+
         // Establish Parent - Child Relationships
         bHsm.setParent(this);
         oHsm.setParent(this);
@@ -132,9 +135,6 @@ struct DHsm : Hsm<DHsm>
         add(oHsm, o_out, ds4);
         add(ds4, end_Devent, ds5);
     }
-
-    State* getStartState() { return &ds1; }
-    State* getStopState() { return &ds5; }
 
     // States
     BHsm bHsm;
