@@ -1,6 +1,5 @@
 <map id="tsmtest::OHsm" name="tsmtest::OHsm">
-<area shape="rect" id="node1" title=" " alt="" coords="85,549,197,627"/>
-<area shape="rect" id="node2" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="70,292,213,501"/>
-<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="5,13,136,237"/>
-<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="161,5,266,244"/>
+<area shape="rect" id="node1" title=" " alt="" coords="21,564,133,641"/>
+<area shape="rect" id="node2" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="5,307,148,516"/>
+<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="11,5,142,259"/>
 </map>

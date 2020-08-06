@@ -1,10 +1,9 @@
 <map id="tsm::OrthogonalHsm&lt; Hsms &gt;" name="tsm::OrthogonalHsm&lt; Hsms &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="223,449,365,659"/>
-<area shape="rect" id="node5" href="$structtsmtest_1_1OHsm.html" title=" " alt="" coords="5,802,169,894"/>
-<area shape="rect" id="node6" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="193,736,432,960"/>
-<area shape="rect" id="node8" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="475,743,617,953"/>
-<area shape="rect" id="node2" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="213,169,343,393"/>
-<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="368,161,473,400"/>
-<area shape="rect" id="node4" href="$structtsm_1_1IState.html" title=" " alt="" coords="377,5,465,112"/>
-<area shape="rect" id="node7" href="$structOrthogonalCdPlayerHsm.html" title=" " alt="" coords="215,1009,410,1101"/>
+<area shape="rect" id="node1" title=" " alt="" coords="223,596,365,805"/>
+<area shape="rect" id="node4" href="$structtsmtest_1_1OHsm.html" title=" " alt="" coords="5,949,169,1041"/>
+<area shape="rect" id="node5" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="193,883,432,1107"/>
+<area shape="rect" id="node7" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="475,890,617,1099"/>
+<area shape="rect" id="node2" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="229,293,359,547"/>
+<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="241,5,347,244"/>
+<area shape="rect" id="node6" href="$structOrthogonalCdPlayerHsm.html" title=" " alt="" coords="215,1156,410,1248"/>
 </map>

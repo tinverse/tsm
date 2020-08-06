@@ -135,7 +135,7 @@ $(function() {
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="comment">// go down the Hsm hierarchy to handle the event as that is the</span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="comment">// &quot;most active state&quot;</span></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">if</span> (!<a class="code" href="structtsm_1_1AsyncExecutionPolicy.html#a6e187902ef8c5776a4d3014f93ae2106">eventQueue_</a>.<a class="code" href="structtsm_1_1EventQueueT.html#ad2eefece38e92c9fa5b7471c06a7126e">interrupted</a>()) {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            (this-&gt;dispatch())-&gt;execute(nextEvent);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            StateType::dispatch(nextEvent);</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            <a class="code" href="tsm__log_8h.html#a7470fb509138e753b4162299b761f7ec">DLOG</a>(WARNING) &lt;&lt; this-&gt;name &lt;&lt; <span class="stringliteral">&quot;: Exiting event loop on interrupt&quot;</span>;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        }</div>

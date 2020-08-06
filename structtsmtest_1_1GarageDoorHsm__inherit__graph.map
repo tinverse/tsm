@@ -1,6 +1,5 @@
 <map id="tsmtest::GarageDoorHsm" name="tsmtest::GarageDoorHsm">
-<area shape="rect" id="node1" title=" " alt="" coords="55,579,227,832"/>
-<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="40,292,243,531"/>
-<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="5,13,136,237"/>
-<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="161,5,266,244"/>
+<area shape="rect" id="node1" title=" " alt="" coords="21,564,193,788"/>
+<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="5,307,208,516"/>
+<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="41,5,172,259"/>
 </map>

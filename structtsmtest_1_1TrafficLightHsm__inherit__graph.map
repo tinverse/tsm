@@ -1,6 +1,6 @@
 <map id="tsmtest::TrafficLightHsm" name="tsmtest::TrafficLightHsm">
-<area shape="rect" id="node1" title=" " alt="" coords="58,579,225,876"/>
-<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="44,292,239,531"/>
-<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="5,13,136,237"/>
-<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="161,5,266,244"/>
+<area shape="rect" id="node1" title=" " alt="" coords="17,736,184,945"/>
+<area shape="rect" id="node2" href="$structtsm_1_1MooreHsm.html" title=" " alt="" coords="5,521,196,687"/>
+<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="30,5,161,259"/>
+<area shape="rect" id="node4" href="$structtsm_1_1MooreHsm.html" title=" " alt="" coords="117,308,306,459"/>
 </map>

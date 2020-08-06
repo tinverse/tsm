@@ -77,16 +77,13 @@ Using tsm</h4>
 <div class="line">     , doorOpen(&quot;Door Open&quot;)</div>
 <div class="line">     ...</div>
 <div class="line">   {</div>
+<div class="line">       setStartState(&amp;doorClosed);</div>
+<div class="line"> </div>
 <div class="line">       // TransitionTable</div>
 <div class="line">       add(doorClosed, click_event, doorOpening);</div>
 <div class="line">       add(doorOpening, topSensor_event, doorOpen);</div>
 <div class="line">       ...</div>
 <div class="line">   }</div>
-<div class="line"> </div>
-<div class="line">   State* getStartState() const { return &amp;doorClosed; }</div>
-<div class="line"> </div>
-<div class="line">   State* getStopState() const { return nullptr; }</div>
-<div class="line"> </div>
 <div class="line"> </div>
 <div class="line">   // States</div>
 <div class="line">   State doorOpen;</div>
@@ -96,8 +93,7 @@ Using tsm</h4>
 <div class="line">   Event click_event;</div>
 <div class="line">   ...</div>
 <div class="line">};</div>
-</div><!-- fragment --><p>The getStartState and getStopState methods return the start and stop states of the GarageDoorHsm</p>
-<p>Wrap the state machine around an execution policy. Currently, there are two options.</p>
+</div><!-- fragment --><p>Wrap the state machine around an execution policy. Currently, there are two options.</p>
 <p>a. A state machine that executes in the context of the parent thread. This means that the client sending events to the state machine drives the event processing as well. Typically, this will be the 'main' thread of your application driving event processing. Note that several other threads can hold references to the state machine instance and queue up events (see 'd' below). </p><div class="fragment"><div class="line">SingleThreadedHsm&lt;GarageDoorHsm&gt; sm;</div>
 </div><!-- fragment --><p>b. A state machine that processes incomming events in its own thread. i.e. Events will be immediately consumed as long as the state machine is not busy. Clients 'fire and forget' an event and desire no control over event processing. </p><div class="fragment"><div class="line">AsyncExecutionPolicy&lt;GarageDoorHsm&gt; sm;</div>
 </div><!-- fragment --><p>c. Send events to the state machine by using sendEvent method provided by the policy. </p><div class="fragment"><div class="line">sm.sendEvent(sm.doorOpen);</div>
@@ -114,7 +110,6 @@ Policy based design</h4>
 <div class="line">d. History Preserving</div>
 </div><!-- fragment --><p>Other Policy classes <em>can</em> be implemented for distributed event processing. The existing mechanism can also be extended to incorporate custom behavior such as writing state transitions to disk. For e.g. see <code>struct AsyncExecWithObserver</code> in <code><a class="el" href="AsyncExecutionPolicy_8h.html">AsyncExecutionPolicy.h</a></code></p>
 <p>Clients need to include <a class="el" href="tsm_8h.html">tsm.h</a> file and link against the libtsm library.</p>
-<p>The abstract base class <code>IHsm</code> forces all Hierarchical State Machines to override the <code>getStartState</code> and <code>getStopState</code> methods.</p>
 <p>The design uses CRTP to force Actions and Guards to be callbacks that are part of your Hsm class. See the implementation of</p>
 <div class="fragment"><div class="line">  template &lt;typename HsmDef&gt;</div>
 <div class="line">  struct Hsm : public IHsm, public State {</div>
