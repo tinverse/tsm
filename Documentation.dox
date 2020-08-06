@@ -12,16 +12,13 @@ Create the state machine by inheriting from Hsm using CRTP.
         , doorOpen("Door Open")
         ...
       {
+          setStartState(&doorClosed);
+
           // TransitionTable
           add(doorClosed, click_event, doorOpening);
           add(doorOpening, topSensor_event, doorOpen);
           ...
       }
-
-      State* getStartState() const { return &doorClosed; }
-
-      State* getStopState() const { return nullptr; }
-
 
       // States
       State doorOpen;
@@ -32,7 +29,6 @@ Create the state machine by inheriting from Hsm using CRTP.
       ...
    };
    ```
-The getStartState and getStopState methods return the start and stop states of the GarageDoorHsm
 
 Wrap the state machine around an execution policy. Currently, there are two options.
 
@@ -79,8 +75,6 @@ d. History Preserving
 Other Policy classes *can* be implemented for distributed event processing. The existing mechanism can also be extended to incorporate custom behavior such as writing state transitions to disk. For e.g. see `struct AsyncExecWithObserver` in `AsyncExecutionPolicy.h`
 
 Clients need to include tsm.h file and link against the libtsm library.
-
-The abstract base class `IHsm` forces all Hierarchical State Machines to override the `getStartState` and `getStopState` methods.
 
 The design uses CRTP to force Actions and Guards to be callbacks that are part of your Hsm class. See the implementation of
 

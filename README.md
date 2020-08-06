@@ -27,12 +27,11 @@ struct Switch : Hsm<Switch>
         , on("on")
         , off("off")
     {
+        setStartState(&off);
+
         add(on, toggle, off);
         add(off, toggle, on);
     }
-
-    State* getStartState() const { return &on; }
-    State* getStopState() const { return nullptr; }
 
     State on;
     State off;
@@ -41,7 +40,7 @@ struct Switch : Hsm<Switch>
 }
 ```
 
-So there you have it. Unfortunately, with tsm (this framework), it doesn't get any simpler than this. Trade-offs. We are not done yet. There is one more thing. How do you expect clients to interact with this state machine? There are two obvious choices.
+So there you have it. There is one more thing. Clients can interact with this state machine in two ways - Synchronously and Asynchronously.
 
 ##### Single Threaded Execution Policy
 
@@ -114,9 +113,7 @@ If you noticed, `Playing` is another state machine hidden among the CdPlayer's s
 struct Playing : public Hsm<PlayingHsm>
 {
 
-    // ... Some details have been left out...
-    State* getStartState() override { return &Song1; }
-    State* getStopState() override { return nullptr; }
+    // ... ignoring boiler plate stuff ...
 
     // States
     State Song1;
@@ -144,6 +141,8 @@ CdPlayerHsm::CdPlayerHsm()
       , Empty("Player Empty")
       , Open("Player Open")
     {
+        setStartState(&Empty);
+
         // Tell Playing who's the parent. <---------------- Note
         Playing.setParent(this);
 
@@ -181,6 +180,8 @@ PlayingHsm()
   , Song2("Playing Hsm -> Song2")
   , Song3("Playing Hsm -> Song3")
 {
+    setStartState(&Song1);
+
     add(Song1, next_song, Song2, &PlayingHsm::PlaySong, &PlayingHsm::PlaySongGuard);  // <-------- Note
     add(Song2, next_song, Song3);
     add(Song3, prev_song, Song2);
@@ -229,30 +230,22 @@ Note that the call to `sm.step()` is not required for the `AsynchronousHsm`. Eve
 
 ##### Start and Stop States
 
-Also, specify the start and stop states within `CdPlayer` or any Hsm definition. This is required.
-
-```cpp
-State* getStartState() override { return &Song1; }
-State* getStopState() override { return nullptr; }
-```
-
+Specify the start state within the Hsm's constructor `setStartState(&Song1)`. This is required. If there is a termination state, that has to be specified as well.
 
 #### TimedExecutionPolicy
 
-A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :).
+A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :). Problems such as these can be modeled as Moore machines.
 
 ```cpp
-struct TrafficLightHsm : public Hsm<TrafficLightHsm>
+struct TrafficLightHsm : public MooreHsm<TrafficLightHsm>
 {
     // ... with a few details removed...
-    State* getStartState() override { return &G1; }
-    State* getStopState() override { return nullptr; }
 
     // States
-    LightState G1;
-    LightState Y1;
-    LightState G2;
-    LightState Y2;
+    LightState g1;
+    LightState y1;
+    G2 g2;      // G2 is derived from LightState, which in turn is inherited from State.
+    LightState y2;
 
     // Events
     Event timer_event;
@@ -261,6 +254,23 @@ struct TrafficLightHsm : public Hsm<TrafficLightHsm>
     bool walkPressed;
     uint64_t ticks_;
 };
+```
+`LightState` looks like this:
+
+```cpp
+    struct LightState : public State
+    {
+        friend TrafficLightHsm;
+        // ... skipping constructor, data members etc. ...
+        State* execute(Event const&) override
+        {
+            if (++parent_->ticks_ > limit_) {
+                this->parent_->ticks_ = 0;
+                return nextState_;
+            }
+            return this;
+        }
+    };
 ```
 
 To turn it into a timer driven state machine,
