@@ -2,106 +2,73 @@
 
 using tsm::Event;
 using tsm::EventQueue;
-using tsm::Hsm;
-using tsm::MooreHsm;
+using tsm::IHsm;
 using tsm::State;
 
 namespace tsmtest {
-///
-/// The problem is to model traffic lights at a 2-way crossing. The states are
-/// G1(30s), Y1(5s), G2(60s), Y2(5s). The signal stays on for the amount of time
-/// indicated in the brackets adjacent to the signal before moving on to the
-/// next. The added complication is that G2 has a walk signal. If the walk
-/// signal is pressed, G2 stays on for only 30s instead of 60s before
-/// transitioning to Y2. The trick is to realize that there is only one event
-/// for this state machine: The expiry of a timer at say, 1s granularity.
-///
-struct TrafficLightHsm : public MooreHsm<TrafficLightHsm>
+struct TrafficLightHsm : public IHsm
 {
     static const int G2WALK = 30;
     struct LightState : public State
     {
-        friend TrafficLightHsm;
-        LightState(std::string const& name,
-                   uint64_t limit,
-                   State* nextState,
-                   TrafficLightHsm* parent)
+        LightState(std::string const& name, uint64_t limit, LightState& next)
           : State(name)
           , limit_(limit)
-          , nextState_(nextState)
-          , parent_(parent)
+          , next_(next)
         {}
 
-        ~LightState() override
-        {
-            parent_ = nullptr;
-            nextState_ = nullptr;
-        }
+        ~LightState() override = default;
 
-        State* execute(Event const&) override
-        {
-            if (++parent_->ticks_ > limit_) {
-                this->parent_->ticks_ = 0;
-                return nextState_;
-            }
-            return this;
-        }
         uint64_t getLimit() const { return limit_; }
-        State* getNextState() const { return nextState_; }
+        LightState& nextState() { return next_; }
 
-      protected:
+      private:
         const uint64_t limit_;
-        State* nextState_;
-        TrafficLightHsm* parent_;
-    };
-
-    struct G2 : public LightState
-    {
-        friend TrafficLightHsm;
-        G2(std::string const& name,
-                   uint64_t limit,
-                   State* nextState,
-                   TrafficLightHsm* parent)
-          : LightState(name, limit, nextState, parent)
-        {}
-
-        ~G2() override = default;
-
-        State* execute(Event const&) override
-        {
-            if ((this->parent_->walkPressed && (this->parent_->ticks_ > G2_WALK))
-                    || (++parent_->ticks_ > limit_)) {
-                this->parent_->walkPressed = false;
-                this->parent_->ticks_ = 0;
-                return this->nextState_;
-            }
-            return this;
-        }
-    private:
-        const uint64_t G2_WALK = 30;
+        LightState& next_;
     };
 
     TrafficLightHsm()
-      : MooreHsm<TrafficLightHsm>("Traffic Light Hsm")
-      , g1("G1", 30, &y1, this)
-      , y1("Y1", 5, &g2, this)
-      , g2("G2", 60, &y2, this)
-      , y2("Y2", 5, &g1, this)
+      : IHsm("Traffic Light Hsm", nullptr)
+      , G1("G1", 30, Y1)
+      , Y1("Y1", 5, G2)
+      , G2("G2", 60, Y2)
+      , Y2("Y2", 5, G1)
       , walkPressed(false)
       , ticks_(0)
     {
-        IHsm::setStartState(&g1);
+        this->setStartState(&G1);
     }
 
     void pressWalk() { walkPressed = true; }
 
+    void handle(Event const&) override
+    {
+        ++ticks_;
+        auto* state = static_cast<LightState*>(this->currentState_);
+        bool guard = (this->ticks_ > state->getLimit());
+        if (state->id == G2.id) {
+            guard |= (walkPressed && (this->ticks_ > G2WALK));
+        }
+
+        if (guard) {
+            // disable walkPressed when exiting G2
+            if ((state->id == G2.id) && walkPressed) {
+                walkPressed = false;
+            }
+
+            ticks_ = 0;
+            // set the next state
+            this->currentState_ = &state->nextState();
+        }
+    }
+
     ~TrafficLightHsm() override = default;
 
     // States
-    LightState g1;
-    LightState y1;
-    G2 g2;
-    LightState y2;
+    LightState G1;
+    LightState Y1;
+    LightState G2;
+    LightState Y2;
 
     // Events
     Event timer_event;

@@ -5,9 +5,9 @@
 
 ///
 /// The default policy class for asynchronous event processing. This policy is
-/// mixed in with a StateMachineT class to create an AsynchronousHsm. The
-/// client uses the sendEvent method to communicate with the state machine. A
-/// separate thread is created and blocks wating on events in the step method.
+/// mixed in with a Hsm class to create an AsynchronousHsm. The client uses
+/// the sendEvent method to communicate with the state machine. A separate
+/// thread is created and blocks wating on events in the step method.
 ///
 namespace tsm {
 template<typename StateType>
@@ -77,7 +77,7 @@ struct AsyncExecutionPolicy : public StateType
 };
 
 ///
-/// Another asynchronous state machine execution policy. The only difference is
+/// Another asynchronous execution policy. The only difference with above is
 /// that an Observer's notify method will be invoked at the end of processing
 /// each event - specifically, right before the blocking wait for the next
 /// event.

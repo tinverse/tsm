@@ -7,6 +7,7 @@
 #include "OrthogonalHsm.h"
 #include "SingleThreadedExecutionPolicy.h"
 #include "State.h"
+#include "TimedExecutionPolicy.h"
 #include "Transition.h"
 
 namespace tsm {
@@ -44,5 +45,21 @@ using SingleThreadedHsm = SingleThreadedExecutionPolicy<Hsm>;
 ///
 template<typename Hsm>
 using AsynchronousHsm = AsyncExecutionPolicy<Hsm>;
+
+// The difference between Mealy and Moore machines is that Moore machines are
+// synchronously driven by a clock whereas Mealy machines are asynchronous. The
+// following are just aliases for SingleThreadedHsm and AsynchronousHsm.
+template<typename Hsm>
+using MooreHsm = SingleThreadedHsm<Hsm>;
+
+template<typename Hsm>
+using MealyHsm = AsynchronousHsm<Hsm>;
+
+// This Moore machine is driven by a periodic timer.
+template<typename Hsm,
+         template<typename> class TimerType,
+         typename DurationType>
+using ClockedMooreHsm =
+  TimedExecutionPolicy<MooreHsm<Hsm>, TimerType, DurationType>;
 
 } // namespace tsm

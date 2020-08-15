@@ -2,7 +2,10 @@
 #include "tsm_log.h"
 
 #include <condition_variable>
+#include <functional>
 #include <mutex>
+#include <vector>
+
 namespace tsm {
 ///
 /// A simple observer class. The notify method will be invoked by an
@@ -37,4 +40,25 @@ struct BlockingObserver
     std::condition_variable cv_;
     bool notified_;
 };
-}
+
+struct CallbackObserver
+{
+    void addCallback(std::function<void()>&& cb)
+    {
+        if (cb != nullptr) {
+            cbs_.push_back(cb);
+        }
+    }
+
+    void notify()
+    {
+        for (auto const& cb : cbs_) {
+            cb();
+        }
+    }
+
+  private:
+    std::vector<std::function<void()>> cbs_;
+};
+
+} // namespace tsm

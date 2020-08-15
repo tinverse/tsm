@@ -11,7 +11,7 @@ tsm is a state machine framework with support for Hierarchical and Orthogonal St
 ### Features:
     * Hierarchical State machine.
     * Thread safe event queue.
-    * Single Threaded or Asynchronous execution.
+    * Single Threaded (Moore) or Asynchronous (Mealy) execution.
     * Timer driven execution policy.
     * Ease of installation and integration - Header only, CMake and Nix support.
     * Policy Based - Ability to customize behavior by defining execution policies.
@@ -232,10 +232,10 @@ Specify the start state within the Hsm's constructor `setStartState(&Song1)`. Th
 
 #### TimedExecutionPolicy
 
-A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :). This problem is modeled as a Moore machine.
+A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :). This problem is modeled with a custom "handle" method without a state transition table and a LightState type inherited from the State struct.
 
 ```cpp
-struct TrafficLightHsm : public MooreHsm<TrafficLightHsm>
+struct TrafficLightHsm : public IHsm
 {
     // ... with a few details removed...
 
@@ -258,30 +258,64 @@ struct TrafficLightHsm : public MooreHsm<TrafficLightHsm>
 ```cpp
     struct LightState : public State
     {
-        friend TrafficLightHsm;
-        // ... skipping constructor, data members etc. ...
-        State* execute(Event const&) override
-        {
-            if (++parent_->ticks_ > limit_) {
-                this->parent_->ticks_ = 0;
-                return nextState_;
-            }
-            return this;
-        }
+        LightState(std::string const& name, uint64_t limit, LightState& next)
+          : State(name)
+          , limit_(limit)
+          , next_(next)
+        {}
+
+        ~LightState() override = default;
+
+        uint64_t getLimit() const { return limit_; }
+        LightState& nextState() { return next_; }
+
+      private:
+        const uint64_t limit_;
+        LightState& next_;
     };
+
 ```
 
+Event handling, guard/action transition table functionality etc. are all captured here:
+
+```cpp
+    void TrafficLightHsm::handle(Event const&) override
+    {
+        ++ticks_;
+        auto* state = static_cast<LightState*>(this->currentState_);
+        bool guard = (this->ticks_ > state->getLimit());
+        if (state->id == G2.id) {
+            guard |= (walkPressed && (this->ticks_ > G2WALK));
+        }
+
+        if (guard) { // ok to transition?
+            // disable walkPressed when exiting G2
+            if ((state->id == G2.id) && walkPressed) {
+                walkPressed = false;
+            }
+
+            ticks_ = 0;
+            // set the next state
+            this->currentState_ = &state->nextState();
+        }
+    }
+```
 To turn it into a timer driven state machine,
 
 ```cpp
 #include <tsm.h>
+using TrafficLightTimedHsm = tsm::ClockedMooreHsm<TrafficLightHsm,
+                                                  tsm::ThreadSleepTimer,
+                                                  std::chrono::microseconds>;
+
 using AsyncTrafficLightTimedHsm =
   TimedExecutionPolicy<AsynchronousHsm<TrafficLightHsm>,  // <----- Note use of AsynchronousHsm
-                       tsm::ThreadSleepTimer>;
+                       tsm::ThreadSleepTimer,
+                       std::chrono::milliseconds>;
 int main() {
     using namespace std::chrono_literals;
     // Painfully named as such to showcase capabilities.
-    AsyncTrafficLightTimedHsm t(1s);
+    AsyncTrafficLightTimedHsm t(1ms);
     t.startSM();
     // ...
 }
@@ -295,13 +329,14 @@ We could just as well have created a timer driven traffic light in this manner:
 
 ```cpp
 #include <tsm.h>
-using TrafficLightTimedHsm =
-  TimedExecutionPolicy<SingleThreadedHsm<TrafficLightHsm>, // <----- Note use of SingleThreadedHsm
-                       tsm::ThreadSleepTimer>;
+
+using TrafficLightTimedHsm = tsm::ClockedMooreHsm<TrafficLightHsm,
+                                                  tsm::ThreadSleepTimer,
+                                                  std::chrono::milliseconds>;
 int main() {
     using namespace std::chrono_literals;
     // Painfully named as such to showcase capabilities.
-    TrafficLightTimedHsm t(1s);
+    TrafficLightTimedHsm t(1ms);
     t.startSM();
     // ...
 }
