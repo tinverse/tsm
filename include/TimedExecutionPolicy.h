@@ -12,10 +12,10 @@ namespace tsm {
 /// queue at the expiration of a set time period. Its granularity is in the
 /// milliseconds range.
 ///
+template<typename DurationType>
 struct ThreadSleepTimer
 {
-    explicit ThreadSleepTimer(std::chrono::microseconds period,
-                              std::function<void()>&& cb)
+    explicit ThreadSleepTimer(DurationType period, std::function<void()>&& cb)
       : period_(period)
       , interrupt_(false)
       , cb_(cb)
@@ -48,7 +48,7 @@ struct ThreadSleepTimer
     void stop() { interrupt_ = true; }
 
   private:
-    std::chrono::duration<double, std::micro> period_;
+    DurationType period_;
     bool interrupt_;
     std::function<void()> cb_;
     std::thread timerThread_;
@@ -59,12 +59,19 @@ struct ThreadSleepTimer
 /// type. A callback from this policy is invoked from the Timer every time a
 /// preset time period expires.
 ///
-template<typename StateType, typename TimerType>
-struct TimedExecutionPolicy : public StateType
+template<typename StateType,
+         template<typename> class TimerType,
+         typename DurationType>
+struct TimedExecutionPolicy
+  : public StateType
+  , public TimerType<DurationType>
 {
-    explicit TimedExecutionPolicy(std::chrono::microseconds period)
+    using timer_type = TimerType<DurationType>;
+
+    explicit TimedExecutionPolicy(DurationType period)
       : StateType()
-      , timer_(period, std::bind(&TimedExecutionPolicy::onTimerExpired, this))
+      , timer_type(period,
+                   std::bind(&TimedExecutionPolicy::onTimerExpired, this))
     {}
 
     TimedExecutionPolicy(TimedExecutionPolicy const&) = delete;
@@ -74,7 +81,7 @@ struct TimedExecutionPolicy : public StateType
 
     void onEntry(Event const& e) override
     {
-        timer_.start();
+        timer_type::start();
         StateType::onEntry(e);
     }
 
@@ -83,11 +90,8 @@ struct TimedExecutionPolicy : public StateType
     void onExit(Event const& e) override
     {
         DLOG(INFO) << "Exiting from Parent thread policy...";
-        timer_.stop();
+        timer_type::stop();
         StateType::onExit(e);
     }
-
-  private:
-    TimerType timer_;
 };
 } // namespace tsm

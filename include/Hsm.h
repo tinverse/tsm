@@ -72,7 +72,6 @@ struct IHsm : public State
 
     State* getCurrentState() { return currentState_; }
 
-
     State* getStartState() { return startState_; }
     void setStartState(State* s) { startState_ = s; }
 
@@ -82,6 +81,7 @@ struct IHsm : public State
   private:
     IHsm* parent_;
     IHsm* currentHsm_;
+
   protected:
     State* currentState_;
     State* startState_;
@@ -92,8 +92,7 @@ struct IHsm : public State
 /// Implements a Hierarchical State Machine.
 ///
 template<typename HsmDef>
-struct Hsm
-  : public IHsm
+struct Hsm : public IHsm
 {
     using StateTransitionTable = StateTransitionTableT<HsmDef>;
     using Transition = typename StateTransitionTableT<HsmDef>::Transition;
@@ -138,10 +137,10 @@ struct Hsm
             if (t->doTransition(static_cast<HsmDef*>(this))) {
                 this->currentState_ = &t->toState;
 
-                auto* currentHsm = dynamic_cast<IHsm*>(this->currentState_);
-                // DLOG(INFO) << "Next State:" << this->currentState_->name;
-                if (currentHsm != nullptr) {
-                    setCurrentHsm(currentHsm);
+                if (dynamic_cast<IHsm*>(this->currentState_) != nullptr) {
+                    // DLOG(INFO) << "Next State:" << this->currentState_->name;
+                    this->setCurrentHsm(
+                      dynamic_cast<IHsm*>(this->currentState_));
                 }
             }
 
@@ -166,40 +165,10 @@ struct Hsm
         return table_.next(currentState, nextEvent);
     }
 
-
-
     StateTransitionTable& getTable() const { return table_; }
     std::set<Event> const& getEvents() const { return table_.getEvents(); }
-
 
   protected:
     StateTransitionTable table_;
 };
-
-template<typename HsmDef>
-struct MooreHsm
-  : public IHsm
-{
-    MooreHsm(std::string const& name)
-      : IHsm(name, nullptr)
-    {}
-
-    MooreHsm(std::string const& name, IHsm* parent)
-      : IHsm(name, parent)
-    {}
-
-    MooreHsm(MooreHsm const&) = delete;
-    MooreHsm(MooreHsm&&) = delete;
-
-    ~MooreHsm() override { IHsm::stopSM(); }
-
-    void handle(Event const& nextEvent) override
-    {
-        currentState_ = currentState_->execute(nextEvent);
-        if (currentState_ == this->getStopState()) {
-            this->onExit(tsm::null_event);
-        }
-    }
-};
-
 } // namespace tsm

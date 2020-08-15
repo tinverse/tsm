@@ -28,13 +28,9 @@ struct State
     bool operator==(State const& rhs) { return this->id == rhs.id; }
     bool operator!=(State& rhs) { return !(*this == rhs); }
 
-    // Implement a transition for a moore machine.
-    // Given the current "input/event", what's the next?
-    virtual State* execute(Event const&)
+    virtual void execute(Event const&)
     {
         DLOG(INFO) << "Executing: " << this->name << std::endl;
-        // return the next state
-        return this;
     }
 
     virtual void onEntry(Event const&)
@@ -49,7 +45,7 @@ struct State
 
     std::ostream& operator<<(std::ostream& os)
     {
-        os << "State: " << this->name;
+        os << this->name;
         return os;
     }
 
