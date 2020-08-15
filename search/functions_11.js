@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unlock_436',['unlock',['../structtsm_1_1null__mutex.html#a23c390df9b711cbebefea2f4898b5e0e',1,'tsm::null_mutex']]]
+  ['wait_435',['wait',['../structtsm_1_1BlockingObserver.html#aabcbea65fef8685cae31a638bdcb2425',1,'tsm::BlockingObserver']]]
 ];

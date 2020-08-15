@@ -80,6 +80,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1BlockingObserver.html">BlockingObserver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1CallbackObserver.html">CallbackObserver</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html">Event</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1EventQueueT.html">EventQueueT</a></td></tr>
@@ -87,8 +89,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Hsm.html">Hsm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html">IHsm</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1MooreHsm.html">MooreHsm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1null__mutex.html">null_mutex</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,6 +119,15 @@ Typedefs</h2></td></tr>
 <tr class="memitem:aa8ab0669455fc993a98907a4347c9186"><td class="memTemplParams" colspan="2">template&lt;typename Hsm &gt; </td></tr>
 <tr class="memitem:aa8ab0669455fc993a98907a4347c9186"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#aa8ab0669455fc993a98907a4347c9186">AsynchronousHsm</a> = <a class="el" href="structtsm_1_1AsyncExecutionPolicy.html">AsyncExecutionPolicy</a>&lt; <a class="el" href="structtsm_1_1Hsm.html">Hsm</a> &gt;</td></tr>
 <tr class="separator:aa8ab0669455fc993a98907a4347c9186"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4efc6de0a3a23bcb01d12f8b525223c5"><td class="memTemplParams" colspan="2">template&lt;typename Hsm &gt; </td></tr>
+<tr class="memitem:a4efc6de0a3a23bcb01d12f8b525223c5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a4efc6de0a3a23bcb01d12f8b525223c5">MooreHsm</a> = <a class="el" href="namespacetsm.html#a0a6cca971bf6a22142c3aafc4d4022e7">SingleThreadedHsm</a>&lt; <a class="el" href="structtsm_1_1Hsm.html">Hsm</a> &gt;</td></tr>
+<tr class="separator:a4efc6de0a3a23bcb01d12f8b525223c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3b3e6cd57f8962efd500120daa25134"><td class="memTemplParams" colspan="2">template&lt;typename Hsm &gt; </td></tr>
+<tr class="memitem:af3b3e6cd57f8962efd500120daa25134"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#af3b3e6cd57f8962efd500120daa25134">MealyHsm</a> = <a class="el" href="namespacetsm.html#aa8ab0669455fc993a98907a4347c9186">AsynchronousHsm</a>&lt; <a class="el" href="structtsm_1_1Hsm.html">Hsm</a> &gt;</td></tr>
+<tr class="separator:af3b3e6cd57f8962efd500120daa25134"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a4172983bd10b31d430035416ac8e6"><td class="memTemplParams" colspan="2">template&lt;typename Hsm , template&lt; typename &gt; class TimerType, typename DurationType &gt; </td></tr>
+<tr class="memitem:a72a4172983bd10b31d430035416ac8e6"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a72a4172983bd10b31d430035416ac8e6">ClockedMooreHsm</a> = <a class="el" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a>&lt; <a class="el" href="namespacetsm.html#a4efc6de0a3a23bcb01d12f8b525223c5">MooreHsm</a>&lt; <a class="el" href="structtsm_1_1Hsm.html">Hsm</a> &gt;, TimerType, DurationType &gt;</td></tr>
+<tr class="separator:a72a4172983bd10b31d430035416ac8e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -141,7 +150,7 @@ Variables</h2></td></tr>
 <tr class="separator:a8054214d46afc3867323bbf41a733511"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The default policy class for asynchronous event processing. This policy is mixed in with a StateMachineT class to create an AsynchronousHsm. The client uses the sendEvent method to communicate with the state machine. A separate thread is created and blocks wating on events in the step method.</p>
+<div class="textblock"><p>The default policy class for asynchronous event processing. This policy is mixed in with a <a class="el" href="structtsm_1_1Hsm.html">Hsm</a> class to create an AsynchronousHsm. The client uses the sendEvent method to communicate with the state machine. A separate thread is created and blocks wating on events in the step method.</p>
 <p>The policy for "synchronous" event processing. Events can be queued up in the event queue as they arrive. However, to process each event, a corresponding number of calls to the step function is required. So if there are 3 queued events, the step function needs to be invoked 3 times for all the events to be processed. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
 <a id="aa8ab0669455fc993a98907a4347c9186"></a>
@@ -161,6 +170,22 @@ template&lt;typename Hsm &gt; </div>
 
 </div>
 </div>
+<a id="a72a4172983bd10b31d430035416ac8e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72a4172983bd10b31d430035416ac8e6">&#9670;&nbsp;</a></span>ClockedMooreHsm</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Hsm , template&lt; typename &gt; class TimerType, typename DurationType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacetsm.html#a72a4172983bd10b31d430035416ac8e6">tsm::ClockedMooreHsm</a> = typedef <a class="el" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a>&lt;<a class="el" href="namespacetsm.html#a4efc6de0a3a23bcb01d12f8b525223c5">MooreHsm</a>&lt;<a class="el" href="structtsm_1_1Hsm.html">Hsm</a>&gt;, TimerType, DurationType&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a03933a5ba08e2b42b53337dd429cf707"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a03933a5ba08e2b42b53337dd429cf707">&#9670;&nbsp;</a></span>EventQueue</h2>
 
@@ -171,6 +196,38 @@ template&lt;typename Event &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacetsm.html#a03933a5ba08e2b42b53337dd429cf707">tsm::EventQueue</a> = typedef <a class="el" href="structtsm_1_1EventQueueT.html">EventQueueT</a>&lt;<a class="el" href="structtsm_1_1Event.html">Event</a>, std::mutex&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af3b3e6cd57f8962efd500120daa25134"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3b3e6cd57f8962efd500120daa25134">&#9670;&nbsp;</a></span>MealyHsm</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Hsm &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacetsm.html#af3b3e6cd57f8962efd500120daa25134">tsm::MealyHsm</a> = typedef <a class="el" href="namespacetsm.html#aa8ab0669455fc993a98907a4347c9186">AsynchronousHsm</a>&lt;<a class="el" href="structtsm_1_1Hsm.html">Hsm</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4efc6de0a3a23bcb01d12f8b525223c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4efc6de0a3a23bcb01d12f8b525223c5">&#9670;&nbsp;</a></span>MooreHsm</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Hsm &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacetsm.html#a4efc6de0a3a23bcb01d12f8b525223c5">tsm::MooreHsm</a> = typedef <a class="el" href="namespacetsm.html#a0a6cca971bf6a22142c3aafc4d4022e7">SingleThreadedHsm</a>&lt;<a class="el" href="structtsm_1_1Hsm.html">Hsm</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">

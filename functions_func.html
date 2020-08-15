@@ -69,6 +69,9 @@ $(function() {
 : <a class="el" href="structtsm_1_1Hsm.html#aa83288b6fbe8eecd4c07d949909d9049">tsm::Hsm&lt; HsmDef &gt;</a>
 , <a class="el" href="structtsm_1_1StateTransitionTableT.html#a33229e79d1a5bd7c0ed1da67acd3f969">tsm::StateTransitionTableT&lt; FsmDef &gt;</a>
 </li>
+<li>addCallback()
+: <a class="el" href="structtsm_1_1CallbackObserver.html#ae375c6af21ed19db4602dae29e09944c">tsm::CallbackObserver</a>
+</li>
 <li>addEvent()
 : <a class="el" href="structtsm_1_1EventQueueT.html#a137ae79bf8b81fce9e9dfda433b5b584">tsm::EventQueueT&lt; Event, LockType &gt;</a>
 </li>
@@ -79,10 +82,10 @@ $(function() {
 : <a class="el" href="structtsmtest_1_1AHsm.html#a031175a04fedb96b1c33f638f83712ab">tsmtest::AHsm</a>
 </li>
 <li>AsyncExecutionPolicy()
-: <a class="el" href="structtsm_1_1AsyncExecutionPolicy.html#a59bd017d2fe14c54d7f3ddcdb409baea">tsm::AsyncExecutionPolicy&lt; StateType &gt;</a>
+: <a class="el" href="structtsm_1_1AsyncExecutionPolicy.html#aaa5cf533608972232c78ab62ec8d0439">tsm::AsyncExecutionPolicy&lt; StateType &gt;</a>
 </li>
 <li>AsyncExecWithObserver()
-: <a class="el" href="structtsm_1_1AsyncExecWithObserver.html#ad90ebb2da5b18400100ece74584665d7">tsm::AsyncExecWithObserver&lt; StateType, Observer &gt;</a>
+: <a class="el" href="structtsm_1_1AsyncExecWithObserver.html#a156a79b1f138b94aa2049d6dfae2eb7a">tsm::AsyncExecWithObserver&lt; StateType, Observer &gt;</a>
 </li>
 </ul>
 
@@ -132,17 +135,12 @@ $(function() {
 : <a class="el" href="structtsm_1_1EventQueueT.html#aa2395d99759852d675f88ee5ed551bff">tsm::EventQueueT&lt; Event, LockType &gt;</a>
 </li>
 <li>execute()
-: <a class="el" href="structtsm_1_1State.html#ae911173abfed6703ac1165605abc2198">tsm::State</a>
-, <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1G2.html#a8c6755da933fd6abaa839a7e598eba70">tsmtest::TrafficLightHsm::G2</a>
-, <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1LightState.html#a8cb81c04bb03c9c64ccfc515962bdf8a">tsmtest::TrafficLightHsm::LightState</a>
+: <a class="el" href="structtsm_1_1State.html#a1e64cdb0932e3bf0c53adfe6c4039c98">tsm::State</a>
 </li>
 </ul>
 
 
 <h3><a id="index_g"></a>- g -</h3><ul>
-<li>G2()
-: <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1G2.html#a795ca943f969f51650acb2979bf88a89">tsmtest::TrafficLightHsm::G2</a>
-</li>
 <li>GarageDoorHsm()
 : <a class="el" href="structtsmtest_1_1GarageDoorHsm.html#abbbf2136f122fe128e9b95456227e83d">tsmtest::GarageDoorHsm</a>
 </li>
@@ -159,9 +157,6 @@ $(function() {
 </li>
 <li>getLimit()
 : <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1LightState.html#a766960e892a163856d51a0794a98c381">tsmtest::TrafficLightHsm::LightState</a>
-</li>
-<li>getNextState()
-: <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1LightState.html#a881a0e6d4aa3afa937061f39ffc9476f">tsmtest::TrafficLightHsm::LightState</a>
 </li>
 <li>getParent()
 : <a class="el" href="structtsm_1_1IHsm.html#a1031aa3905e546f857e216bdf1cd6c10">tsm::IHsm</a>
@@ -182,8 +177,8 @@ $(function() {
 <li>handle()
 : <a class="el" href="structtsm_1_1Hsm.html#a0fc649d82f823753268693a0d519436c">tsm::Hsm&lt; HsmDef &gt;</a>
 , <a class="el" href="structtsm_1_1IHsm.html#a9390c1cbff7feaaff67f6204ea157542">tsm::IHsm</a>
-, <a class="el" href="structtsm_1_1MooreHsm.html#a41419d0d0dee05574c309a576652241d">tsm::MooreHsm&lt; HsmDef &gt;</a>
 , <a class="el" href="structtsm_1_1OrthogonalHsm.html#a1b6fbcf6849f70a2e193279ce6257e15">tsm::OrthogonalHsm&lt; Hsms &gt;</a>
+, <a class="el" href="structtsmtest_1_1TrafficLightHsm.html#ab824325e06458beff16a228cf6bb73d5">tsmtest::TrafficLightHsm</a>
 </li>
 <li>Hsm()
 : <a class="el" href="structtsm_1_1Hsm.html#a23e2eb43fedc27f2e5221feb7b05fe7c">tsm::Hsm&lt; HsmDef &gt;</a>
@@ -206,17 +201,10 @@ $(function() {
 
 <h3><a id="index_l"></a>- l -</h3><ul>
 <li>LightState()
-: <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1LightState.html#acdf1b2e14f53ad4469c21951e4aba1bc">tsmtest::TrafficLightHsm::LightState</a>
+: <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1LightState.html#a832d9c4e48cb201fed300f05fddbc0cc">tsmtest::TrafficLightHsm::LightState</a>
 </li>
 <li>lock()
 : <a class="el" href="structtsm_1_1null__mutex.html#a56a49c72744e7b284b9268c4c99970a9">tsm::null_mutex</a>
-</li>
-</ul>
-
-
-<h3><a id="index_m"></a>- m -</h3><ul>
-<li>MooreHsm()
-: <a class="el" href="structtsm_1_1MooreHsm.html#a488e11d93aa75233a3451ba719fec039">tsm::MooreHsm&lt; HsmDef &gt;</a>
 </li>
 </ul>
 
@@ -229,11 +217,15 @@ $(function() {
 <li>nextEvent()
 : <a class="el" href="structtsm_1_1EventQueueT.html#a699170522ac60fba4ce0c38606aee45e">tsm::EventQueueT&lt; Event, LockType &gt;</a>
 </li>
+<li>nextState()
+: <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1LightState.html#a718a66da9415927feed0fc87946ce66f">tsmtest::TrafficLightHsm::LightState</a>
+</li>
 <li>notify()
 : <a class="el" href="structtsm_1_1BlockingObserver.html#a8affb5f5d0a8424d66e29a4d9b7a2e6a">tsm::BlockingObserver</a>
+, <a class="el" href="structtsm_1_1CallbackObserver.html#a263dbc1378b4a17ecdd77c02873632b5">tsm::CallbackObserver</a>
 </li>
 <li>null_mutex()
-: <a class="el" href="structtsm_1_1null__mutex.html#a1583901121b673341bb4dc9736029037">tsm::null_mutex</a>
+: <a class="el" href="structtsm_1_1null__mutex.html#a60930537e39ea4388b9f4a1ebcacc17c">tsm::null_mutex</a>
 </li>
 <li>null_ostream()
 : <a class="el" href="structnull__ostream.html#a38815e6df8e81eee259fd73b270705b3">null_ostream</a>
@@ -250,7 +242,7 @@ $(function() {
 , <a class="el" href="structtsm_1_1IHsm.html#a0b98c1d2e6d0baff5f0fc44ac98ecef3">tsm::IHsm</a>
 , <a class="el" href="structtsm_1_1OrthogonalHsm.html#ab5e935e0be3abe0ea8edd01d1756f208">tsm::OrthogonalHsm&lt; Hsms &gt;</a>
 , <a class="el" href="structtsm_1_1State.html#ae7bc4fa4f86ae30307e0301bd09126a0">tsm::State</a>
-, <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#aa797033654af76f08d0a8ba33ccf0150">tsm::TimedExecutionPolicy&lt; StateType, TimerType &gt;</a>
+, <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#af9fa63735d05caef4ca420f3b9f8f941">tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;</a>
 , <a class="el" href="structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm.html#a87b255ec3f40b1996354e5b0fa502589">tsmtest::CdPlayerHsm&lt; ControllerType &gt;::PlayingHsm</a>
 </li>
 <li>onExit()
@@ -259,11 +251,11 @@ $(function() {
 , <a class="el" href="structtsm_1_1OrthogonalHsm.html#a2b7983c2275529a11e5a09ed8436e429">tsm::OrthogonalHsm&lt; Hsms &gt;</a>
 , <a class="el" href="structtsm_1_1SingleThreadedExecutionPolicy.html#a045506badb36caff5d5477d6b3ef50d3">tsm::SingleThreadedExecutionPolicy&lt; StateType &gt;</a>
 , <a class="el" href="structtsm_1_1State.html#ab455a503d929a5d3e01bf7218fae3a72">tsm::State</a>
-, <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#adb9c0058f6b2bd6e37e7d35c4242c2a6">tsm::TimedExecutionPolicy&lt; StateType, TimerType &gt;</a>
+, <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#a71771c050ec7b54dc3466ab3ed145c9a">tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;</a>
 , <a class="el" href="structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm.html#a36dd8471b3a48c56515a56464bc80e9a">tsmtest::CdPlayerHsm&lt; ControllerType &gt;::PlayingHsm</a>
 </li>
 <li>onTimerExpired()
-: <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#af891c3d28edad0be9fcb3aba2560398e">tsm::TimedExecutionPolicy&lt; StateType, TimerType &gt;</a>
+: <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;</a>
 </li>
 <li>operator!=()
 : <a class="el" href="structtsm_1_1Event.html#a30ec8d1b0562284e2e2ae58dd527e289">tsm::Event</a>
@@ -289,7 +281,7 @@ $(function() {
 : <a class="el" href="structOrthogonalCdPlayerHsm.html#ae28e90d9abd5d15207f0d660ce4938b3">OrthogonalCdPlayerHsm</a>
 </li>
 <li>OrthogonalHsm()
-: <a class="el" href="structtsm_1_1OrthogonalHsm.html#adb35e2604facf09c387d1af27315ac6f">tsm::OrthogonalHsm&lt; Hsms &gt;</a>
+: <a class="el" href="structtsm_1_1OrthogonalHsm.html#a3070ac964652b9ed75d571c4e2d4a3cd">tsm::OrthogonalHsm&lt; Hsms &gt;</a>
 </li>
 <li>overflow()
 : <a class="el" href="structnull__ostream_1_1null__buffer.html#a0fb3f82ee574f55cf8ed4c26b1787326">null_ostream::null_buffer</a>
@@ -348,20 +340,20 @@ $(function() {
 : <a class="el" href="structtsm_1_1IHsm.html#a4fb2626fd3596ac45b6ac756206727fd">tsm::IHsm</a>
 </li>
 <li>SingleThreadedExecutionPolicy()
-: <a class="el" href="structtsm_1_1SingleThreadedExecutionPolicy.html#a4a39d406722a7f6ab67aef5114dbfbfd">tsm::SingleThreadedExecutionPolicy&lt; StateType &gt;</a>
+: <a class="el" href="structtsm_1_1SingleThreadedExecutionPolicy.html#aefda0015b2ef074a6826ac12b997380e">tsm::SingleThreadedExecutionPolicy&lt; StateType &gt;</a>
 </li>
 <li>Song1State()
 : <a class="el" href="structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm_1_1Song1State.html#a810512e06b8d8ce67595443ef27789c9">tsmtest::CdPlayerHsm&lt; ControllerType &gt;::PlayingHsm::Song1State</a>
 </li>
 <li>start()
-: <a class="el" href="structtsm_1_1ThreadSleepTimer.html#a2d49469468311b6a73982b63266f0faa">tsm::ThreadSleepTimer</a>
+: <a class="el" href="structtsm_1_1ThreadSleepTimer.html#a58761384d65f06b90b6b9de29ce2c74f">tsm::ThreadSleepTimer&lt; DurationType &gt;</a>
 </li>
 <li>startSM()
 : <a class="el" href="structtsm_1_1IHsm.html#ad9b4b2ca893447c4435e3e9cafe50f89">tsm::IHsm</a>
 , <a class="el" href="structtsm_1_1OrthogonalHsm.html#aff35aa6e7a3aac4d9ad5d9a5f418eb37">tsm::OrthogonalHsm&lt; Hsms &gt;</a>
 </li>
 <li>State()
-: <a class="el" href="structtsm_1_1State.html#a37f579e9df6778b524958057db716996">tsm::State</a>
+: <a class="el" href="structtsm_1_1State.html#a4592d0d93bcc8eae50f68048310c2a1f">tsm::State</a>
 </li>
 <li>StateMachineTest()
 : <a class="el" href="structtsmtest_1_1StateMachineTest.html#aaffd93c89317676d96ea75bc1de11ee1">tsmtest::StateMachineTest&lt; DerivedHsm &gt;</a>
@@ -373,7 +365,7 @@ $(function() {
 </li>
 <li>stop()
 : <a class="el" href="structtsm_1_1EventQueueT.html#ad247bf9ae7ee26d0bc266605318ef13e">tsm::EventQueueT&lt; Event, LockType &gt;</a>
-, <a class="el" href="structtsm_1_1ThreadSleepTimer.html#afd82350e96c54bd889b60bb4b273fdc7">tsm::ThreadSleepTimer</a>
+, <a class="el" href="structtsm_1_1ThreadSleepTimer.html#a5d6cb897bf414f77f463fddd3b97dd4d">tsm::ThreadSleepTimer&lt; DurationType &gt;</a>
 </li>
 <li>stopSM()
 : <a class="el" href="structtsm_1_1IHsm.html#a00230564c29c0508e2b0bdd59a999a2f">tsm::IHsm</a>
@@ -384,10 +376,10 @@ $(function() {
 
 <h3><a id="index_t"></a>- t -</h3><ul>
 <li>ThreadSleepTimer()
-: <a class="el" href="structtsm_1_1ThreadSleepTimer.html#a67464406f309570fa76f507c075ace5f">tsm::ThreadSleepTimer</a>
+: <a class="el" href="structtsm_1_1ThreadSleepTimer.html#ab3df35cd0e0f9b96941d824ed6a5e9fd">tsm::ThreadSleepTimer&lt; DurationType &gt;</a>
 </li>
 <li>TimedExecutionPolicy()
-: <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#a8a1a3d1a0106a669924be9dc9aea9777">tsm::TimedExecutionPolicy&lt; StateType, TimerType &gt;</a>
+: <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#a927db5f87779551728719f3275299bf0">tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;</a>
 </li>
 <li>TrafficLightHsm()
 : <a class="el" href="structtsmtest_1_1TrafficLightHsm.html#a182a4f1b542d0083b7b8a3f55e888d84">tsmtest::TrafficLightHsm</a>
@@ -434,9 +426,6 @@ $(function() {
 <li>~EventQueueT()
 : <a class="el" href="structtsm_1_1EventQueueT.html#aac2de92686c2cdd13cfd4f5544e64864">tsm::EventQueueT&lt; Event, LockType &gt;</a>
 </li>
-<li>~G2()
-: <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1G2.html#a391d1d0cda8b6fe0e1ec8310b6dfc383">tsmtest::TrafficLightHsm::G2</a>
-</li>
 <li>~GarageDoorHsm()
 : <a class="el" href="structtsmtest_1_1GarageDoorHsm.html#a0844812b0f8a7be05379614da78a1ae9">tsmtest::GarageDoorHsm</a>
 </li>
@@ -447,10 +436,7 @@ $(function() {
 : <a class="el" href="structtsm_1_1IHsm.html#ab8fb69f6b1196a941d5b332da9719602">tsm::IHsm</a>
 </li>
 <li>~LightState()
-: <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1LightState.html#aa095808f147a86da8583a2f2091b99e9">tsmtest::TrafficLightHsm::LightState</a>
-</li>
-<li>~MooreHsm()
-: <a class="el" href="structtsm_1_1MooreHsm.html#ad5d5a9cb42297becf37532f5e6312a16">tsm::MooreHsm&lt; HsmDef &gt;</a>
+: <a class="el" href="structtsmtest_1_1TrafficLightHsm_1_1LightState.html#acd784671d3542807de6dcc41cae3c49c">tsmtest::TrafficLightHsm::LightState</a>
 </li>
 <li>~null_mutex()
 : <a class="el" href="structtsm_1_1null__mutex.html#a520fc6b7275e6ec716053f419877766f">tsm::null_mutex</a>
@@ -471,10 +457,10 @@ $(function() {
 : <a class="el" href="structtsmtest_1_1StateMachineTest.html#a483f63cf22c216a804895db96fd335dc">tsmtest::StateMachineTest&lt; DerivedHsm &gt;</a>
 </li>
 <li>~ThreadSleepTimer()
-: <a class="el" href="structtsm_1_1ThreadSleepTimer.html#aa6f93799dbf9be9a5db5dce97a1297d2">tsm::ThreadSleepTimer</a>
+: <a class="el" href="structtsm_1_1ThreadSleepTimer.html#a0f120a3bbf29bb443e0f2de17b0f6b38">tsm::ThreadSleepTimer&lt; DurationType &gt;</a>
 </li>
 <li>~TimedExecutionPolicy()
-: <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#aa1ea56eb5f5cae2a14f8af0902e0d14b">tsm::TimedExecutionPolicy&lt; StateType, TimerType &gt;</a>
+: <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#aabea93396556041995ed0258ef15998f">tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;</a>
 </li>
 <li>~TrafficLightHsm()
 : <a class="el" href="structtsmtest_1_1TrafficLightHsm.html#ac1a595613e3c146118da88b0cc5ff779">tsmtest::TrafficLightHsm</a>

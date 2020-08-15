@@ -1,4 +1,5 @@
-<map id="tsm::TimedExecutionPolicy&lt; StateType, TimerType &gt;" name="tsm::TimedExecutionPolicy&lt; StateType, TimerType &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="5,131,188,311"/>
-<area shape="rect" id="node2" title=" " alt="" coords="56,5,137,83"/>
+<map id="tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;" name="tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="33,131,216,325"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,87,83"/>
+<area shape="rect" id="node3" title=" " alt="" coords="111,5,295,83"/>
 </map>

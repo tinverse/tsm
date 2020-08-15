@@ -131,30 +131,30 @@ Policy Classes</h4>
 <p>The <code>AsyncExecutionPolicy</code> processes events in its own thread. The processing of events is single threaded within all Hsms. So when a Hsm is started using a call to <code>startSM</code>, the <code>StateMachine</code> will block on the call to <code>nextEvent</code> in the <code>execute</code> method. The main advantage is that the only external interface to the Hsm can be the EventQueue. Any "client" can asynchronously send an event to the state machine long as they have a reference to it. As soon as the Hsm is done with its processing, it will pick up the first event in the queue and process it. This can be seen in the test/*.cpp files.</p>
 <h4><a class="anchor" id="autotoc_md6"></a>
 Disadvantages</h4>
-<p>. <code><a class="el" href="structtsm_1_1State.html">tsm::State</a></code> - The State type implements the IState interface which has three virtual methods. Most often there are useless calls to the <code>execute</code>, <code>onEntry</code> and <code>onExit</code> methods of <code><a class="el" href="structtsm_1_1State.html">tsm::State</a></code>. Support for barebones enum State or a c-style State type with just a unique id - without any of the bells and whistles associated with <code>IState</code> should make it more compact and efficient. . Use of virtual methods - The implementation closely resembles the State pattern. The states are created at run-time and not compile time like boost::hsm. However, it is easier to wrap around your head. In my experience with Medical/Embedded devices, a lot of the 'in house' state machines are closer to <code>tsm</code> in terms of design and implementation. . Fsm or Hsm? - Not every state machine is or needs to be Hierarchical. That distinction is fuzzified here and is clubbed together for brevity. <code>tsm</code> has gone back and forth on this separation a couple of times. Future use of this library might dictate how this is handled in the implementation.</p>
+<ul>
+<li><code><a class="el" href="structtsm_1_1State.html">tsm::State</a></code> - The State type implements the IState interface which has three virtual methods. Most often there are useless calls to the <code>execute</code>, <code>onEntry</code> and <code>onExit</code> methods of <code><a class="el" href="structtsm_1_1State.html">tsm::State</a></code>. Support for barebones enum State or a c-style State type with just a unique id - without any of the bells and whistles associated with <code>IState</code> should make it more compact and efficient.</li>
+<li>Use of virtual methods - The implementation closely resembles the State pattern. The states are created at run-time and not compile time like boost::hsm. However, it is easier to wrap around your head. In my experience with Medical/Embedded devices, a lot of the 'in house' state machines are closer to <code>tsm</code> in terms of design and implementation.</li>
+<li>Fsm or Hsm? - Not every state machine is or needs to be Hierarchical. That distinction is fuzzified here and is clubbed together for brevity. <code>tsm</code> has gone back and forth on this separation a couple of times. Future use of this library might dictate how this is handled in the implementation.</li>
+</ul>
 <h4><a class="anchor" id="autotoc_md7"></a>
 Advantages</h4>
-<p>. Integration - A lot of effort went into integration using CMake. This should make it easier for modern C++ development. . Unit Tests - Althought the framework could use a lot more unit tests, most of the code (98%) has been tested for 'happy path' cases. . Architecture - Hopefully, the ability to add your own policy classes makes it adaptable to your applications.</p>
+<ul>
+<li>Integration - A lot of effort went into integration using CMake. This should make it easier for modern C++ development.</li>
+<li>Unit Tests - Althought the framework could use a lot more unit tests, most of the code (98%) has been tested for 'happy path' cases.</li>
+<li>Architecture - Hopefully, the ability to add your own policy classes makes it adaptable to your applications.</li>
+</ul>
 <h4><a class="anchor" id="autotoc_md8"></a>
 Putting it all together</h4>
 <p>Create your own state machine definition that derives from <code>Hsm</code>. The Hsm hierarchy, its states (and sub-Hsms if any), events, actions and guards are all specified and defined in the definition. The relationships between Hsms(<code>child.setParent(this)</code>) and the state transition table(<code>add(fromState, onEvent, toState, action, guard)</code>) are also specified here. All code related to your Hsm lives here. Then choose a policy class for your state machine. Complete your state machine type by wrapping the policy class around it. The unit test provided below is illustrative.</p>
-<div class="fragment"><div class="line">/// A &quot;Blocking&quot; Observer with Async Execution Policy</div>
-<div class="line">template&lt;typename StateType&gt;</div>
-<div class="line">using AsyncBlockingObserver =</div>
-<div class="line">  tsm::AsyncExecWithObserver&lt;StateType, BlockingObserver&gt;;</div>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> StateType&gt;</div>
+<div class="line"><span class="keyword">using</span> <a class="code" href="structtsm_1_1AsyncExecWithObserver.html">AsyncBlockingObserver</a> =</div>
+<div class="line">  <a class="code" href="structtsm_1_1AsyncExecWithObserver.html">tsm::AsyncExecWithObserver&lt;StateType, BlockingObserver&gt;</a>;</div>
 <div class="line"> </div>
-<div class="line">///</div>
-<div class="line">/// GarageDoorHsm is the state machine definition. It has knowledge of the Hsm</div>
-<div class="line">/// hierarchy, its states, events and sub-Hsms if any. The relationships between</div>
-<div class="line">/// Hsms (parentHsm_) is also setup here. Mix the Async observer and the</div>
-<div class="line">/// GarageDoor Hsm to get an asynchronous garage door state machine</div>
-<div class="line">/// that notifies a listener at the end of processing each event.</div>
-<div class="line">///</div>
-<div class="line">using GarageDoorHsmSeparateThread = AsyncBlockingObserver&lt;GarageDoorHsm&gt;;</div>
+<div class="line"><span class="keyword">using</span> <a class="code" href="structtsm_1_1AsyncExecWithObserver.html">GarageDoorHsmSeparateThread</a> = <a class="code" href="structtsm_1_1AsyncExecWithObserver.html">AsyncBlockingObserver&lt;GarageDoorHsm&gt;</a>;</div>
 <div class="line"> </div>
-<div class="line">TEST_CASE(&quot;TestGarageDoorSM - testGarageDoorSeparateThreadPolicy&quot;)</div>
+<div class="line"><a class="code" href="CdPlayerHsm_8cpp.html#aad2ad36474072a985dcc117b3386c1f0">TEST_CASE</a>(<span class="stringliteral">&quot;TestGarageDoorSM - testGarageDoorSeparateThreadPolicy&quot;</span>)</div>
 <div class="line">{</div>
-<div class="line">    auto sm = std::make_shared&lt;GarageDoorHsmSeparateThread&gt;();</div>
+<div class="line">    <span class="keyword">auto</span> sm = std::make_shared&lt;GarageDoorHsmSeparateThread&gt;();</div>
 <div class="line"> </div>
 <div class="line">    sm-&gt;startSM();</div>
 <div class="line"> </div>
@@ -172,9 +172,9 @@ Putting it all together</h4>
 <div class="line">    sm-&gt;stopSM();</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line">TEST_CASE(&quot;TestGarageDoorSM - testGarageDoorSingleThreadPolicy&quot;)</div>
+<div class="line"><a class="code" href="CdPlayerHsm_8cpp.html#aad2ad36474072a985dcc117b3386c1f0">TEST_CASE</a>(<span class="stringliteral">&quot;TestGarageDoorSM - testGarageDoorSingleThreadPolicy&quot;</span>)</div>
 <div class="line">{</div>
-<div class="line">    auto sm = std::make_shared&lt;SingleThreadedHsm&lt;GarageDoorHsm&gt;&gt;();</div>
+<div class="line">    <span class="keyword">auto</span> sm = std::make_shared&lt;SingleThreadedHsm&lt;GarageDoorHsm&gt;&gt;();</div>
 <div class="line"> </div>
 <div class="line">    sm-&gt;sendEvent(sm-&gt;click_event);</div>
 <div class="line">    sm-&gt;sendEvent(sm-&gt;topSensor_event);</div>
@@ -195,6 +195,8 @@ Testing</h4>
 <p>For testing the <code>AsyncExecutionPolicy</code>, the <code>AsyncExecWithObserver</code> class is used with a special <code>Observer</code> class that blocks the parent thread until the <code>AsyncExecutionPolicy</code> finishes event processing. The state machine thread then calls a <code>notify</code> method that releases the mutex blocking the parent thread. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
+<div class="ttc" id="astructtsm_1_1AsyncExecWithObserver_html"><div class="ttname"><a href="structtsm_1_1AsyncExecWithObserver.html">tsm::AsyncExecWithObserver</a></div><div class="ttdef"><b>Definition:</b> AsyncExecutionPolicy.h:89</div></div>
+<div class="ttc" id="aCdPlayerHsm_8cpp_html_aad2ad36474072a985dcc117b3386c1f0"><div class="ttname"><a href="CdPlayerHsm_8cpp.html#aad2ad36474072a985dcc117b3386c1f0">TEST_CASE</a></div><div class="ttdeci">TEST_CASE(&quot;TestCdPlayerHsm - testTransitionsSeparateThreadPolicy&quot;)</div><div class="ttdef"><b>Definition:</b> CdPlayerHsm.cpp:30</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

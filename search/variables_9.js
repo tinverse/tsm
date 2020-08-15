@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['limit_5f_499',['limit_',['../structtsmtest_1_1TrafficLightHsm_1_1LightState.html#aedb92bf0574e408001d062b5850423d4',1,'tsmtest::TrafficLightHsm::LightState']]]
+  ['name_495',['name',['../structtsm_1_1State.html#a29207205de5d98261cdd2ab6c489ac08',1,'tsm::State']]],
+  ['next_5fsong_496',['next_song',['../structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm.html#aa106f8a053dfde36af80b62fea4631e5',1,'tsmtest::CdPlayerHsm::PlayingHsm']]]
 ];
