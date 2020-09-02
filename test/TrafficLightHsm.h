@@ -3,16 +3,16 @@
 using tsm::Event;
 using tsm::EventQueue;
 using tsm::IHsm;
-using tsm::State;
+using tsm::NamedState;
 
 namespace tsmtest {
 struct TrafficLightHsm : public IHsm
 {
     static const int G2WALK = 30;
-    struct LightState : public State
+    struct LightState : public NamedState
     {
         LightState(std::string const& name, uint64_t limit, LightState& next)
-          : State(name)
+          : NamedState(name)
           , limit_(limit)
           , next_(next)
         {}
@@ -28,8 +28,7 @@ struct TrafficLightHsm : public IHsm
     };
 
     TrafficLightHsm()
-      : IHsm("Traffic Light Hsm", nullptr)
-      , G1("G1", 30, Y1)
+      : G1("G1", 30, Y1)
       , Y1("Y1", 5, G2)
       , G2("G2", 60, Y2)
       , Y2("Y2", 5, G1)

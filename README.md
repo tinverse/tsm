@@ -23,9 +23,6 @@ tsm is a state machine framework with support for Hierarchical and Orthogonal St
 struct Switch : Hsm<Switch>
 {
     Switch()
-        : Hsm<Switch>("A Simple Switch")
-        , on("on")
-        , off("off")
     {
         setStartState(&off);
 
@@ -135,11 +132,6 @@ Let's see how the state transition table looks like for the CdPlayer.
 ```cpp
 // Goes in the header along with your State Machine class or .cpp file.
 CdPlayerHsm::CdPlayerHsm()
-      : Hsm<CdPlayerHsm>("CD Player Hsm")
-      , Stopped("Player Stopped")
-      , Paused("Player Paused")
-      , Empty("Player Empty")
-      , Open("Player Open")
     {
         setStartState(&Empty);
 
@@ -175,10 +167,6 @@ Looking at `Playing`'s state transition table,
 
 ```cpp
 PlayingHsm()
-  : Hsm<PlayingHsm>("Playing Hsm")
-  , Song1()
-  , Song2("Playing Hsm -> Song2")
-  , Song3("Playing Hsm -> Song3")
 {
     setStartState(&Song1);
 

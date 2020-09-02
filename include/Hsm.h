@@ -10,10 +10,17 @@ namespace tsm {
 ///
 struct IHsm : public State
 {
-    IHsm() = delete;
+    IHsm()
+      : State()
+      , parent_(nullptr)
+      , currentHsm_(nullptr)
+      , currentState_(nullptr)
+      , startState_(nullptr)
+      , stopState_(nullptr)
+    {}
 
-    explicit IHsm(std::string const& name, IHsm* parent)
-      : State(name)
+    explicit IHsm(IHsm* parent)
+      : State()
       , parent_(parent)
       , currentHsm_(nullptr)
       , currentState_(nullptr)
@@ -99,12 +106,12 @@ struct Hsm : public IHsm
     using ActionFn = void (HsmDef::*)();
     using GuardFn = bool (HsmDef::*)();
 
-    Hsm(std::string const& name)
-      : IHsm(name, nullptr)
+    Hsm()
+      : IHsm(nullptr)
     {}
 
-    Hsm(std::string const& name, IHsm* parent)
-      : IHsm(name, parent)
+    Hsm(IHsm* parent)
+      : IHsm(parent)
     {}
 
     Hsm(Hsm const&) = delete;
@@ -114,7 +121,7 @@ struct Hsm : public IHsm
 
     void handle(Event const& nextEvent) override
     {
-        DLOG(INFO) << "Current State:" << this->currentState_->name
+        DLOG(INFO) << "Current State:" << this->currentState_->id
                    << " Event:" << nextEvent.id;
 
         Transition* t = this->next(*this->currentState_, nextEvent);
@@ -138,14 +145,14 @@ struct Hsm : public IHsm
                 this->currentState_ = &t->toState;
 
                 if (dynamic_cast<IHsm*>(this->currentState_) != nullptr) {
-                    // DLOG(INFO) << "Next State:" << this->currentState_->name;
+                    // DLOG(INFO) << "Next State:" << this->currentState_->id;
                     this->setCurrentHsm(
                       dynamic_cast<IHsm*>(this->currentState_));
                 }
             }
 
             if (this->currentState_ == this->getStopState()) {
-                // DLOG(INFO) << this->name << " Reached stop state. Exiting.";
+                // DLOG(INFO) << this->id << " Reached stop state. Exiting.";
                 this->onExit(tsm::null_event);
             }
         }

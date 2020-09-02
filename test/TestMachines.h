@@ -9,8 +9,6 @@ using tsm::State;
 struct BHsm : public Hsm<BHsm>
 {
     BHsm()
-      : Hsm<BHsm>("BHsm")
-      , s1("BS1")
     {
         IHsm::setStartState(&s1);
 
@@ -27,11 +25,6 @@ struct BHsm : public Hsm<BHsm>
 struct AHsm : public Hsm<AHsm>
 {
     AHsm()
-      : Hsm<AHsm>("AHsm")
-      , s1("s1")
-      , s2("s2")
-      , s3("s3")
-      , s4("s4")
     {
 
         IHsm::setStartState(&s1);
@@ -66,11 +59,6 @@ struct AHsm : public Hsm<AHsm>
 struct CHsm : public Hsm<CHsm>
 {
     CHsm()
-      : Hsm<CHsm>("CHsm")
-      , s1("s1")
-      , s2("s2")
-      , s3("s3")
-      , s4("s4")
     {
         IHsm::setStartState(&s1);
         IHsm::setStopState(&s4);
@@ -101,23 +89,11 @@ struct CHsm : public Hsm<CHsm>
     Event end_event;
 };
 
-struct OHsm : OrthogonalHsm<AHsm, CHsm>
-{
-
-    OHsm()
-      : OrthogonalHsm<AHsm, CHsm>("OHsm")
-    {}
-};
+using OHsm = OrthogonalHsm<AHsm, CHsm>;
 
 struct DHsm : Hsm<DHsm>
 {
     DHsm()
-      : Hsm<DHsm>("DHsm")
-      , ds1("ds1")
-      , ds2("ds2")
-      , ds3("ds3")
-      , ds4("ds4")
-      , ds5("ds5")
     {
         IHsm::setStartState(&ds1);
         IHsm::setStopState(&ds5);

@@ -39,17 +39,7 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
     {
         using Hsm<PlayingHsm>::add;
 
-        struct Song1State : public State
-        {
-            Song1State()
-              : State("Playing Hsm -> Song1")
-            {}
-        };
         PlayingHsm()
-          : Hsm<PlayingHsm>("Playing Hsm")
-          , Song1()
-          , Song2("Playing Hsm -> Song2")
-          , Song3("Playing Hsm -> Song3")
         {
             IHsm::setStartState(&Song1);
 
@@ -64,7 +54,7 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
         virtual ~PlayingHsm() = default;
 
         // States
-        Song1State Song1;
+        State Song1;
         State Song2;
         State Song3;
 
@@ -76,7 +66,7 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
         void PlaySong()
         {
             DLOG(INFO) << "Play Song";
-            controller_.playSong(this->getCurrentState()->name);
+            controller_.playSong("Dummy");
         }
 
         // Guards
@@ -108,11 +98,6 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
     };
 
     CdPlayerHsm()
-      : Hsm<CdPlayerHsm>("CD Player Hsm")
-      , Stopped("Player Stopped")
-      , Paused("Player Paused")
-      , Empty("Player Empty")
-      , Open("Player Open")
     {
         IHsm::setStartState(&Empty);
 
@@ -165,9 +150,6 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
 struct ErrorHsm : public Hsm<ErrorHsm>
 {
     ErrorHsm()
-      : Hsm<ErrorHsm>("Error Hsm")
-      , AllOk("All Ok")
-      , ErrorMode("Error Mode")
     {
         IHsm::setStartState(&AllOk);
 

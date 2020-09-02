@@ -13,15 +13,8 @@ using tsmtest::CdPlayerController;
 using tsmtest::CdPlayerHsm;
 using tsmtest::ErrorHsm;
 
-struct OrthogonalCdPlayerHsm
-  : public OrthogonalHsm<CdPlayerHsm<CdPlayerController>, ErrorHsm>
-{
-    OrthogonalCdPlayerHsm()
-      : OrthogonalHsm<CdPlayerHsm<CdPlayerController>, ErrorHsm>(
-          "CD Player Orthogonal Hsm")
-    {}
-    ~OrthogonalCdPlayerHsm() override = default;
-};
+using OrthogonalCdPlayerHsm =
+  OrthogonalHsm<CdPlayerHsm<CdPlayerController>, ErrorHsm>;
 
 /// A "Blocking" Observer with Async Execution Policy
 template<typename StateType>

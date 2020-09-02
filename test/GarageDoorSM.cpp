@@ -5,7 +5,6 @@
 
 using tsm::AsyncExecWithObserver;
 using tsm::BlockingObserver;
-using tsm::Hsm;
 using tsm::SingleThreadedHsm;
 
 using tsmtest::GarageDoorHsm;
