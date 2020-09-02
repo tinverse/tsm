@@ -71,7 +71,7 @@ struct AsyncExecutionPolicy : public StateType
         if (!eventQueue_.interrupted()) {
             StateType::dispatch(nextEvent);
         } else {
-            DLOG(WARNING) << this->name << ": Exiting event loop on interrupt";
+            DLOG(WARNING) << this->id << ": Exiting event loop on interrupt";
         }
     }
 };

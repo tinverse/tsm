@@ -122,7 +122,7 @@ struct StateTransitionTableT
             return &it->second;
         }
 
-        DLOG(ERROR) << "No Transition:" << fromState.name
+        DLOG(ERROR) << "No Transition:" << fromState.id
                     << "\tonEvent:" << onEvent.id;
         return nullptr;
     }

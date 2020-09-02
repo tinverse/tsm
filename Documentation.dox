@@ -7,10 +7,6 @@ Create the state machine by inheriting from Hsm using CRTP.
    struct GarageDoorHsm : public Hsm<GarageDoorHsm>
    {
       GarageDoorHsm()
-        : Hsm<GarageDoorHsm>()
-        , name("Garage Door Hsm")
-        , doorOpen("Door Open")
-        ...
       {
           setStartState(&doorClosed);
 

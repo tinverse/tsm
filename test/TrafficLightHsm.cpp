@@ -78,7 +78,7 @@ using SynchronousTrafficLightHsm =
   tsm::SingleThreadedExecutionPolicy<TrafficLightHsm>;
 
 std::ostream&
-operator<<(std::ostream& os, State* s)
+operator<<(std::ostream& os, NamedState* s)
 {
     os << s->name;
     return os;

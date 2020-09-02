@@ -10,13 +10,6 @@ using tsm::State;
 struct GarageDoorHsm : public Hsm<GarageDoorHsm>
 {
     GarageDoorHsm()
-      : Hsm<GarageDoorHsm>("Garage Door Hsm")
-      , doorOpen("Door Open")
-      , doorOpening("Door Opening")
-      , doorClosing("Door Closing")
-      , doorClosed("Door Closed")
-      , doorStoppedClosing("Door Stopped Closing")
-      , doorStoppedOpening("Door Stopped Opening")
     {
         // Start State
         setStartState(&doorClosed);

@@ -60,7 +60,8 @@ struct ThreadSleepTimer
 /// preset time period expires.
 ///
 template<typename StateType,
-         template<typename> class TimerType,
+         template<typename>
+         class TimerType,
          typename DurationType>
 struct TimedExecutionPolicy
   : public StateType

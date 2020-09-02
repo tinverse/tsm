@@ -62,21 +62,19 @@ perform(Tuple&& tuple, size_t index, Action action)
 }
 
 template<typename... Hsms>
-struct OrthogonalHsm
-  : public IHsm
+struct OrthogonalHsm : public IHsm
 {
     using type = OrthogonalHsm<Hsms...>;
     static constexpr size_t HSM_COUNT = sizeof...(Hsms);
 
-    OrthogonalHsm(std::string const& name)
-      : IHsm(name, nullptr)
+    OrthogonalHsm()
     {
 
         for_each_hsm(sms_, [&](auto& sm) { sm.setParent(this); });
     }
 
-    OrthogonalHsm(std::string const& name, IHsm* parent)
-      : IHsm(name, parent)
+    OrthogonalHsm(IHsm* parent)
+      : IHsm(parent)
     {
 
         for_each_hsm(sms_, [&](auto& sm) { sm.setParent(this); });
@@ -86,7 +84,7 @@ struct OrthogonalHsm
 
     void onEntry(Event const& e) override
     {
-        DLOG(INFO) << "Entering: " << this->name;
+        DLOG(INFO) << "Entering: " << this->id;
         for_each_hsm(sms_, [&](auto& sm) { sm.onEntry(e); });
         this->setCurrentHsm(&std::get<0>(sms_));
     }

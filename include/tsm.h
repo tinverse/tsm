@@ -57,7 +57,8 @@ using MealyHsm = AsynchronousHsm<Hsm>;
 
 // This Moore machine is driven by a periodic timer.
 template<typename Hsm,
-         template<typename> class TimerType,
+         template<typename>
+         class TimerType,
          typename DurationType>
 using ClockedMooreHsm =
   TimedExecutionPolicy<MooreHsm<Hsm>, TimerType, DurationType>;
