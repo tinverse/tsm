@@ -1,12 +1,11 @@
 <map id="tsmtest::CdPlayerHsm&lt; ControllerType &gt;" name="tsmtest::CdPlayerHsm&lt; ControllerType &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="354,1244,510,1351"/>
-<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="87,715,262,939"/>
-<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="125,336,256,560"/>
-<area shape="rect" id="node7" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="286,722,461,931"/>
-<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="243,5,349,244"/>
-<area shape="rect" id="node6" href="$structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm.html" title=" " alt="" coords="454,1016,663,1181"/>
-<area shape="rect" id="node10" href="$structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm_1_1Song1State.html" title=" " alt="" coords="419,584,600,691"/>
-<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="280,380,451,516"/>
-<area shape="rect" id="node8" href="$structtsmtest_1_1CdPlayerController.html" title=" " alt="" coords="764,788,948,865"/>
-<area shape="rect" id="node9" href="$structtsm_1_1Event.html" title=" " alt="" coords="583,729,689,924"/>
+<area shape="rect" id="node1" title=" " alt="" coords="298,1152,454,1259"/>
+<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="87,623,262,847"/>
+<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="117,307,248,531"/>
+<area shape="rect" id="node7" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="286,630,461,839"/>
+<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="129,5,234,215"/>
+<area shape="rect" id="node6" href="$structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm.html" title=" " alt="" coords="394,924,603,1089"/>
+<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="275,351,445,487"/>
+<area shape="rect" id="node8" href="$structtsmtest_1_1CdPlayerController.html" title=" " alt="" coords="536,696,720,773"/>
+<area shape="rect" id="node9" href="$structtsm_1_1Event.html" title=" " alt="" coords="745,637,850,832"/>
 </map>

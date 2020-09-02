@@ -1,7 +1,8 @@
 <map id="tsmtest::TrafficLightHsm" name="tsmtest::TrafficLightHsm">
-<area shape="rect" id="node1" title=" " alt="" coords="161,667,327,817"/>
-<area shape="rect" id="node2" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="5,336,136,560"/>
-<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="62,5,167,244"/>
-<area shape="rect" id="node5" href="$structtsmtest_1_1TrafficLightHsm_1_1LightState.html" title=" " alt="" coords="161,380,327,516"/>
-<area shape="rect" id="node4" href="$structtsm_1_1Event.html" title=" " alt="" coords="351,351,457,545"/>
+<area shape="rect" id="node1" title=" " alt="" coords="131,881,298,1032"/>
+<area shape="rect" id="node2" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="5,307,136,531"/>
+<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="61,5,166,215"/>
+<area shape="rect" id="node6" href="$structtsm_1_1NamedState.html" title=" " alt="" coords="160,307,285,531"/>
+<area shape="rect" id="node4" href="$structtsm_1_1Event.html" title=" " alt="" coords="322,580,427,775"/>
+<area shape="rect" id="node5" href="$structtsmtest_1_1TrafficLightHsm_1_1LightState.html" title=" " alt="" coords="131,609,298,745"/>
 </map>
