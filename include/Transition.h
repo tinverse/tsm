@@ -94,15 +94,9 @@ struct StateTransitionTableT
     {
         size_t operator()(const StateEventPair& s) const
         {
-            State* statePtr = &s.first;
-            uint64_t id_s = statePtr->id;
-            tsm::Event event = s.second;
-            auto address = reinterpret_cast<uintptr_t>(statePtr);
-            uint64_t id_e = event.id;
-            size_t hash_value = std::hash<uint64_t>{}(id_s) ^
-                                std::hash<uintptr_t>{}(address) ^
-                                (std::hash<uint64_t>{}(id_e) << 1);
-            return hash_value;
+            auto a = s.first.id;
+            auto b = s.second.id;
+            return (a + b) * (a + b + 1) / 2 + a;
         }
     };
 
