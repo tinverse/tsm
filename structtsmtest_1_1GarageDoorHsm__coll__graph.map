@@ -1,8 +1,8 @@
 <map id="tsmtest::GarageDoorHsm" name="tsmtest::GarageDoorHsm">
-<area shape="rect" id="node1" title=" " alt="" coords="87,983,259,1075"/>
-<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="72,667,275,876"/>
+<area shape="rect" id="node1" title=" " alt="" coords="87,968,259,1060"/>
+<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="72,667,274,861"/>
 <area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="61,307,192,531"/>
 <area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="30,5,135,215"/>
-<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="216,351,387,487"/>
-<area shape="rect" id="node6" href="$structtsm_1_1Event.html" title=" " alt="" coords="299,674,405,869"/>
+<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="216,351,386,487"/>
+<area shape="rect" id="node6" href="$structtsm_1_1Event.html" title=" " alt="" coords="299,667,404,861"/>
 </map>

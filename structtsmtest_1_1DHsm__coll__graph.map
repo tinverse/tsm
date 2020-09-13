@@ -1,12 +1,12 @@
 <map id="tsmtest::DHsm" name="tsmtest::DHsm">
-<area shape="rect" id="node1" title=" " alt="" coords="360,1137,472,1215"/>
-<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="209,593,352,803"/>
-<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="264,307,395,531"/>
-<area shape="rect" id="node7" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="42,865,185,1075"/>
-<area shape="rect" id="node8" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="42,593,185,803"/>
-<area shape="rect" id="node10" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="504,593,646,803"/>
-<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="518,5,624,215"/>
-<area shape="rect" id="node9" href="$structtsmtest_1_1BHsm.html" title=" " alt="" coords="520,931,630,1009"/>
-<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="431,351,602,487"/>
-<area shape="rect" id="node6" href="$structtsm_1_1Event.html" title=" " alt="" coords="376,601,481,795"/>
+<area shape="rect" id="node1" title=" " alt="" coords="374,1064,486,1141"/>
+<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="211,593,354,788"/>
+<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="266,307,397,531"/>
+<area shape="rect" id="node7" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="44,851,187,1001"/>
+<area shape="rect" id="node8" href="$structtsm_1_1OrthogonalHsm.html" title=" " alt="" coords="44,615,187,766"/>
+<area shape="rect" id="node10" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="506,593,648,788"/>
+<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="520,5,626,215"/>
+<area shape="rect" id="node9" href="$structtsmtest_1_1BHsm.html" title=" " alt="" coords="508,887,619,965"/>
+<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="433,351,604,487"/>
+<area shape="rect" id="node6" href="$structtsm_1_1Event.html" title=" " alt="" coords="378,593,483,788"/>
 </map>

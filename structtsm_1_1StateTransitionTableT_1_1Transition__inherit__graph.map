@@ -1,4 +1,4 @@
 <map id="tsm::StateTransitionTableT&lt; FsmDef &gt;::Transition" name="tsm::StateTransitionTableT&lt; FsmDef &gt;::Transition">
-<area shape="rect" id="node1" title=" " alt="" coords="25,5,195,185"/>
-<area shape="rect" id="node2" href="$structtsm_1_1StateTransitionTableT_1_1InternalTransition.html" title=" " alt="" coords="5,233,215,340"/>
+<area shape="rect" id="node1" title=" " alt="" coords="25,5,195,156"/>
+<area shape="rect" id="node2" href="$structtsm_1_1StateTransitionTableT_1_1InternalTransition.html" title=" " alt="" coords="5,204,215,311"/>
 </map>
