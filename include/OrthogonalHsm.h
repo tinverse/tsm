@@ -69,35 +69,9 @@ struct OrthogonalHsm : public IHsm
 
     OrthogonalHsm()
     {
-
         for_each_hsm(sms_, [&](auto& sm) { sm.setParent(this); });
-    }
-
-    OrthogonalHsm(IHsm* parent)
-      : IHsm(parent)
-    {
-
-        for_each_hsm(sms_, [&](auto& sm) { sm.setParent(this); });
-    }
-
-    void startSM() { onEntry(tsm::null_event); }
-
-    void onEntry(Event const& e) override
-    {
-        DLOG(INFO) << "Entering: " << this->id;
-        for_each_hsm(sms_, [&](auto& sm) { sm.onEntry(e); });
         this->setCurrentHsm(&std::get<0>(sms_));
-    }
-
-    void stopSM() { onExit(tsm::null_event); }
-
-    void onExit(Event const& e) override
-    {
-
-        // Stopping a Hsm means stopping all of its sub Hsms
-        for_each_hsm(sms_, [&](auto& sm) { sm.onExit(e); });
-
-        this->setCurrentHsm(nullptr);
+        for_each_hsm(sms_, [&](auto& sm) { sm.onEntry(tsm::null_event); });
     }
 
     void handle(Event const& nextEvent) override
@@ -121,11 +95,9 @@ struct OrthogonalHsm : public IHsm
         }
     }
 
-    State* getCurrentState()
-    {
-        return dynamic_cast<State*>(this->getCurrentHsm());
-    }
+    State* getCurrentState() override { return this->getCurrentHsm(); }
 
+    State* getStartState() override { return &std::get<0>(sms_); }
     std::tuple<Hsms...> sms_;
 };
 } // namespace tsm

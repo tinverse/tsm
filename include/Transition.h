@@ -17,21 +17,15 @@ struct StateTransitionTableT
 
     struct Transition
     {
-        Transition(State& fromState,
-                   Event const& event,
-                   State& toState,
-                   ActionFn action,
-                   GuardFn guard)
-          : fromState(fromState)
-          , onEvent(event)
-          , toState(toState)
+        Transition(State& toState, ActionFn action, GuardFn guard)
+          : toState(toState)
           , action(action)
           , guard(guard)
         {}
 
         virtual ~Transition() = default;
 
-        bool doTransition(FsmDef* hsm)
+        bool doTransition(FsmDef* hsm, Event const& e)
         {
             bool transitioned = false;
             if (!hsm) {
@@ -46,19 +40,18 @@ struct StateTransitionTableT
                 // If just an internal transition, Entry and exit actions are
                 // not performed
 
-                this->fromState.onExit(onEvent);
+                hsm->getCurrentState()->onExit(e);
                 if (action) {
                     CALL_MEMBER_FN(hsm, action);
                 }
-                this->toState.onEntry(onEvent);
+                hsm->setCurrentState(&toState);
+                this->toState.onEntry(e);
                 transitioned = true;
             } else {
                 DLOG(INFO) << "Guard prevented transition";
             }
             return transitioned;
         }
-        State& fromState;
-        Event onEvent;
         State& toState;
         ActionFn action;
         GuardFn guard;
@@ -66,11 +59,8 @@ struct StateTransitionTableT
 
     struct InternalTransition : public Transition
     {
-        InternalTransition(State& fromState,
-                           Event const& event,
-                           ActionFn action,
-                           GuardFn guard)
-          : Transition(fromState, event, fromState, action, guard)
+        InternalTransition(ActionFn action, GuardFn guard)
+          : Transition(action, guard)
         {}
 
         template<typename HsmType>
@@ -135,7 +125,7 @@ struct StateTransitionTableT
              ActionFn action = nullptr,
              GuardFn guard = nullptr)
     {
-        Transition t(fromState, onEvent, toState, action, guard);
+        Transition t(toState, action, guard);
         addTransition(fromState, onEvent, t);
         eventSet_.insert(onEvent);
     }
