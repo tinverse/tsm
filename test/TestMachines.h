@@ -109,7 +109,9 @@ struct DHsm : Hsm<DHsm>
         add(ds3, e3, ds1);
         add(ds3, o_in, oHsm);
         add(oHsm, o_out, ds4);
-        add(ds4, end_Devent, ds5);
+        add(ds4, e4, ds3);
+        add(ds4, end, ds5);
+        add(ds3, end, ds5);
     }
 
     // States
@@ -126,8 +128,9 @@ struct DHsm : Hsm<DHsm>
     Event e2_in;
     Event e2_out;
     Event e3;
+    Event e4;
     Event o_in;
     Event o_out;
-    Event end_Devent;
+    Event end;
 };
 } // namespace tsmtest

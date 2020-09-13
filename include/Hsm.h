@@ -10,16 +10,7 @@ namespace tsm {
 ///
 struct IHsm : public State
 {
-    IHsm()
-      : State()
-      , parent_(nullptr)
-      , currentHsm_(nullptr)
-      , currentState_(nullptr)
-      , startState_(nullptr)
-      , stopState_(nullptr)
-    {}
-
-    explicit IHsm(IHsm* parent)
+    explicit IHsm(IHsm* parent = nullptr)
       : State()
       , parent_(parent)
       , currentHsm_(nullptr)
@@ -35,16 +26,17 @@ struct IHsm : public State
 
     void startSM() { this->onEntry(tsm::null_event); }
     void stopSM() { this->onExit(tsm::null_event); }
-    void onEntry(Event const&) override
+    void onEntry(Event const& e) override
     {
         currentState_ = this->getStartState();
+        currentState_->onEntry(e);
 
         if (parent_ != nullptr) {
             parent_->setCurrentHsm(this);
         }
     }
 
-    void onExit(Event const&) override
+    void onExit(Event const& e) override
     {
         // TODO (sriram): Does the sub-Hsm remember which state it was in at
         // exit? This really depends on exit/history policy. Sometimes you
@@ -53,11 +45,13 @@ struct IHsm : public State
         // HsmDefs to override onExit appropriately. Currently as you see,
         // the policy is to 'forget' on exit by setting the currentState_ to
         // nullptr.
-        currentState_ = nullptr;
+        if (currentState_ != nullptr) {
+            currentState_->onExit(e);
+            currentState_ = nullptr;
+        }
         if (parent_ != nullptr) {
             parent_->setCurrentHsm(nullptr);
         }
-        startState_ = nullptr;
     }
 
     IHsm* getCurrentHsm() { return currentHsm_; }
@@ -77,9 +71,10 @@ struct IHsm : public State
     IHsm* getParent() const { return parent_; }
     void setParent(IHsm* parent) { parent_ = parent; }
 
-    State* getCurrentState() { return currentState_; }
+    virtual State* getCurrentState() { return currentState_; }
+    void setCurrentState(State* s) { currentState_ = s; }
 
-    State* getStartState() { return startState_; }
+    virtual State* getStartState() { return startState_; }
     void setStartState(State* s) { startState_ = s; }
 
     State* getStopState() { return stopState_; }
@@ -106,11 +101,7 @@ struct Hsm : public IHsm
     using ActionFn = void (HsmDef::*)();
     using GuardFn = bool (HsmDef::*)();
 
-    Hsm()
-      : IHsm(nullptr)
-    {}
-
-    Hsm(IHsm* parent)
+    explicit Hsm(IHsm* parent = nullptr)
       : IHsm(parent)
     {}
 
@@ -141,15 +132,7 @@ struct Hsm : public IHsm
             // Perform entry and exit actions in the doTransition function.
             // If just an internal transition, Entry and exit actions are
             // not performed
-            if (t->doTransition(static_cast<HsmDef*>(this))) {
-                this->currentState_ = &t->toState;
-
-                if (dynamic_cast<IHsm*>(this->currentState_) != nullptr) {
-                    // DLOG(INFO) << "Next State:" << this->currentState_->id;
-                    this->setCurrentHsm(
-                      dynamic_cast<IHsm*>(this->currentState_));
-                }
-            }
+            t->doTransition(static_cast<HsmDef*>(this), nextEvent);
 
             if (this->currentState_ == this->getStopState()) {
                 // DLOG(INFO) << this->id << " Reached stop state. Exiting.";

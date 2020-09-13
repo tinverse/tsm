@@ -202,7 +202,28 @@ TEST_CASE("State machine drill - Synchronous OrthogonalHsm that is a child of "
     sm.step();
     REQUIRE(&sm.ds4 == sm.getCurrentState());
 
-    sm.sendEvent(sm.end_Devent);
+    sm.sendEvent(sm.e4);
+    sm.step();
+    REQUIRE(&sm.ds3 == sm.getCurrentState());
+
+    sm.sendEvent(sm.o_in);
+    sm.step();
+    REQUIRE(&sm.oHsm == sm.getCurrentState());
+    // Should be AHsm
+    // auto* aHsm = dynamic_cast<AHsm*>(sm.oHsm.getCurrentState());
+    REQUIRE(aHsm == &std::get<0>(sm.oHsm.sms_));
+    REQUIRE(aHsm->getCurrentState() == &aHsm->s1);
+
+    sm.sendEvent(aHsm->e1);
+    sm.step();
+    REQUIRE(&aHsm->s2 == aHsm->getCurrentState());
+    REQUIRE(&sm.oHsm == sm.getCurrentState());
+
+    sm.sendEvent(sm.o_out);
+    sm.step();
+    REQUIRE(&sm.ds4 == sm.getCurrentState());
+
+    sm.sendEvent(sm.end);
     sm.step();
     REQUIRE(nullptr == sm.getCurrentState());
 
