@@ -4,11 +4,11 @@ project(Catch2)
 include( ExternalProject )
 
 message( "External project - Catch2" )
-set (Catch2_VERSION 1.8.0)
+set (Catch2_VERSION 2.13.4)
 
 ExternalProject_Add(Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2 
-    GIT_TAG master 
+    GIT_REPOSITORY https://github.com/catchorg/Catch2
+    GIT_TAG v2.13.4
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
     UPDATE_COMMAND ""
     CMAKE_ARGS
