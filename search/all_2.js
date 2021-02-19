@@ -14,6 +14,7 @@ var searchData=
   ['click_5fevent_29',['click_event',['../structtsmtest_1_1GarageDoorHsm.html#aaba441197b1e40fbdc2d308a583b60b0',1,'tsmtest::GarageDoorHsm']]],
   ['clockedmoorehsm_30',['ClockedMooreHsm',['../namespacetsm.html#a72a4172983bd10b31d430035416ac8e6',1,'tsm']]],
   ['controller_5f_31',['controller_',['../structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm.html#a4e9e0178d7586cde566c30e4fb614bb2',1,'tsmtest::CdPlayerHsm::PlayingHsm::controller_()'],['../structtsmtest_1_1CdPlayerHsm.html#a11cb89388b6543af0df66227b2a632cb',1,'tsmtest::CdPlayerHsm::controller_()']]],
-  ['counter_5finc_32',['counter_inc',['../namespacetsm.html#a8054214d46afc3867323bbf41a733511',1,'tsm']]],
-  ['currentstate_5f_33',['currentState_',['../structtsm_1_1IHsm.html#a41dab637c24230da657cbaf30034e336',1,'tsm::IHsm']]]
+  ['counter_32',['Counter',['../structtsm_1_1Counter.html',1,'tsm']]],
+  ['counter_5finc_33',['counter_inc',['../structtsm_1_1Counter.html#a7674c8edfee9799205eb6e48b8a499fa',1,'tsm::Counter']]],
+  ['currentstate_5f_34',['currentState_',['../structtsm_1_1IHsm.html#a41dab637c24230da657cbaf30034e336',1,'tsm::IHsm']]]
 ];
