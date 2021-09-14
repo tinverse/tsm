@@ -16,7 +16,7 @@ namespace tsm {
 struct State
 {
     State()
-      : id(tsm::counter_inc())
+      : id(Counter::counter_inc())
     {}
 
     State(State const& other) = default;

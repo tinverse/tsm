@@ -7,7 +7,7 @@ namespace tsm {
 struct Event
 {
     Event()
-      : id(tsm::counter_inc())
+      : id(Counter::counter_inc())
     {}
 
     Event(uint64_t id_)

@@ -4,7 +4,7 @@ project(Catch2)
 include( ExternalProject )
 
 message( "External project - Catch2" )
-set (Catch2_VERSION 2.13.4)
+set (Catch2_VERSION "2.13.4" CACHE STRING "Catch2 Version")
 
 ExternalProject_Add(Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2
