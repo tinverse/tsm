@@ -15,7 +15,7 @@ struct CdPlayerController
     // Actions
     void playSong(std::string const& songName)
     {
-        DLOG(INFO) << "Playing song: " << songName;
+        LOG(INFO) << "Playing song: " << songName;
     }
 };
 
@@ -51,28 +51,24 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
             add(Song2, prev_song, Song1);
         }
 
-        virtual ~PlayingHsm() = default;
 
         // States
-        State Song1;
-        State Song2;
-        State Song3;
+        State Song1, Song2, Song3;
 
         // Events
-        Event next_song;
-        Event prev_song;
+        Event next_song, prev_song;
 
         // Actions
         void PlaySong()
         {
-            DLOG(INFO) << "Play Song";
+            LOG(INFO) << "Play Song";
             controller_.playSong("Dummy");
         }
 
         // Guards
         bool PlaySongGuard()
         {
-            DLOG(INFO) << "Play Song Guard";
+            LOG(INFO) << "Play Song Guard";
             return true;
         }
 
@@ -123,26 +119,15 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
         add(Paused, open_close, Open);
     }
 
-    virtual ~CdPlayerHsm() = default;
-
     // CdPlayer Hsm
     // States
-    State Stopped;
+    State Stopped, Paused, Empty, Open;
 
     // Playing is a Hsm and a State
     PlayingHsm Playing;
 
-    State Paused;
-    State Empty;
-    State Open;
-
     // Events
-    Event play;
-    Event open_close;
-    Event stop_event;
-    Event cd_detected;
-    Event pause;
-    Event end_pause;
+    Event play, open_close, stop_event, cd_detected, pause, end_pause;
 
     ControllerType controller_;
 };
@@ -158,17 +143,14 @@ struct ErrorHsm : public Hsm<ErrorHsm>
         add(ErrorMode, recover, AllOk, &ErrorHsm::recovery);
     }
 
-    virtual ~ErrorHsm() = default;
     // States
-    State AllOk;
-    State ErrorMode;
+    State AllOk, ErrorMode;
 
     // Events
-    Event error;
-    Event recover;
+    Event error, recover;
 
     // Actions
-    void recovery() { DLOG(INFO) << "Recovering from Error:"; }
+    void recovery() { LOG(INFO) << "Recovering from Error:"; }
 };
 
 } // namespace tsmtest

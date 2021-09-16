@@ -55,7 +55,7 @@ struct EventQueueT : private deque<Event>
             return Event();
         } else {
             const Event e = std::move(front());
-            DLOG(INFO) << "Thread:" << std::this_thread::get_id()
+            LOG(INFO) << "Thread:" << std::this_thread::get_id()
                        << " Popping Event:" << e.id;
             pop_front();
             return e;
@@ -65,7 +65,7 @@ struct EventQueueT : private deque<Event>
     void addEvent(Event const& e)
     {
         std::lock_guard<LockType> lock(eventQueueMutex_);
-        DLOG(INFO) << "Thread:" << std::this_thread::get_id()
+        LOG(INFO) << "Thread:" << std::this_thread::get_id()
                    << " Adding Event:" << e.id;
         push_back(e);
         cvEventAvailable_.notify_all();

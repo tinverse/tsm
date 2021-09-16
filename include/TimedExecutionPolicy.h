@@ -20,9 +20,11 @@ struct ThreadSleepTimer
       , interrupt_(false)
       , cb_(cb)
     {}
-    ThreadSleepTimer() = delete;
+
     ThreadSleepTimer(ThreadSleepTimer const&) = delete;
-    ThreadSleepTimer(ThreadSleepTimer&&) = default;
+    ThreadSleepTimer operator=(ThreadSleepTimer const&) = delete;
+    ThreadSleepTimer(ThreadSleepTimer&&) = delete;
+    ThreadSleepTimer operator=(ThreadSleepTimer&&) = delete;
 
     virtual ~ThreadSleepTimer()
     {
@@ -75,11 +77,6 @@ struct TimedExecutionPolicy
                    std::bind(&TimedExecutionPolicy::onTimerExpired, this))
     {}
 
-    TimedExecutionPolicy(TimedExecutionPolicy const&) = delete;
-    TimedExecutionPolicy(TimedExecutionPolicy&&) = delete;
-
-    virtual ~TimedExecutionPolicy() = default;
-
     void onEntry(Event const& e) override
     {
         timer_type::start();
@@ -90,7 +87,7 @@ struct TimedExecutionPolicy
 
     void onExit(Event const& e) override
     {
-        DLOG(INFO) << "Exiting from Parent thread policy...";
+        LOG(INFO) << "Exiting from Parent thread policy...";
         timer_type::stop();
         StateType::onExit(e);
     }

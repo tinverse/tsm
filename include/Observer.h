@@ -23,14 +23,14 @@ struct BlockingObserver
     {
         std::unique_lock<std::mutex> lock(smBusyMutex_);
         notified_ = true;
-        DLOG(INFO) << "Notify.....";
+        LOG(INFO) << "Notify.....";
         cv_.notify_all();
     }
 
     void wait()
     {
         std::unique_lock<std::mutex> lock(smBusyMutex_);
-        DLOG(INFO) << "Wait.....";
+        LOG(INFO) << "Wait.....";
         cv_.wait(lock, [this] { return this->notified_ == true; });
         notified_ = false;
     }

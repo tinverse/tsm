@@ -23,8 +23,6 @@ struct StateTransitionTableT
           , guard(guard)
         {}
 
-        virtual ~Transition() = default;
-
         bool doTransition(FsmDef* hsm, Event const& e)
         {
             bool transitioned = false;
@@ -48,7 +46,7 @@ struct StateTransitionTableT
                 this->toState.onEntry(e);
                 transitioned = true;
             } else {
-                DLOG(INFO) << "Guard prevented transition";
+                LOG(INFO) << "Guard prevented transition";
             }
             return transitioned;
         }
@@ -74,7 +72,7 @@ struct StateTransitionTableT
                     CALL_MEMBER_FN(hsm, this->action);
                 }
             } else {
-                DLOG(INFO) << "Guard prevented transition";
+                LOG(INFO) << "Guard prevented transition";
             }
         }
     };
@@ -106,7 +104,7 @@ struct StateTransitionTableT
             return &it->second;
         }
 
-        DLOG(ERROR) << "No Transition:" << fromState.id
+        LOG(ERROR) << "No Transition:" << fromState.id
                     << "\tonEvent:" << onEvent.id;
         return nullptr;
     }
@@ -114,7 +112,7 @@ struct StateTransitionTableT
     void print()
     {
         for (const auto& it : *this) {
-            DLOG(INFO) << it.first.first->name << "," << it.first.second.id
+            LOG(INFO) << it.first.first->name << "," << it.first.second.id
                        << ":" << it.second->toState.name << "\n";
         }
     }

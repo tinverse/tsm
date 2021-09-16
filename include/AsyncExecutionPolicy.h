@@ -19,11 +19,12 @@ struct AsyncExecutionPolicy : public StateType
     AsyncExecutionPolicy()
       : StateType()
       , threadCallback_(&AsyncExecutionPolicy::step)
-      , interrupt_(false)
     {}
 
     AsyncExecutionPolicy(AsyncExecutionPolicy const&) = delete;
+    AsyncExecutionPolicy operator=(AsyncExecutionPolicy const&) = delete;
     AsyncExecutionPolicy(AsyncExecutionPolicy&&) = delete;
+    AsyncExecutionPolicy operator=(AsyncExecutionPolicy&&) = delete;
 
     virtual ~AsyncExecutionPolicy()
     {
@@ -60,7 +61,7 @@ struct AsyncExecutionPolicy : public StateType
     ThreadCallback threadCallback_;
     std::thread smThread_;
     EventQueue eventQueue_;
-    bool interrupt_;
+    bool interrupt_{};
 
     void processEvent()
     {
@@ -71,7 +72,7 @@ struct AsyncExecutionPolicy : public StateType
         if (!eventQueue_.interrupted()) {
             StateType::dispatch(nextEvent);
         } else {
-            DLOG(WARNING) << this->id << ": Exiting event loop on interrupt";
+            LOG(WARNING) << this->id << ": Exiting event loop on interrupt";
         }
     }
 };
@@ -94,11 +95,6 @@ struct AsyncExecWithObserver
       : AsyncExecutionPolicy<StateType>()
       , Observer()
     {}
-
-    AsyncExecWithObserver(AsyncExecWithObserver const&) = delete;
-    AsyncExecWithObserver(AsyncExecWithObserver&&) = delete;
-
-    virtual ~AsyncExecWithObserver() = default;
 
     void step() override
     {

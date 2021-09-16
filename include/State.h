@@ -4,7 +4,7 @@
 #include "UniqueId.h"
 #include "tsm_log.h"
 
-#include <memory>
+#include <iostream>
 #include <string>
 
 namespace tsm {
@@ -19,33 +19,35 @@ struct State
       : id(Counter::counter_inc())
     {}
 
-    State(State const& other) = default;
-    State(State&& other) = default;
+    State(State const& other) = delete;
+    State(State&& other) = delete;
+    State& operator=(State const& other) = delete;
+    State& operator=(State const&& other) = delete;
     virtual ~State() = default;
-    bool operator==(State const& rhs) { return this->id == rhs.id; }
-    bool operator!=(State& rhs) { return !(*this == rhs); }
+    bool operator==(State const& rhs) const { return this->id == rhs.id; }
+    bool operator!=(State& rhs) const { return !(*this == rhs); }
 
-    virtual void execute(Event const&)
-    {
-        DLOG(INFO) << "Executing: " << this->id << std::endl;
-    }
-
-    virtual void onEntry(Event const&)
-    {
-        DLOG(INFO) << "Entering: " << this->id << std::endl;
-    }
-
-    virtual void onExit(Event const&)
-    {
-        DLOG(INFO) << "Exiting: " << this->id << std::endl;
-    }
-
-    std::ostream& operator<<(std::ostream& os)
+    std::ostream& operator<<(std::ostream& os) const
     {
         os << this->id;
         return os;
     }
 
+
+    virtual void execute(Event const&  /*e*/)
+    {
+        LOG(INFO) << "Executing: " << this->id << std::endl;
+    }
+
+    virtual void onEntry(Event const& /*unused*/)
+    {
+        LOG(INFO) << "Entering: " << this->id << std::endl;
+    }
+
+    virtual void onExit(Event const& /*unused*/)
+    {
+        LOG(INFO) << "Exiting: " << this->id << std::endl;
+    }
     const uint64_t id;
 };
 
@@ -53,33 +55,34 @@ struct NamedState : public State
 {
     NamedState() = delete;
 
-    explicit NamedState(std::string const& stateName)
-      : State()
-      , name(stateName)
+    explicit NamedState(std::string stateName)
+      : name(std::move(stateName))
     {}
+    NamedState(NamedState const& other) = delete;
+    NamedState(NamedState&& other) = delete;
+     ~NamedState() override = default;
 
-    NamedState(NamedState const& other) = default;
-    NamedState(NamedState&& other) = default;
-    virtual ~NamedState() = default;
+    NamedState& operator=(NamedState const& other) = delete;
+    NamedState& operator=(NamedState const&& other) = delete;
     bool operator==(NamedState const& rhs)
     {
         return this->id == rhs.id && this->name == rhs.name;
     }
     bool operator!=(NamedState& rhs) { return !(*this == rhs); }
 
-    void execute(Event const&) override
+    void execute(Event const& /*unused*/) override
     {
-        DLOG(INFO) << "Executing: " << this->name << std::endl;
+        LOG(INFO) << "Executing: " << this->name << std::endl;
     }
 
-    void onEntry(Event const&) override
+    void onEntry(Event const& /*unused*/) override
     {
-        DLOG(INFO) << "Entering: " << this->name << std::endl;
+        LOG(INFO) << "Entering: " << this->name << std::endl;
     }
 
-    void onExit(Event const&) override
+    void onExit(Event const& /*unused*/) override
     {
-        DLOG(INFO) << "Exiting: " << this->name << std::endl;
+        LOG(INFO) << "Exiting: " << this->name << std::endl;
     }
 
     std::ostream& operator<<(std::ostream& os)

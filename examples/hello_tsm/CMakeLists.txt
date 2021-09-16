@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(hello_tsm VERSION 0.1.0)
 
-# This is key. Set tsm_DIR to a folder that contains tsmConfig.cmake
+set(CMAKE_CXX_STANDARD 14)
+# READ THIS:
+# Set tsm_DIR to a folder that contains tsmConfig.cmake
 # For e.g.
 # git clone https://github.com/tinverse/tsm tsm
 # cd tsm && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=/tmp ..
@@ -11,7 +13,9 @@ project(hello_tsm VERSION 0.1.0)
 # make
 # This should build this example. You can use this as a guide to include tsm
 # in your projects.
-set (tsm_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../build" CACHE PATH "")
+if (NOT tsm_DIR)
+    message(WARNING "tsm_DIR not defined")
+endif(NOT tsm_DIR)
 
 find_package(tsm REQUIRED CONFIG)
 

@@ -17,8 +17,6 @@ struct TrafficLightHsm : public IHsm
           , next_(next)
         {}
 
-        ~LightState() override = default;
-
         uint64_t getLimit() const { return limit_; }
         LightState& nextState() { return next_; }
 
@@ -32,15 +30,13 @@ struct TrafficLightHsm : public IHsm
       , Y1("Y1", 5, G2)
       , G2("G2", 60, Y2)
       , Y2("Y2", 5, G1)
-      , walkPressed(false)
-      , ticks_(0)
     {
         this->setStartState(&G1);
     }
 
     void pressWalk() { walkPressed = true; }
 
-    void handle(Event const&) override
+    void handle(Event const& /*unused*/) override
     {
         ++ticks_;
         auto* state = static_cast<LightState*>(this->currentState_);
@@ -64,16 +60,13 @@ struct TrafficLightHsm : public IHsm
     ~TrafficLightHsm() override = default;
 
     // States
-    LightState G1;
-    LightState Y1;
-    LightState G2;
-    LightState Y2;
+    LightState G1, Y1, G2, Y2;
 
     // Events
     Event timer_event;
 
     // Walk button
-    bool walkPressed;
-    uint64_t ticks_;
+    bool walkPressed{};
+    uint64_t ticks_{};
 };
 } // namespace tsmtest

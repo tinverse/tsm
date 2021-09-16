@@ -7,13 +7,10 @@ struct SocketSM : tsm::Hsm<SocketSM>
 {
   public:
     SocketSM()
-      : tsm::Hsm<SocketSM>("Socket State Machine")
-      , Closed("closed")
-      , Ready("ready")
-      , Bound("bound")
-      , Open("open")
-      , Listening("listening")
+      : tsm::Hsm<SocketSM>()
     {
+        IHsm::setStartState(&Closed);
+
         add(Closed, sock_open, Ready);
         add(Ready, connect, Open);
         add(Ready, bind, Bound);
@@ -24,22 +21,11 @@ struct SocketSM : tsm::Hsm<SocketSM>
     }
 
     // Events
-    Event sock_open;
-    Event bind;
-    Event listen;
-    Event connect;
-    Event accept;
-    Event close;
+    Event sock_open, bind, listen, connect, accept, close;
 
     // States
-    State Closed;
-    State Ready;
-    State Bound;
-    State Open;
-    State Listening;
+    State Closed, Ready, Bound, Open, Listening;
 
-    State* getStartState() override { return &Closed; }
-    State* getStopState() override { return nullptr; }
 };
 
 using SocketHsm = tsm::SingleThreadedHsm<SocketSM>;

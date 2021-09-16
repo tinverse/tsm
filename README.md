@@ -30,8 +30,7 @@ struct Switch : Hsm<Switch>
         add(off, toggle, on);
     }
 
-    State on;
-    State off;
+    State on, off;
 
     Event toggle;
 }
@@ -87,19 +86,11 @@ struct CdPlayer : public Hsm<CdPlayer>
         return true;
     }
     // States
-    State Stopped;
+    State Stopped, Paused, Empty, Open;
     PlayingHsm Playing; // <-------- Note
-    State Paused;
-    State Empty;
-    State Open;
 
     // Events
-    Event play;
-    Event open_close;
-    Event stop_event;
-    Event cd_detected;
-    Event pause;
-    Event end_pause;
+    Event play, open_close, stop_event, cd_detected, pause, end_pause;
 }
 ```
 
@@ -113,13 +104,10 @@ struct Playing : public Hsm<PlayingHsm>
     // ... ignoring boiler plate stuff ...
 
     // States
-    State Song1;
-    State Song2;
-    State Song3;
+    State Song1, Song2, Song3;
 
     // Events
-    Event next_song;
-    Event prev_song;
+    Event next_song, prev_song;
 
 };
 
@@ -228,10 +216,8 @@ struct TrafficLightHsm : public IHsm
     // ... with a few details removed...
 
     // States
-    LightState g1;
-    LightState y1;
+    LightState g1, y1, y2;
     G2 g2;      // G2 is derived from LightState, which in turn is inherited from State.
-    LightState y2;
 
     // Events
     Event timer_event;

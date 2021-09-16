@@ -27,20 +27,11 @@ struct GarageDoorHsm : public Hsm<GarageDoorHsm>
         add(doorClosed, click_event, doorOpening);
     }
 
-    virtual ~GarageDoorHsm() = default;
-
     // States
-    State doorOpen;
-    State doorOpening;
-    State doorClosing;
-    State doorClosed;
-    State doorStoppedClosing;
-    State doorStoppedOpening;
+     State doorOpen, doorOpening, doorClosing, doorClosed, doorStoppedClosing,
+           doorStoppedOpening;
 
     // Events
-    Event click_event;
-    Event bottomSensor_event;
-    Event topSensor_event;
-    Event obstruct_event;
+     Event click_event, bottomSensor_event, topSensor_event, obstruct_event;
 };
 } // namespace tsmtest

@@ -28,7 +28,7 @@ struct SingleThreadedExecutionPolicy : public StateType
 
     void onExit(Event const& e) override
     {
-        DLOG(INFO) << "Exiting from Parent thread policy...";
+        LOG(INFO) << "Exiting from Parent thread policy...";
         eventQueue_.stop();
         StateType::onExit(e);
     }

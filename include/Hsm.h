@@ -13,16 +13,7 @@ struct IHsm : public State
     explicit IHsm(IHsm* parent = nullptr)
       : State()
       , parent_(parent)
-      , currentHsm_(nullptr)
-      , currentState_(nullptr)
-      , startState_(nullptr)
-      , stopState_(nullptr)
     {}
-
-    IHsm(IHsm const&) = delete;
-    IHsm(IHsm&&) = delete;
-
-    ~IHsm() override = default;
 
     void startSM() { this->onEntry(tsm::null_event); }
     void stopSM() { this->onExit(tsm::null_event); }
@@ -82,12 +73,12 @@ struct IHsm : public State
 
   private:
     IHsm* parent_;
-    IHsm* currentHsm_;
+    IHsm* currentHsm_{};
 
   protected:
-    State* currentState_;
-    State* startState_;
-    State* stopState_;
+    State* currentState_{};
+    State* startState_{};
+    State* stopState_{};
 };
 
 ///
@@ -105,14 +96,9 @@ struct Hsm : public IHsm
       : IHsm(parent)
     {}
 
-    Hsm(Hsm const&) = delete;
-    Hsm(Hsm&&) = delete;
-
-    ~Hsm() override { IHsm::stopSM(); }
-
     void handle(Event const& nextEvent) override
     {
-        DLOG(INFO) << "Current State:" << this->currentState_->id
+        LOG(INFO) << "Current State:" << this->currentState_->id
                    << " Event:" << nextEvent.id;
 
         Transition* t = this->next(*this->currentState_, nextEvent);
@@ -125,7 +111,7 @@ struct Hsm : public IHsm
                 // state machines this->onExit(nextEvent);
                 this->getParent()->handle(nextEvent);
             } else {
-                DLOG(ERROR) << "Reached top level Hsm. Cannot handle event";
+                LOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         } else {
 
@@ -135,7 +121,7 @@ struct Hsm : public IHsm
             t->doTransition(static_cast<HsmDef*>(this), nextEvent);
 
             if (this->currentState_ == this->getStopState()) {
-                // DLOG(INFO) << this->id << " Reached stop state. Exiting.";
+                // LOG(INFO) << this->id << " Reached stop state. Exiting.";
                 this->onExit(tsm::null_event);
             }
         }

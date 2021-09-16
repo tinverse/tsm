@@ -12,7 +12,7 @@ namespace tsm {
 // See Fluent C++ for_each std tuple (https://www.fluentcpp.com)
 template<class Tuple, class F, std::size_t... I>
 constexpr F
-for_each_impl(Tuple&& t, F&& f, std::index_sequence<I...>)
+for_each_impl(Tuple&& t, F&& f, std::index_sequence<I...> /*unused*/)
 {
     return (void)std::initializer_list<int>{ (
              std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))), 0)... },
@@ -90,7 +90,7 @@ struct OrthogonalHsm : public IHsm
                 // Don't dispatch, directly handle here.
                 this->getParent()->handle(nextEvent);
             } else {
-                DLOG(ERROR) << "Reached top level Hsm. Cannot handle event";
+                LOG(ERROR) << "Reached top level Hsm. Cannot handle event";
             }
         }
     }

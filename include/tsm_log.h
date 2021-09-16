@@ -1,24 +1,27 @@
 #pragma once
 #include <iostream>
+enum LogLevel {
+    DEBUG,
+    INFO,
+    WARNING,
+    ERROR,
+};
+
 struct null_ostream : public std::ostream
 {
     struct null_buffer : public std::streambuf
     {
-        int overflow(int c) { return c; }
+        int overflow(int c) override { return c; }
     };
 
-    null_ostream()
-      : std::ostream(&m_sb)
+    explicit null_ostream(LogLevel const& /* unused */)
+      : std::ostream(&sb_)
     {}
 
   private:
-    null_buffer m_sb;
+    null_buffer sb_;
 };
 
-#ifndef LOG
-#define LOG(level) null_ostream()
-#endif
-
-#ifndef DLOG
-#define DLOG(level) null_ostream()
+#ifndef USE_EXTERNAL_LOG
+    using LOG = null_ostream;
 #endif
