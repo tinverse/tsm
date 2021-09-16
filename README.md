@@ -33,7 +33,7 @@ struct Switch : Hsm<Switch>
     State on, off;
 
     Event toggle;
-}
+};
 ```
 
 Clients can interact with this state machine in two ways - Synchronously and Asynchronously.
