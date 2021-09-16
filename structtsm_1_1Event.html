@@ -81,7 +81,7 @@ Collaboration diagram for tsm::Event:</div>
 <div class="dyncontent">
 <div class="center"><img src="structtsm_1_1Event__coll__graph.png" border="0" usemap="#atsm_1_1Event_coll__map" alt="Collaboration graph"/></div>
 <map name="tsm_1_1Event_coll__map" id="atsm_1_1Event_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,111,200"/>
+<area shape="rect" title=" " alt="" coords="5,5,129,127"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -89,16 +89,6 @@ Collaboration diagram for tsm::Event:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a11015a77e0de9447efd0ac8440b9bfaa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html#a11015a77e0de9447efd0ac8440b9bfaa">Event</a> ()</td></tr>
 <tr class="separator:a11015a77e0de9447efd0ac8440b9bfaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a332fb4ecc39b727265f3e35dd93207bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html#a332fb4ecc39b727265f3e35dd93207bf">Event</a> (uint64_t id_)</td></tr>
-<tr class="separator:a332fb4ecc39b727265f3e35dd93207bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97ad1a6bd03d282f32461fc61f044189"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html#a97ad1a6bd03d282f32461fc61f044189">Event</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;other)=default</td></tr>
-<tr class="separator:a97ad1a6bd03d282f32461fc61f044189"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc1993064cc244b873f85c69f32f9a37"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html#acc1993064cc244b873f85c69f32f9a37">Event</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> &amp;&amp;other)=default</td></tr>
-<tr class="separator:acc1993064cc244b873f85c69f32f9a37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50dcf43c564433d99a8b6b129170cf0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtsm_1_1Event.html">Event</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html#a50dcf43c564433d99a8b6b129170cf0b">operator=</a> (<a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;e)</td></tr>
-<tr class="separator:a50dcf43c564433d99a8b6b129170cf0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24889fc5026c08d20a7ca7069bdf41ec"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html#a24889fc5026c08d20a7ca7069bdf41ec">~Event</a> ()=default</td></tr>
-<tr class="separator:a24889fc5026c08d20a7ca7069bdf41ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af26eb15be67f172c0516b851fe5b350b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html#af26eb15be67f172c0516b851fe5b350b">operator==</a> (const <a class="el" href="structtsm_1_1Event.html">Event</a> &amp;rhs) const</td></tr>
 <tr class="separator:af26eb15be67f172c0516b851fe5b350b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30ec8d1b0562284e2e2ae58dd527e289"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html#a30ec8d1b0562284e2e2ae58dd527e289">operator!=</a> (const <a class="el" href="structtsm_1_1Event.html">Event</a> &amp;rhs) const</td></tr>
@@ -111,9 +101,11 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a1ea49d2a46067e1d0f8552921838c676"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1Event.html#a1ea49d2a46067e1d0f8552921838c676">id</a></td></tr>
 <tr class="separator:a1ea49d2a46067e1d0f8552921838c676"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>For startSM and stopSM calls, the state machine "automatically" transitions to the starting state. However, the <a class="el" href="structtsm_1_1State.html">State</a> interface requires that an event be passed to the onEntry and onExit. Hence "null_event" </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a11015a77e0de9447efd0ac8440b9bfaa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11015a77e0de9447efd0ac8440b9bfaa">&#9670;&nbsp;</a></span>Event() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a11015a77e0de9447efd0ac8440b9bfaa">&#9670;&nbsp;</a></span>Event()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -131,109 +123,6 @@ Public Attributes</h2></td></tr>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a332fb4ecc39b727265f3e35dd93207bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a332fb4ecc39b727265f3e35dd93207bf">&#9670;&nbsp;</a></span>Event() <span class="overload">[2/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">tsm::Event::Event </td>
-          <td>(</td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>id_</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a97ad1a6bd03d282f32461fc61f044189"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97ad1a6bd03d282f32461fc61f044189">&#9670;&nbsp;</a></span>Event() <span class="overload">[3/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">tsm::Event::Event </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;&#160;</td>
-          <td class="paramname"><em>other</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">default</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="acc1993064cc244b873f85c69f32f9a37"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc1993064cc244b873f85c69f32f9a37">&#9670;&nbsp;</a></span>Event() <span class="overload">[4/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">tsm::Event::Event </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structtsm_1_1Event.html">Event</a> &amp;&amp;&#160;</td>
-          <td class="paramname"><em>other</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">default</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a24889fc5026c08d20a7ca7069bdf41ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24889fc5026c08d20a7ca7069bdf41ec">&#9670;&nbsp;</a></span>~Event()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual tsm::Event::~Event </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -282,33 +171,6 @@ Public Attributes</h2></td></tr>
           <td class="paramtype">const <a class="el" href="structtsm_1_1Event.html">Event</a> &amp;&#160;</td>
           <td class="paramname"><em>rhs</em></td><td>)</td>
           <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>For startSM and stopSM calls, the state machine "automatically" transitions to the starting state. However, the <a class="el" href="structtsm_1_1State.html">State</a> interface requires that an event be passed to the onEntry and onExit </p>
-
-</div>
-</div>
-<a id="a50dcf43c564433d99a8b6b129170cf0b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50dcf43c564433d99a8b6b129170cf0b">&#9670;&nbsp;</a></span>operator=()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structtsm_1_1Event.html">Event</a>&amp; tsm::Event::operator= </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structtsm_1_1Event.html">Event</a> const &amp;&#160;</td>
-          <td class="paramname"><em>e</em></td><td>)</td>
-          <td></td>
         </tr>
       </table>
   </td>

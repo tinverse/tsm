@@ -72,33 +72,41 @@ $(function() {
 <div class="contents">
 <a href="tsm__log_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno"><a class="line" href="structnull__ostream.html">    3</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnull__ostream.html">null_ostream</a> : <span class="keyword">public</span> std::ostream</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;{</div>
-<div class="line"><a name="l00005"></a><span class="lineno"><a class="line" href="structnull__ostream_1_1null__buffer.html">    5</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structnull__ostream_1_1null__buffer.html">null_buffer</a> : <span class="keyword">public</span> std::streambuf</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    {</div>
-<div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="structnull__ostream_1_1null__buffer.html#a0fb3f82ee574f55cf8ed4c26b1787326">    7</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="structnull__ostream_1_1null__buffer.html#a0fb3f82ee574f55cf8ed4c26b1787326">overflow</a>(<span class="keywordtype">int</span> c) { <span class="keywordflow">return</span> c; }</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    };</div>
+<div class="line"><a name="l00003"></a><span class="lineno"><a class="line" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">    3</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> {</div>
+<div class="line"><a name="l00004"></a><span class="lineno"><a class="line" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a0593585da9181e972974c1274d8f2b4f">    4</a></span>&#160;    <a class="code" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a0593585da9181e972974c1274d8f2b4f">DEBUG</a>,</div>
+<div class="line"><a name="l00005"></a><span class="lineno"><a class="line" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806">    5</a></span>&#160;    <a class="code" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806">INFO</a>,</div>
+<div class="line"><a name="l00006"></a><span class="lineno"><a class="line" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a984de77c680eaff141ec910e25568a81">    6</a></span>&#160;    <a class="code" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a984de77c680eaff141ec910e25568a81">WARNING</a>,</div>
+<div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a2fd6f336d08340583bd620a7f5694c90">    7</a></span>&#160;    <a class="code" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a2fd6f336d08340583bd620a7f5694c90">ERROR</a>,</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;};</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="structnull__ostream.html#a38815e6df8e81eee259fd73b270705b3">   10</a></span>&#160;    <a class="code" href="structnull__ostream.html#a38815e6df8e81eee259fd73b270705b3">null_ostream</a>()</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;      : std::ostream(&amp;m_sb)</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    {}</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    null_buffer m_sb;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;};</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#ifndef LOG</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="tsm__log_8h.html#aba7b09d6e8fbe414c23705ad24dde6ff">   19</a></span>&#160;<span class="preprocessor">#define LOG(level) null_ostream()</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#ifndef DLOG</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="tsm__log_8h.html#a7470fb509138e753b4162299b761f7ec">   23</a></span>&#160;<span class="preprocessor">#define DLOG(level) null_ostream()</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="structnull__ostream.html">   10</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnull__ostream.html">null_ostream</a> : <span class="keyword">public</span> std::ostream</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;{</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="structnull__ostream_1_1null__buffer.html">   12</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structnull__ostream_1_1null__buffer.html">null_buffer</a> : <span class="keyword">public</span> std::streambuf</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    {</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="structnull__ostream_1_1null__buffer.html#a617d43dcf2c56718352722eb823ed9b3">   14</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="structnull__ostream_1_1null__buffer.html#a617d43dcf2c56718352722eb823ed9b3">overflow</a>(<span class="keywordtype">int</span> c)<span class="keyword"> override </span>{ <span class="keywordflow">return</span> c; }</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    };</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="structnull__ostream.html#ae939bf6e6d73c45b0b17a36095726f08">   17</a></span>&#160;    <span class="keyword">explicit</span> <a class="code" href="structnull__ostream.html#ae939bf6e6d73c45b0b17a36095726f08">null_ostream</a>(<a class="code" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> <span class="keyword">const</span>&amp; <span class="comment">/* unused */</span>)</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;      : std::ostream(&amp;sb_)</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    {}</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    null_buffer sb_;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifndef USE_EXTERNAL_LOG</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="tsm__log_8h.html#a0d4a747819ec10880e6d5984e2d5f0bf">   26</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="structnull__ostream.html">LOG</a> = <a class="code" href="structnull__ostream.html">null_ostream</a>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astructnull__ostream_1_1null__buffer_html"><div class="ttname"><a href="structnull__ostream_1_1null__buffer.html">null_ostream::null_buffer</a></div><div class="ttdef"><b>Definition:</b> tsm_log.h:6</div></div>
-<div class="ttc" id="astructnull__ostream_html_a38815e6df8e81eee259fd73b270705b3"><div class="ttname"><a href="structnull__ostream.html#a38815e6df8e81eee259fd73b270705b3">null_ostream::null_ostream</a></div><div class="ttdeci">null_ostream()</div><div class="ttdef"><b>Definition:</b> tsm_log.h:10</div></div>
-<div class="ttc" id="astructnull__ostream_html"><div class="ttname"><a href="structnull__ostream.html">null_ostream</a></div><div class="ttdef"><b>Definition:</b> tsm_log.h:4</div></div>
-<div class="ttc" id="astructnull__ostream_1_1null__buffer_html_a0fb3f82ee574f55cf8ed4c26b1787326"><div class="ttname"><a href="structnull__ostream_1_1null__buffer.html#a0fb3f82ee574f55cf8ed4c26b1787326">null_ostream::null_buffer::overflow</a></div><div class="ttdeci">int overflow(int c)</div><div class="ttdef"><b>Definition:</b> tsm_log.h:7</div></div>
+<div class="ttc" id="astructnull__ostream_1_1null__buffer_html"><div class="ttname"><a href="structnull__ostream_1_1null__buffer.html">null_ostream::null_buffer</a></div><div class="ttdef"><b>Definition:</b> tsm_log.h:13</div></div>
+<div class="ttc" id="astructnull__ostream_html"><div class="ttname"><a href="structnull__ostream.html">null_ostream</a></div><div class="ttdef"><b>Definition:</b> tsm_log.h:11</div></div>
+<div class="ttc" id="atsm__log_8h_html_aca1fd1d8935433e6ba2e3918214e07f9a0593585da9181e972974c1274d8f2b4f"><div class="ttname"><a href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a0593585da9181e972974c1274d8f2b4f">DEBUG</a></div><div class="ttdeci">@ DEBUG</div><div class="ttdef"><b>Definition:</b> tsm_log.h:4</div></div>
+<div class="ttc" id="astructnull__ostream_html_ae939bf6e6d73c45b0b17a36095726f08"><div class="ttname"><a href="structnull__ostream.html#ae939bf6e6d73c45b0b17a36095726f08">null_ostream::null_ostream</a></div><div class="ttdeci">null_ostream(LogLevel const &amp;)</div><div class="ttdef"><b>Definition:</b> tsm_log.h:17</div></div>
+<div class="ttc" id="atsm__log_8h_html_aca1fd1d8935433e6ba2e3918214e07f9a2fd6f336d08340583bd620a7f5694c90"><div class="ttname"><a href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a2fd6f336d08340583bd620a7f5694c90">ERROR</a></div><div class="ttdeci">@ ERROR</div><div class="ttdef"><b>Definition:</b> tsm_log.h:7</div></div>
+<div class="ttc" id="astructnull__ostream_1_1null__buffer_html_a617d43dcf2c56718352722eb823ed9b3"><div class="ttname"><a href="structnull__ostream_1_1null__buffer.html#a617d43dcf2c56718352722eb823ed9b3">null_ostream::null_buffer::overflow</a></div><div class="ttdeci">int overflow(int c) override</div><div class="ttdef"><b>Definition:</b> tsm_log.h:14</div></div>
+<div class="ttc" id="atsm__log_8h_html_aca1fd1d8935433e6ba2e3918214e07f9a984de77c680eaff141ec910e25568a81"><div class="ttname"><a href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a984de77c680eaff141ec910e25568a81">WARNING</a></div><div class="ttdeci">@ WARNING</div><div class="ttdef"><b>Definition:</b> tsm_log.h:6</div></div>
+<div class="ttc" id="atsm__log_8h_html_aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806"><div class="ttname"><a href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806">INFO</a></div><div class="ttdeci">@ INFO</div><div class="ttdef"><b>Definition:</b> tsm_log.h:5</div></div>
+<div class="ttc" id="atsm__log_8h_html_aca1fd1d8935433e6ba2e3918214e07f9"><div class="ttname"><a href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a></div><div class="ttdeci">LogLevel</div><div class="ttdef"><b>Definition:</b> tsm_log.h:3</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20

@@ -1,10 +1,10 @@
 <map id="tsmtest::AHsm" name="tsmtest::AHsm">
-<area shape="rect" id="node1" title=" " alt="" coords="225,991,335,1068"/>
-<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="59,593,199,788"/>
-<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="43,307,173,531"/>
-<area shape="rect" id="node8" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="224,593,365,788"/>
-<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="54,5,159,215"/>
-<area shape="rect" id="node7" href="$structtsmtest_1_1BHsm.html" title=" " alt="" coords="289,851,399,928"/>
-<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="197,351,368,487"/>
-<area shape="rect" id="node6" href="$structtsm_1_1Event.html" title=" " alt="" coords="443,593,549,788"/>
+<area shape="rect" id="node1" title=" " alt="" coords="245,976,363,1053"/>
+<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="64,623,219,773"/>
+<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="43,336,189,560"/>
+<area shape="rect" id="node8" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="243,623,397,773"/>
+<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="53,5,177,244"/>
+<area shape="rect" id="node7" href="$structtsmtest_1_1BHsm.html" title=" " alt="" coords="315,836,434,913"/>
+<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="213,380,400,516"/>
+<area shape="rect" id="node6" href="$structtsm_1_1Event.html" title=" " alt="" coords="475,637,599,759"/>
 </map>

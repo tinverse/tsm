@@ -1,9 +1,9 @@
 <map id="tsmtest::CdPlayerHsm&lt; ControllerType &gt;::PlayingHsm" name="tsmtest::CdPlayerHsm&lt; ControllerType &gt;::PlayingHsm">
-<area shape="rect" id="node1" title=" " alt="" coords="213,895,422,1060"/>
-<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="78,623,253,817"/>
-<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="78,307,208,531"/>
-<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="46,5,152,215"/>
-<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="232,351,403,487"/>
-<area shape="rect" id="node6" href="$structtsmtest_1_1CdPlayerController.html" title=" " alt="" coords="278,681,462,759"/>
-<area shape="rect" id="node7" href="$structtsm_1_1Event.html" title=" " alt="" coords="486,623,592,817"/>
+<area shape="rect" id="node1" title=" " alt="" coords="225,880,457,1031"/>
+<area shape="rect" id="node2" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="77,652,271,803"/>
+<area shape="rect" id="node3" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="77,336,223,560"/>
+<area shape="rect" id="node4" href="$structtsm_1_1State.html" title=" " alt="" coords="44,5,168,244"/>
+<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="247,380,434,516"/>
+<area shape="rect" id="node6" href="$structtsmtest_1_1CdPlayerController.html" title=" " alt="" coords="295,689,498,766"/>
+<area shape="rect" id="node7" href="$structtsm_1_1Event.html" title=" " alt="" coords="523,667,647,788"/>
 </map>

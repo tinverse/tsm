@@ -89,14 +89,14 @@ $(function() {
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        std::unique_lock&lt;std::mutex&gt; lock(smBusyMutex_);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        notified_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <a class="code" href="tsm__log_8h.html#a7470fb509138e753b4162299b761f7ec">DLOG</a>(INFO) &lt;&lt; <span class="stringliteral">&quot;Notify.....&quot;</span>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <a class="code" href="tsm__log_8h.html#a0d4a747819ec10880e6d5984e2d5f0bf">LOG</a>(<a class="code" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806">INFO</a>) &lt;&lt; <span class="stringliteral">&quot;Notify.....&quot;</span>;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        cv_.notify_all();</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    }</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
 <div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="structtsm_1_1BlockingObserver.html#aabcbea65fef8685cae31a638bdcb2425">   30</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1BlockingObserver.html#aabcbea65fef8685cae31a638bdcb2425">wait</a>()</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    {</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        std::unique_lock&lt;std::mutex&gt; lock(smBusyMutex_);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <a class="code" href="tsm__log_8h.html#a7470fb509138e753b4162299b761f7ec">DLOG</a>(INFO) &lt;&lt; <span class="stringliteral">&quot;Wait.....&quot;</span>;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <a class="code" href="tsm__log_8h.html#a0d4a747819ec10880e6d5984e2d5f0bf">LOG</a>(<a class="code" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806">INFO</a>) &lt;&lt; <span class="stringliteral">&quot;Wait.....&quot;</span>;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        cv_.wait(lock, [<span class="keyword">this</span>] { <span class="keywordflow">return</span> this-&gt;notified_ == <span class="keyword">true</span>; });</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        notified_ = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
@@ -135,10 +135,11 @@ $(function() {
 <div class="ttc" id="atsm__log_8h_html"><div class="ttname"><a href="tsm__log_8h.html">tsm_log.h</a></div></div>
 <div class="ttc" id="astructtsm_1_1CallbackObserver_html_a263dbc1378b4a17ecdd77c02873632b5"><div class="ttname"><a href="structtsm_1_1CallbackObserver.html#a263dbc1378b4a17ecdd77c02873632b5">tsm::CallbackObserver::notify</a></div><div class="ttdeci">void notify()</div><div class="ttdef"><b>Definition:</b> Observer.h:53</div></div>
 <div class="ttc" id="anamespacetsm_html"><div class="ttname"><a href="namespacetsm.html">tsm</a></div><div class="ttdef"><b>Definition:</b> AsyncExecutionPolicy.h:12</div></div>
-<div class="ttc" id="atsm__log_8h_html_a7470fb509138e753b4162299b761f7ec"><div class="ttname"><a href="tsm__log_8h.html#a7470fb509138e753b4162299b761f7ec">DLOG</a></div><div class="ttdeci">#define DLOG(level)</div><div class="ttdef"><b>Definition:</b> tsm_log.h:23</div></div>
 <div class="ttc" id="astructtsm_1_1CallbackObserver_html_ae375c6af21ed19db4602dae29e09944c"><div class="ttname"><a href="structtsm_1_1CallbackObserver.html#ae375c6af21ed19db4602dae29e09944c">tsm::CallbackObserver::addCallback</a></div><div class="ttdeci">void addCallback(std::function&lt; void()&gt; &amp;&amp;cb)</div><div class="ttdef"><b>Definition:</b> Observer.h:46</div></div>
 <div class="ttc" id="astructtsm_1_1BlockingObserver_html"><div class="ttname"><a href="structtsm_1_1BlockingObserver.html">tsm::BlockingObserver</a></div><div class="ttdef"><b>Definition:</b> Observer.h:17</div></div>
 <div class="ttc" id="astructtsm_1_1CallbackObserver_html"><div class="ttname"><a href="structtsm_1_1CallbackObserver.html">tsm::CallbackObserver</a></div><div class="ttdef"><b>Definition:</b> Observer.h:45</div></div>
+<div class="ttc" id="atsm__log_8h_html_a0d4a747819ec10880e6d5984e2d5f0bf"><div class="ttname"><a href="tsm__log_8h.html#a0d4a747819ec10880e6d5984e2d5f0bf">LOG</a></div><div class="ttdeci">null_ostream LOG</div><div class="ttdef"><b>Definition:</b> tsm_log.h:26</div></div>
+<div class="ttc" id="atsm__log_8h_html_aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806"><div class="ttname"><a href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806">INFO</a></div><div class="ttdeci">@ INFO</div><div class="ttdef"><b>Definition:</b> tsm_log.h:5</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20

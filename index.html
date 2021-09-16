@@ -82,8 +82,7 @@ Using tsm</h4>
 <div class="line">   }</div>
 <div class="line"> </div>
 <div class="line">   // States</div>
-<div class="line">   State doorOpen;</div>
-<div class="line">   State doorOpening;</div>
+<div class="line">   State doorOpen, doorOpening;</div>
 <div class="line">   ...</div>
 <div class="line">   // Events</div>
 <div class="line">   Event click_event;</div>
@@ -94,7 +93,7 @@ Using tsm</h4>
 </div><!-- fragment --><p>b. A state machine that processes incomming events in its own thread. i.e. Events will be immediately consumed as long as the state machine is not busy. Clients 'fire and forget' an event and desire no control over event processing. </p><div class="fragment"><div class="line">AsyncExecutionPolicy&lt;GarageDoorHsm&gt; sm;</div>
 </div><!-- fragment --><p>c. Send events to the state machine by using sendEvent method provided by the policy. </p><div class="fragment"><div class="line">sm.sendEvent(sm.doorOpen);</div>
 </div><!-- fragment --><p>d. If the state machine is running in parent thread context, invoke the <code>step</code> method to process the first event in the event queue. As opposed to the <code>SingleThreadedExecutionPolicy</code>, the <code>AsyncExecutionPolicy</code> will immediately process an event on completion of prior event processing.</p>
-<p>For a complete example see <a href="https://github.com/tinverse/tsm/blob/master/test/GarageDoorSM.h">GarageDoorHsm.h</a> and <a href="https://github.com/tinverse/tsm/blob/master/test/GarageDoorSM.cpp">GarageDoorHsm.cpp</a>. Also look at <a href="https://github.com/tinverse/tsm/blob/master/test/CdPlayerHsm.h">CdPlayerHsm.h</a> <a href="https://github.com/tinverse/tsm/blob/master/test/CdPlayerHsm.cpp">CdPlayerHsm.cpp</a></p>
+<p>For a complete example see <a href="https://github.com/tinverse/tsm/blob/main/test/GarageDoorSM.h">GarageDoorHsm.h</a> and <a href="https://github.com/tinverse/tsm/blob/main/test/GarageDoorSM.cpp">GarageDoorHsm.cpp</a>. Also look at <a href="https://github.com/tinverse/tsm/blob/main/test/CdPlayerHsm.h">CdPlayerHsm.h</a> <a href="https://github.com/tinverse/tsm/blob/main/test/CdPlayerHsm.cpp">CdPlayerHsm.cpp</a></p>
 <div class="fragment"><div class="line">sm.step();</div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md1"></a>
 Architecture</h3>
@@ -191,7 +190,7 @@ Testing</h4>
 <p>For testing the <code>AsyncExecutionPolicy</code>, the <code>AsyncExecWithObserver</code> class is used with a special <code>Observer</code> class that blocks the parent thread until the <code>AsyncExecutionPolicy</code> finishes event processing. The state machine thread then calls a <code>notify</code> method that releases the mutex blocking the parent thread. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
-<div class="ttc" id="astructtsm_1_1AsyncExecWithObserver_html"><div class="ttname"><a href="structtsm_1_1AsyncExecWithObserver.html">tsm::AsyncExecWithObserver</a></div><div class="ttdef"><b>Definition:</b> AsyncExecutionPolicy.h:89</div></div>
+<div class="ttc" id="astructtsm_1_1AsyncExecWithObserver_html"><div class="ttname"><a href="structtsm_1_1AsyncExecWithObserver.html">tsm::AsyncExecWithObserver</a></div><div class="ttdef"><b>Definition:</b> AsyncExecutionPolicy.h:90</div></div>
 <div class="ttc" id="aCdPlayerHsm_8cpp_html_aad2ad36474072a985dcc117b3386c1f0"><div class="ttname"><a href="CdPlayerHsm_8cpp.html#aad2ad36474072a985dcc117b3386c1f0">TEST_CASE</a></div><div class="ttdeci">TEST_CASE(&quot;TestCdPlayerHsm - testTransitionsSeparateThreadPolicy&quot;)</div><div class="ttdef"><b>Definition:</b> CdPlayerHsm.cpp:30</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

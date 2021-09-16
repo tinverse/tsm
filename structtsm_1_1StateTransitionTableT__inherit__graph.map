@@ -1,12 +1,12 @@
 <map id="tsm::StateTransitionTableT&lt; FsmDef &gt;" name="tsm::StateTransitionTableT&lt; FsmDef &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="784,5,955,141"/>
-<area shape="rect" id="node2" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="5,219,176,355"/>
-<area shape="rect" id="node3" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="200,219,371,355"/>
-<area shape="rect" id="node4" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="395,219,565,355"/>
-<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="589,219,760,355"/>
-<area shape="rect" id="node6" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="784,219,955,355"/>
-<area shape="rect" id="node7" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="979,219,1149,355"/>
-<area shape="rect" id="node8" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="1174,219,1418,355"/>
-<area shape="rect" id="node9" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="1443,219,1613,355"/>
-<area shape="rect" id="node10" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="1637,219,1808,355"/>
+<area shape="rect" id="node1" title=" " alt="" coords="848,5,1035,141"/>
+<area shape="rect" id="node2" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="5,219,192,355"/>
+<area shape="rect" id="node3" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="216,219,403,355"/>
+<area shape="rect" id="node4" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="427,219,613,355"/>
+<area shape="rect" id="node5" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="637,219,824,355"/>
+<area shape="rect" id="node6" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="848,219,1035,355"/>
+<area shape="rect" id="node7" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="1059,219,1245,355"/>
+<area shape="rect" id="node8" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="1269,219,1541,355"/>
+<area shape="rect" id="node9" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="1565,219,1752,355"/>
+<area shape="rect" id="node10" href="$structtsm_1_1StateTransitionTableT.html" title=" " alt="" coords="1776,219,1963,355"/>
 </map>
