@@ -17,7 +17,7 @@ stdenv.mkDerivation {
     cmake --build .
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "tsm, a c++ state machine framework";
     platforms = with platforms; darwin ++ linux;
     license = licenses.mit;
