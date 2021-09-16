@@ -30,7 +30,7 @@ deploy:
   keep_history: true
   verbose: true
   on:
-    branch: master
+    branch: main
     condition: -d "build/docs/html"
 after_failure:
 - echo pwd

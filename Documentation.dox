@@ -17,8 +17,7 @@ Create the state machine by inheriting from Hsm using CRTP.
       }
 
       // States
-      State doorOpen;
-      State doorOpening;
+      State doorOpen, doorOpening;
       ...
       // Events
       Event click_event;
@@ -52,10 +51,10 @@ For a complete example see  [GarageDoorHsm.h][2] and [GarageDoorHsm.cpp][3]. Als
 ```
 
 [1]: https://en.wikipedia.org/wiki/UML_state_machine
-[2]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorSM.h
-[3]: https://github.com/tinverse/tsm/blob/master/test/GarageDoorSM.cpp
-[4]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHsm.h
-[5]: https://github.com/tinverse/tsm/blob/master/test/CdPlayerHsm.cpp
+[2]: https://github.com/tinverse/tsm/blob/main/test/GarageDoorSM.h
+[3]: https://github.com/tinverse/tsm/blob/main/test/GarageDoorSM.cpp
+[4]: https://github.com/tinverse/tsm/blob/main/test/CdPlayerHsm.h
+[5]: https://github.com/tinverse/tsm/blob/main/test/CdPlayerHsm.cpp
 
 ### Architecture
 

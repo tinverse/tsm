@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/tinverse/tsm.svg?branch=master)](https://travis-ci.org/tinverse/tsm)
-[![codecov.io](http://codecov.io/github/tinverse/tsm/coverage.svg?branch=master)](http://codecov.io/github/tinverse/tsm?branch=master)
+[![Build Status](https://travis-ci.org/tinverse/tsm.svg?branch=main)](https://travis-ci.org/tinverse/tsm)
+[![codecov.io](http://codecov.io/github/tinverse/tsm/coverage.svg?branch=main)](http://codecov.io/github/tinverse/tsm?branch=main)
 [![Coverity Scan](https://scan.coverity.com/projects/17873/badge.svg)](https://scan.coverity.com/projects/tinverse-tsm)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -36,7 +36,7 @@ struct Switch : Hsm<Switch>
 }
 ```
 
-So there you have it. There is one more thing. Clients can interact with this state machine in two ways - Synchronously and Asynchronously.
+Clients can interact with this state machine in two ways - Synchronously and Asynchronously.
 
 ##### Single Threaded Execution Policy
 
@@ -340,7 +340,7 @@ cmake -GNinja -DCMAKE_INSTALL_PREFIX=${HOME}/usr .. && ninja install
 ```
 
 ### Integrating with your CMake project
-How do I use it from my project? Look at the example project [CMakeLists.txt](https://github.com/tinverse/tsm/blob/master/examples/hello_tsm/CMakeLists.txt). Use this as a template for your project's CMakeLists.txt. The `tsm_DIR` variable should be set to point to the location of tsmConfig.cmake (for the case above, ${HOME}/usr/lib/cmake/tsm).
+How do I use it from my project? Look at the example project [CMakeLists.txt](https://github.com/tinverse/tsm/blob/main/examples/hello_tsm/CMakeLists.txt). Use this as a template for your project's CMakeLists.txt. The `tsm_DIR` variable should be set to point to the location of tsmConfig.cmake (for the case above, ${HOME}/usr/lib/cmake/tsm).
 
 #### Nix - Recommended
 Install nix by running `curl https://nixos.org/nix/install | sh`. The `default.nix` file is responsible for setting up your environment and installing all required dependencies.
