@@ -12,11 +12,12 @@ set (TEST_PROJECT tsm_test)
 
 add_executable(${TEST_PROJECT}
   main.cpp
-  TestMachines.cpp
-  GarageDoorSM.cpp
   CdPlayerHsm.cpp
   EventQueue.cpp
+  GarageDoorSM.cpp
   OrthogonalCdPlayerHsm.cpp
+  Switch.cpp
+  TestMachines.cpp
   TrafficLightHsm.cpp
 )
 

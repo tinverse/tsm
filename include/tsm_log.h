@@ -15,7 +15,9 @@ struct null_ostream : public std::ostream
         int overflow(int c) override { return c; }
     };
 
-    explicit null_ostream(LogLevel const& /* unused */)
+    explicit null_ostream(const char* /* filename */,
+                          int /* lineno */,
+                          LogLevel const& /* unused */)
       : std::ostream(&sb_)
     {}
 
@@ -24,5 +26,5 @@ struct null_ostream : public std::ostream
 };
 
 #ifndef USE_EXTERNAL_LOG
-using LOG = null_ostream;
+#define LOG(Level) null_ostream(__FILE__, __LINE__, Level)
 #endif
