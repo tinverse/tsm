@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
-enum LogLevel {
+enum LogLevel
+{
     DEBUG,
     INFO,
     WARNING,
@@ -23,5 +24,5 @@ struct null_ostream : public std::ostream
 };
 
 #ifndef USE_EXTERNAL_LOG
-    using LOG = null_ostream;
+using LOG = null_ostream;
 #endif

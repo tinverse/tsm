@@ -98,9 +98,6 @@ struct Hsm : public IHsm
 
     void handle(Event const& nextEvent) override
     {
-        LOG(INFO) << "Current State:" << this->currentState_->id
-                   << " Event:" << nextEvent.id;
-
         Transition* t = this->next(*this->currentState_, nextEvent);
 
         if (!t) {

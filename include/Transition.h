@@ -26,9 +26,6 @@ struct StateTransitionTableT
         bool doTransition(FsmDef* hsm, Event const& e)
         {
             bool transitioned = false;
-            if (!hsm) {
-                // throw NullPointerException;
-            }
 
             // Evaluate guard if it exists
             bool result = guard && CALL_MEMBER_FN(hsm, guard);
@@ -45,8 +42,6 @@ struct StateTransitionTableT
                 hsm->setCurrentState(&toState);
                 this->toState.onEntry(e);
                 transitioned = true;
-            } else {
-                LOG(INFO) << "Guard prevented transition";
             }
             return transitioned;
         }
@@ -67,12 +62,9 @@ struct StateTransitionTableT
             // Evaluate guard if it exists
             bool result = this->guard && CALL_MEMBER_FN(hsm, this->guard);
             if (!(this->guard) || result) {
-
                 if (this->action) {
                     CALL_MEMBER_FN(hsm, this->action);
                 }
-            } else {
-                LOG(INFO) << "Guard prevented transition";
             }
         }
     };
@@ -104,8 +96,6 @@ struct StateTransitionTableT
             return &it->second;
         }
 
-        LOG(ERROR) << "No Transition:" << fromState.id
-                    << "\tonEvent:" << onEvent.id;
         return nullptr;
     }
 
@@ -113,7 +103,7 @@ struct StateTransitionTableT
     {
         for (const auto& it : *this) {
             LOG(INFO) << it.first.first->name << "," << it.first.second.id
-                       << ":" << it.second->toState.name << "\n";
+                      << ":" << it.second->toState.name << "\n";
         }
     }
 

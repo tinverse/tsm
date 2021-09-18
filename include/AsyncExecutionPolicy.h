@@ -3,6 +3,7 @@
 #include "Event.h"
 #include "EventQueue.h"
 
+#include <thread>
 ///
 /// The default policy class for asynchronous event processing. This policy is
 /// mixed in with a Hsm class to create an AsynchronousHsm. The client uses
@@ -10,6 +11,7 @@
 /// thread is created and blocks wating on events in the step method.
 ///
 namespace tsm {
+
 template<typename StateType>
 struct AsyncExecutionPolicy : public StateType
 {
@@ -17,8 +19,7 @@ struct AsyncExecutionPolicy : public StateType
     using ThreadCallback = void (AsyncExecutionPolicy::*)();
 
     AsyncExecutionPolicy()
-      : StateType()
-      , threadCallback_(&AsyncExecutionPolicy::step)
+      : threadCallback_(&AsyncExecutionPolicy::step)
     {}
 
     AsyncExecutionPolicy(AsyncExecutionPolicy const&) = delete;

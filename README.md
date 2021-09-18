@@ -120,31 +120,31 @@ Let's see how the state transition table looks like for the CdPlayer.
 ```cpp
 // Goes in the header along with your State Machine class or .cpp file.
 CdPlayerHsm::CdPlayerHsm()
-    {
-        setStartState(&Empty);
+{
+    setStartState(&Empty);
 
-        // Tell Playing who's the parent. <---------------- Note
-        Playing.setParent(this);
+    // Tell Playing who's the parent. <---------------- Note
+    Playing.setParent(this);
 
-        // State Transition Table
-        add(Stopped, play, Playing); // <-------- Note
-        add(Stopped, open_close, Open);
-        add(Stopped, stop_event, Stopped);
-        //-------------------------------------------------
-        add(Open, open_close, Empty);
-        //-------------------------------------------------
-        add(Empty, open_close, Open);
-        add(Empty, cd_detected, Stopped);
-        add(Empty, cd_detected, Playing);
-        //-------------------------------------------------
-        add(Playing, stop_event, Stopped);
-        add(Playing, pause, Paused);
-        add(Playing, open_close, Open);
-        //-------------------------------------------------
-        add(Paused, end_pause, Playing);
-        add(Paused, stop_event, Stopped);
-        add(Paused, open_close, Open);
-    }
+    // State Transition Table
+    add(Stopped, play, Playing); // <-------- Note
+    add(Stopped, open_close, Open);
+    add(Stopped, stop_event, Stopped);
+    //-------------------------------------------------
+    add(Open, open_close, Empty);
+    //-------------------------------------------------
+    add(Empty, open_close, Open);
+    add(Empty, cd_detected, Stopped);
+    add(Empty, cd_detected, Playing);
+    //-------------------------------------------------
+    add(Playing, stop_event, Stopped);
+    add(Playing, pause, Paused);
+    add(Playing, open_close, Open);
+    //-------------------------------------------------
+    add(Paused, end_pause, Playing);
+    add(Paused, stop_event, Stopped);
+    add(Paused, open_close, Open);
+}
 
 ```
 

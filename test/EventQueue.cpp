@@ -5,15 +5,15 @@
 #include <future>
 
 using tsm::Event;
-using tsm::EventQueue;
+using EventQueue = tsm::EventQueueT<tsm::Event, std::mutex>;
 
 TEST_CASE("TestEventQueue - testSingleEvent")
 {
-    EventQueue<Event> eq_;
+    EventQueue eq_;
     Event e1;
-    auto f1 = std::async(&EventQueue<Event>::nextEvent, &eq_);
+    auto f1 = std::async(&EventQueue::nextEvent, &eq_);
 
-    std::thread t1(&EventQueue<Event>::addEvent, &eq_, e1);
+    std::thread t1(&EventQueue::addEvent, &eq_, e1);
 
     // Use the same threads to retrieve events
     Event actualEvent1 = f1.get();
@@ -23,7 +23,7 @@ TEST_CASE("TestEventQueue - testSingleEvent")
 
 TEST_CASE("TestEventQueue - testAddFrom100Threads")
 {
-    EventQueue<Event> eq_;
+    EventQueue eq_;
     std::vector<Event> v;
     const int NEVENTS = 100;
 
@@ -34,14 +34,14 @@ TEST_CASE("TestEventQueue - testAddFrom100Threads")
     }
 
     std::vector<std::thread> vtProduce;
-    std::vector<std::future<const Event>> vtConsume;
+    std::vector<std::future<Event>> vtConsume;
 
     for (Event const& e : v) {
-        auto f = std::async(&EventQueue<Event>::nextEvent, &eq_);
+        auto f = std::async(&EventQueue::nextEvent, &eq_);
         // add a 100 threads to asynchronously wait on nextEvent
         vtConsume.push_back(std::move(f));
         // add 100 events to the event queue.
-        vtProduce.emplace_back(&EventQueue<Event>::addEvent, &eq_, e);
+        vtProduce.emplace_back(&EventQueue::addEvent, &eq_, e);
     }
 
     for (auto&& future : vtConsume) {

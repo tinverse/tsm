@@ -33,8 +33,7 @@ struct State
         return os;
     }
 
-
-    virtual void execute(Event const&  /*e*/)
+    virtual void execute(Event const& /*e*/)
     {
         LOG(INFO) << "Executing: " << this->id << std::endl;
     }
@@ -48,7 +47,7 @@ struct State
     {
         LOG(INFO) << "Exiting: " << this->id << std::endl;
     }
-    const uint64_t id;
+    const id_t id;
 };
 
 struct NamedState : public State
@@ -60,7 +59,7 @@ struct NamedState : public State
     {}
     NamedState(NamedState const& other) = delete;
     NamedState(NamedState&& other) = delete;
-     ~NamedState() override = default;
+    ~NamedState() override = default;
 
     NamedState& operator=(NamedState const& other) = delete;
     NamedState& operator=(NamedState const&& other) = delete;

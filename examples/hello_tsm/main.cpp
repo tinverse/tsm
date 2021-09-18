@@ -1,7 +1,7 @@
 #include <tsm.h>
 
-using tsm::State;
 using tsm::Event;
+using tsm::State;
 
 struct SocketSM : tsm::Hsm<SocketSM>
 {
@@ -25,7 +25,6 @@ struct SocketSM : tsm::Hsm<SocketSM>
 
     // States
     State Closed, Ready, Bound, Open, Listening;
-
 };
 
 using SocketHsm = tsm::SingleThreadedHsm<SocketSM>;

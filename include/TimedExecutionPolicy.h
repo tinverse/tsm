@@ -1,6 +1,7 @@
 #pragma once
 #include "Event.h"
 #include "EventQueue.h"
+#include "pt.h"
 
 #include <chrono>
 #include <functional>
@@ -17,7 +18,6 @@ struct ThreadSleepTimer
 {
     explicit ThreadSleepTimer(DurationType period, std::function<void()>&& cb)
       : period_(period)
-      , interrupt_(false)
       , cb_(cb)
     {}
 
@@ -51,7 +51,7 @@ struct ThreadSleepTimer
 
   private:
     DurationType period_;
-    bool interrupt_;
+    bool interrupt_{};
     std::function<void()> cb_;
     std::thread timerThread_;
 };
@@ -72,8 +72,7 @@ struct TimedExecutionPolicy
     using timer_type = TimerType<DurationType>;
 
     explicit TimedExecutionPolicy(DurationType period)
-      : StateType()
-      , timer_type(period,
+      : timer_type(period,
                    std::bind(&TimedExecutionPolicy::onTimerExpired, this))
     {}
 
@@ -87,7 +86,6 @@ struct TimedExecutionPolicy
 
     void onExit(Event const& e) override
     {
-        LOG(INFO) << "Exiting from Parent thread policy...";
         timer_type::stop();
         StateType::onExit(e);
     }

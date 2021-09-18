@@ -5,7 +5,6 @@
 namespace tsmtest {
 
 using tsm::Event;
-using tsm::EventQueue;
 using tsm::Hsm;
 using tsm::IHsm;
 using tsm::State;
@@ -50,7 +49,6 @@ struct CdPlayerHsm : public Hsm<CdPlayerHsm<ControllerType>>
             add(Song3, prev_song, Song2);
             add(Song2, prev_song, Song1);
         }
-
 
         // States
         State Song1, Song2, Song3;

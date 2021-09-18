@@ -14,7 +14,7 @@ struct Event
     bool operator!=(const Event& rhs) const { return !(*this == rhs); }
     bool operator<(const Event& rhs) const { return this->id < rhs.id; }
 
-    uint64_t id;
+    id_t id;
 };
 
 ///< For startSM and stopSM calls, the state machine

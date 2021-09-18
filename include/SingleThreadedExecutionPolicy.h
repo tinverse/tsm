@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Event.h"
-#include "EventQueue.h"
+
+#include <deque>
+
 ///
 /// The policy for "synchronous" event processing. Events can be queued up in
 /// the event queue as they arrive. However, to process each event, a
@@ -13,41 +15,24 @@ namespace tsm {
 template<typename StateType>
 struct SingleThreadedExecutionPolicy : public StateType
 {
-    using EventQueue = EventQueueT<Event, null_mutex>;
+    using EventQueue = std::deque<Event>;
 
-    SingleThreadedExecutionPolicy()
-      : StateType()
-      , interrupt_(false)
-    {}
-
-    SingleThreadedExecutionPolicy(SingleThreadedExecutionPolicy const&) =
-      delete;
-    SingleThreadedExecutionPolicy(SingleThreadedExecutionPolicy&&) = delete;
-
-    virtual ~SingleThreadedExecutionPolicy() = default;
-
-    void onExit(Event const& e) override
-    {
-        LOG(INFO) << "Exiting from Parent thread policy...";
-        eventQueue_.stop();
-        StateType::onExit(e);
-    }
+    void onExit(Event const& e) override { StateType::onExit(e); }
 
     void step()
     {
         // This is a blocking wait
-        Event const& nextEvent = eventQueue_.nextEvent();
+        Event const& nextEvent = eventQueue_.front();
+        eventQueue_.pop_front();
         // go down the Hsm hierarchy to handle the event as that is the
         // "most active state"
-        if (!eventQueue_.interrupted()) {
-            StateType::dispatch(nextEvent);
-        }
+        StateType::dispatch(nextEvent);
     }
 
-    void sendEvent(Event const& event) { eventQueue_.addEvent(event); }
+    void sendEvent(Event const& event) { eventQueue_.push_back(event); }
 
   private:
     EventQueue eventQueue_;
-    bool interrupt_;
+    bool interrupt_{};
 };
 } // namespace tsm

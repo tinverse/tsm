@@ -1,7 +1,6 @@
 #include "tsm.h"
 
 using tsm::Event;
-using tsm::EventQueue;
 using tsm::IHsm;
 using tsm::NamedState;
 
@@ -39,7 +38,7 @@ struct TrafficLightHsm : public IHsm
     void handle(Event const& /*unused*/) override
     {
         ++ticks_;
-        auto* state = static_cast<LightState*>(this->currentState_);
+        auto* state = dynamic_cast<LightState*>(this->currentState_);
         bool guard = (this->ticks_ > state->getLimit());
         if (state->id == G2.id) {
             guard |= (walkPressed && (this->ticks_ > G2WALK));
@@ -56,8 +55,6 @@ struct TrafficLightHsm : public IHsm
             this->currentState_ = &state->nextState();
         }
     }
-
-    ~TrafficLightHsm() override = default;
 
     // States
     LightState G1, Y1, G2, Y2;
