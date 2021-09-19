@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/tinverse/tsm.svg?branch=main)](https://travis-ci.org/tinverse/tsm)
+[![Build Status](https://app.travis-ci.com/tinverse/tsm.svg?branch=main)](https://travis-ci.com/tinverse/tsm)
 [![codecov.io](http://codecov.io/github/tinverse/tsm/coverage.svg?branch=main)](http://codecov.io/github/tinverse/tsm?branch=main)
 [![Coverity Scan](https://scan.coverity.com/projects/17873/badge.svg)](https://scan.coverity.com/projects/tinverse-tsm)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
