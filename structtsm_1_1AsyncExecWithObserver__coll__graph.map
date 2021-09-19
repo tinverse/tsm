@@ -1,7 +1,7 @@
 <map id="tsm::AsyncExecWithObserver&lt; StateType, Observer &gt;" name="tsm::AsyncExecWithObserver&lt; StateType, Observer &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="106,565,319,672"/>
-<area shape="rect" id="node2" href="$structtsm_1_1AsyncExecutionPolicy.html" title=" " alt="" coords="32,248,231,516"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,57,92,134"/>
-<area shape="rect" id="node4" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="116,5,315,185"/>
-<area shape="rect" id="node5" title=" " alt="" coords="255,343,336,421"/>
+<area shape="rect" id="node1" title=" " alt="" coords="106,624,319,731"/>
+<area shape="rect" id="node2" href="$structtsm_1_1AsyncExecutionPolicy.html" title=" " alt="" coords="32,307,231,575"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,86,92,163"/>
+<area shape="rect" id="node4" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="116,5,315,244"/>
+<area shape="rect" id="node5" title=" " alt="" coords="255,402,336,479"/>
 </map>

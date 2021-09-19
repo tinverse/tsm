@@ -80,20 +80,18 @@ $(function() {
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;mutex&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
-<code>#include &lt;thread&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for EventQueue.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="EventQueue_8h__incl.png" border="0" usemap="#ainclude_2EventQueue_8h" alt=""/></div>
 <map name="include_2EventQueue_8h" id="ainclude_2EventQueue_8h">
-<area shape="rect" title=" " alt="" coords="284,5,448,32"/>
+<area shape="rect" title=" " alt="" coords="220,5,384,32"/>
 <area shape="rect" href="tsm__log_8h.html" title=" " alt="" coords="5,80,92,107"/>
 <area shape="rect" title=" " alt="" coords="49,155,129,181"/>
 <area shape="rect" title=" " alt="" coords="168,80,311,107"/>
 <area shape="rect" title=" " alt="" coords="335,80,397,107"/>
 <area shape="rect" title=" " alt="" coords="422,80,486,107"/>
 <area shape="rect" title=" " alt="" coords="510,80,569,107"/>
-<area shape="rect" title=" " alt="" coords="593,80,657,107"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -101,13 +99,13 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="EventQueue_8h__dep__incl.png" border="0" usemap="#ainclude_2EventQueue_8hdep" alt=""/></div>
 <map name="include_2EventQueue_8hdep" id="ainclude_2EventQueue_8hdep">
-<area shape="rect" title=" " alt="" coords="341,5,505,32"/>
-<area shape="rect" href="AsyncExecutionPolicy_8h.html" title=" " alt="" coords="5,87,229,114"/>
-<area shape="rect" href="tsm_8h.html" title=" " alt="" coords="290,169,401,196"/>
-<area shape="rect" href="SingleThreadedExecutionPolicy_8h.html" title=" " alt="" coords="304,80,541,121"/>
-<area shape="rect" href="TimedExecutionPolicy_8h.html" title=" " alt="" coords="565,87,792,114"/>
-<area shape="rect" href="EventQueue_8cpp.html" title=" " alt="" coords="816,87,973,114"/>
-<area shape="rect" href="TrafficLightHsm_8cpp.html" title=" " alt="" coords="589,169,768,196"/>
+<area shape="rect" title=" " alt="" coords="259,5,423,32"/>
+<area shape="rect" href="AsyncExecutionPolicy_8h.html" title=" " alt="" coords="5,80,229,107"/>
+<area shape="rect" href="tsm_8h.html" title=" " alt="" coords="183,155,294,181"/>
+<area shape="rect" href="TimedExecutionPolicy_8h.html" title=" " alt="" coords="304,80,531,107"/>
+<area shape="rect" href="EventQueue_8cpp.html" title=" " alt="" coords="555,80,712,107"/>
+<area shape="rect" href="Switch_8cpp.html" title=" " alt="" coords="122,229,243,256"/>
+<area shape="rect" href="TrafficLightHsm_8cpp.html" title=" " alt="" coords="328,155,507,181"/>
 </map>
 </div>
 </div>
@@ -115,8 +113,6 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1null__mutex.html">tsm::null_mutex</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1EventQueueT.html">tsm::EventQueueT&lt; Event, LockType &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -127,9 +123,6 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a8ab573af17042f875e8406c0d5d29fb8"><td class="memTemplParams" colspan="2">template&lt;typename Event &gt; </td></tr>
-<tr class="memitem:a8ab573af17042f875e8406c0d5d29fb8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a8ab573af17042f875e8406c0d5d29fb8">tsm::SimpleEventQueue</a> = EventQueueT&lt; Event, null_mutex &gt;</td></tr>
-<tr class="separator:a8ab573af17042f875e8406c0d5d29fb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03933a5ba08e2b42b53337dd429cf707"><td class="memTemplParams" colspan="2">template&lt;typename Event &gt; </td></tr>
 <tr class="memitem:a03933a5ba08e2b42b53337dd429cf707"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a03933a5ba08e2b42b53337dd429cf707">tsm::EventQueue</a> = EventQueueT&lt; Event, std::mutex &gt;</td></tr>
 <tr class="separator:a03933a5ba08e2b42b53337dd429cf707"><td class="memSeparator" colspan="2">&#160;</td></tr>

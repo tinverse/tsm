@@ -84,99 +84,94 @@ $(function() {
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
 <div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#ab3df35cd0e0f9b96941d824ed6a5e9fd">   18</a></span>&#160;    <span class="keyword">explicit</span> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#ab3df35cd0e0f9b96941d824ed6a5e9fd">ThreadSleepTimer</a>(DurationType period, std::function&lt;<span class="keywordtype">void</span>()&gt;&amp;&amp; cb)</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;      : period_(period)</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;      , interrupt_(false)</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;      , cb_(cb)</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    {}</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a6146984c0f16fb3bafa8befce5541107">   24</a></span>&#160;    <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a6146984c0f16fb3bafa8befce5541107">ThreadSleepTimer</a>(<a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a5fb1204984c76b3aff1a25294e0a4d69">   25</a></span>&#160;    <a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a5fb1204984c76b3aff1a25294e0a4d69">operator=</a>(<a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#aae3a3340cc7bb652a73bb86fc226de49">   26</a></span>&#160;    <a class="code" href="structtsm_1_1ThreadSleepTimer.html#aae3a3340cc7bb652a73bb86fc226de49">ThreadSleepTimer</a>(<a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a440207e04a09550e213baffb0e8f096e">   27</a></span>&#160;    <a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a440207e04a09550e213baffb0e8f096e">operator=</a>(<a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a0f120a3bbf29bb443e0f2de17b0f6b38">   29</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a0f120a3bbf29bb443e0f2de17b0f6b38">~ThreadSleepTimer</a>()</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a5d6cb897bf414f77f463fddd3b97dd4d">stop</a>();</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <span class="keywordflow">if</span> (timerThread_.joinable()) {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            timerThread_.join();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        }</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    }</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a58761384d65f06b90b6b9de29ce2c74f">   37</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a58761384d65f06b90b6b9de29ce2c74f">start</a>()</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        timerThread_ = std::thread([&amp;]() {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <span class="keywordflow">while</span> (!interrupt_) {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                std::this_thread::sleep_for(period_);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                <span class="keywordflow">if</span> (interrupt_) {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                    <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                this-&gt;cb_();</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        });</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a5d6cb897bf414f77f463fddd3b97dd4d">   50</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a5d6cb897bf414f77f463fddd3b97dd4d">stop</a>() { interrupt_ = <span class="keyword">true</span>; }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    DurationType period_;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">bool</span> interrupt_;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    std::function&lt;void()&gt; cb_;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    std::thread timerThread_;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;};</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> StateType,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;         <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;         <span class="keyword">class </span>TimerType,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;         <span class="keyword">typename</span> DurationType&gt;</div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html">   68</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  : <span class="keyword">public</span> StateType</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  , <span class="keyword">public</span> TimerType&lt;DurationType&gt;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;{</div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#aff85e54e4d1fa74e30f92260f81508ec">   72</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#aff85e54e4d1fa74e30f92260f81508ec">timer_type</a> = TimerType&lt;DurationType&gt;;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#a927db5f87779551728719f3275299bf0">   74</a></span>&#160;    <span class="keyword">explicit</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#a927db5f87779551728719f3275299bf0">TimedExecutionPolicy</a>(DurationType period)</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      : StateType()</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      , <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#aff85e54e4d1fa74e30f92260f81508ec">timer_type</a>(period,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                   std::bind(&amp;<a class="code" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a>::<a class="code" href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">onTimerExpired</a>, this))</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    {}</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#af9fa63735d05caef4ca420f3b9f8f941">   80</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#af9fa63735d05caef4ca420f3b9f8f941">onEntry</a>(<a class="code" href="structtsm_1_1Event.html">Event</a> <span class="keyword">const</span>&amp; e)<span class="keyword"> override</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        timer_type::start();</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        StateType::onEntry(e);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    }</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;      , cb_(cb)</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    {}</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a6146984c0f16fb3bafa8befce5541107">   23</a></span>&#160;    <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a6146984c0f16fb3bafa8befce5541107">ThreadSleepTimer</a>(<a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a5fb1204984c76b3aff1a25294e0a4d69">   24</a></span>&#160;    <a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a5fb1204984c76b3aff1a25294e0a4d69">operator=</a>(<a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#aae3a3340cc7bb652a73bb86fc226de49">   25</a></span>&#160;    <a class="code" href="structtsm_1_1ThreadSleepTimer.html#aae3a3340cc7bb652a73bb86fc226de49">ThreadSleepTimer</a>(<a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a440207e04a09550e213baffb0e8f096e">   26</a></span>&#160;    <a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a440207e04a09550e213baffb0e8f096e">operator=</a>(<a class="code" href="structtsm_1_1ThreadSleepTimer.html">ThreadSleepTimer</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a0f120a3bbf29bb443e0f2de17b0f6b38">   28</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a0f120a3bbf29bb443e0f2de17b0f6b38">~ThreadSleepTimer</a>()</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a5d6cb897bf414f77f463fddd3b97dd4d">stop</a>();</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="keywordflow">if</span> (timerThread_.joinable()) {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            timerThread_.join();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        }</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    }</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a58761384d65f06b90b6b9de29ce2c74f">   36</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a58761384d65f06b90b6b9de29ce2c74f">start</a>()</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        timerThread_ = std::thread([&amp;]() {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <span class="keywordflow">while</span> (!interrupt_) {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                std::this_thread::sleep_for(period_);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                <span class="keywordflow">if</span> (interrupt_) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                this-&gt;cb_();</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            }</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        });</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="structtsm_1_1ThreadSleepTimer.html#a5d6cb897bf414f77f463fddd3b97dd4d">   49</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1ThreadSleepTimer.html#a5d6cb897bf414f77f463fddd3b97dd4d">stop</a>() { interrupt_ = <span class="keyword">true</span>; }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    DurationType period_;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">bool</span> interrupt_{};</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    std::function&lt;void()&gt; cb_;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    std::thread timerThread_;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;};</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> StateType,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;         <span class="keyword">template</span>&lt;<span class="keyword">typename</span>&gt;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;         <span class="keyword">class </span>TimerType,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;         <span class="keyword">typename</span> DurationType&gt;</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html">   67</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  : <span class="keyword">public</span> StateType</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  , <span class="keyword">public</span> TimerType&lt;DurationType&gt;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;{</div>
+<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#aff85e54e4d1fa74e30f92260f81508ec">   71</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#aff85e54e4d1fa74e30f92260f81508ec">timer_type</a> = TimerType&lt;DurationType&gt;;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#a927db5f87779551728719f3275299bf0">   73</a></span>&#160;    <span class="keyword">explicit</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#a927db5f87779551728719f3275299bf0">TimedExecutionPolicy</a>(DurationType period)</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      : <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#aff85e54e4d1fa74e30f92260f81508ec">timer_type</a>(period,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                   std::bind(&amp;<a class="code" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a>::<a class="code" href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">onTimerExpired</a>, this))</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    {}</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#af9fa63735d05caef4ca420f3b9f8f941">   78</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#af9fa63735d05caef4ca420f3b9f8f941">onEntry</a>(<a class="code" href="structtsm_1_1Event.html">Event</a> <span class="keyword">const</span>&amp; e)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        timer_type::start();</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        StateType::onEntry(e);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">   84</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">onTimerExpired</a>() { StateType::sendEvent(StateType::timer_event); }</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">   86</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">onTimerExpired</a>() { StateType::sendEvent(StateType::timer_event); }</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#a71771c050ec7b54dc3466ab3ed145c9a">   88</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#a71771c050ec7b54dc3466ab3ed145c9a">onExit</a>(<a class="code" href="structtsm_1_1Event.html">Event</a> <span class="keyword">const</span>&amp; e)<span class="keyword"> override</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <a class="code" href="tsm__log_8h.html#a0d4a747819ec10880e6d5984e2d5f0bf">LOG</a>(<a class="code" href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806">INFO</a>) &lt;&lt; <span class="stringliteral">&quot;Exiting from Parent thread policy...&quot;</span>;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        timer_type::stop();</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        StateType::onExit(e);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    }</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;};</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;} <span class="comment">// namespace tsm</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="structtsm_1_1TimedExecutionPolicy.html#a71771c050ec7b54dc3466ab3ed145c9a">   86</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structtsm_1_1TimedExecutionPolicy.html#a71771c050ec7b54dc3466ab3ed145c9a">onExit</a>(<a class="code" href="structtsm_1_1Event.html">Event</a> <span class="keyword">const</span>&amp; e)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        timer_type::stop();</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        StateType::onExit(e);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;};</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;} <span class="comment">// namespace tsm</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_a5fb1204984c76b3aff1a25294e0a4d69"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#a5fb1204984c76b3aff1a25294e0a4d69">tsm::ThreadSleepTimer::operator=</a></div><div class="ttdeci">ThreadSleepTimer operator=(ThreadSleepTimer const &amp;)=delete</div></div>
-<div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_a0f120a3bbf29bb443e0f2de17b0f6b38"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#a0f120a3bbf29bb443e0f2de17b0f6b38">tsm::ThreadSleepTimer::~ThreadSleepTimer</a></div><div class="ttdeci">virtual ~ThreadSleepTimer()</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:29</div></div>
+<div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_a0f120a3bbf29bb443e0f2de17b0f6b38"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#a0f120a3bbf29bb443e0f2de17b0f6b38">tsm::ThreadSleepTimer::~ThreadSleepTimer</a></div><div class="ttdeci">virtual ~ThreadSleepTimer()</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:28</div></div>
 <div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_ab3df35cd0e0f9b96941d824ed6a5e9fd"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#ab3df35cd0e0f9b96941d824ed6a5e9fd">tsm::ThreadSleepTimer::ThreadSleepTimer</a></div><div class="ttdeci">ThreadSleepTimer(DurationType period, std::function&lt; void()&gt; &amp;&amp;cb)</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:18</div></div>
-<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_a1d2b787b5d502f8e2d90477a380dcb79"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">tsm::TimedExecutionPolicy::onTimerExpired</a></div><div class="ttdeci">void onTimerExpired()</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:86</div></div>
+<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_a1d2b787b5d502f8e2d90477a380dcb79"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">tsm::TimedExecutionPolicy::onTimerExpired</a></div><div class="ttdeci">void onTimerExpired()</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:84</div></div>
 <div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_a6146984c0f16fb3bafa8befce5541107"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#a6146984c0f16fb3bafa8befce5541107">tsm::ThreadSleepTimer::ThreadSleepTimer</a></div><div class="ttdeci">ThreadSleepTimer(ThreadSleepTimer const &amp;)=delete</div></div>
-<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_a927db5f87779551728719f3275299bf0"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#a927db5f87779551728719f3275299bf0">tsm::TimedExecutionPolicy::TimedExecutionPolicy</a></div><div class="ttdeci">TimedExecutionPolicy(DurationType period)</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:74</div></div>
+<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_a927db5f87779551728719f3275299bf0"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#a927db5f87779551728719f3275299bf0">tsm::TimedExecutionPolicy::TimedExecutionPolicy</a></div><div class="ttdeci">TimedExecutionPolicy(DurationType period)</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:73</div></div>
 <div class="ttc" id="aEventQueue_8h_html"><div class="ttname"><a href="EventQueue_8h.html">EventQueue.h</a></div></div>
 <div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_aae3a3340cc7bb652a73bb86fc226de49"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#aae3a3340cc7bb652a73bb86fc226de49">tsm::ThreadSleepTimer::ThreadSleepTimer</a></div><div class="ttdeci">ThreadSleepTimer(ThreadSleepTimer &amp;&amp;)=delete</div></div>
-<div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_a58761384d65f06b90b6b9de29ce2c74f"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#a58761384d65f06b90b6b9de29ce2c74f">tsm::ThreadSleepTimer::start</a></div><div class="ttdeci">void start()</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:37</div></div>
+<div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_a58761384d65f06b90b6b9de29ce2c74f"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#a58761384d65f06b90b6b9de29ce2c74f">tsm::ThreadSleepTimer::start</a></div><div class="ttdeci">void start()</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:36</div></div>
 <div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_a440207e04a09550e213baffb0e8f096e"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#a440207e04a09550e213baffb0e8f096e">tsm::ThreadSleepTimer::operator=</a></div><div class="ttdeci">ThreadSleepTimer operator=(ThreadSleepTimer &amp;&amp;)=delete</div></div>
-<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_aff85e54e4d1fa74e30f92260f81508ec"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#aff85e54e4d1fa74e30f92260f81508ec">tsm::TimedExecutionPolicy::timer_type</a></div><div class="ttdeci">TimerType&lt; DurationType &gt; timer_type</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:72</div></div>
-<div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_a5d6cb897bf414f77f463fddd3b97dd4d"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#a5d6cb897bf414f77f463fddd3b97dd4d">tsm::ThreadSleepTimer::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:50</div></div>
+<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_aff85e54e4d1fa74e30f92260f81508ec"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#aff85e54e4d1fa74e30f92260f81508ec">tsm::TimedExecutionPolicy::timer_type</a></div><div class="ttdeci">TimerType&lt; DurationType &gt; timer_type</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:71</div></div>
+<div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html_a5d6cb897bf414f77f463fddd3b97dd4d"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html#a5d6cb897bf414f77f463fddd3b97dd4d">tsm::ThreadSleepTimer::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:49</div></div>
 <div class="ttc" id="astructtsm_1_1Event_html"><div class="ttname"><a href="structtsm_1_1Event.html">tsm::Event</a></div><div class="ttdef"><b>Definition:</b> Event.h:8</div></div>
 <div class="ttc" id="aEvent_8h_html"><div class="ttname"><a href="Event_8h.html">Event.h</a></div></div>
 <div class="ttc" id="astructtsm_1_1ThreadSleepTimer_html"><div class="ttname"><a href="structtsm_1_1ThreadSleepTimer.html">tsm::ThreadSleepTimer</a></div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:17</div></div>
-<div class="ttc" id="anamespacetsm_html"><div class="ttname"><a href="namespacetsm.html">tsm</a></div><div class="ttdef"><b>Definition:</b> AsyncExecutionPolicy.h:12</div></div>
-<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html">tsm::TimedExecutionPolicy</a></div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:71</div></div>
-<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_a71771c050ec7b54dc3466ab3ed145c9a"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#a71771c050ec7b54dc3466ab3ed145c9a">tsm::TimedExecutionPolicy::onExit</a></div><div class="ttdeci">void onExit(Event const &amp;e) override</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:88</div></div>
-<div class="ttc" id="atsm__log_8h_html_a0d4a747819ec10880e6d5984e2d5f0bf"><div class="ttname"><a href="tsm__log_8h.html#a0d4a747819ec10880e6d5984e2d5f0bf">LOG</a></div><div class="ttdeci">null_ostream LOG</div><div class="ttdef"><b>Definition:</b> tsm_log.h:26</div></div>
-<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_af9fa63735d05caef4ca420f3b9f8f941"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#af9fa63735d05caef4ca420f3b9f8f941">tsm::TimedExecutionPolicy::onEntry</a></div><div class="ttdeci">void onEntry(Event const &amp;e) override</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:80</div></div>
-<div class="ttc" id="atsm__log_8h_html_aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806"><div class="ttname"><a href="tsm__log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9a748005382152808a72b1a9177d9dc806">INFO</a></div><div class="ttdeci">@ INFO</div><div class="ttdef"><b>Definition:</b> tsm_log.h:5</div></div>
+<div class="ttc" id="anamespacetsm_html"><div class="ttname"><a href="namespacetsm.html">tsm</a></div><div class="ttdef"><b>Definition:</b> AsyncExecutionPolicy.h:13</div></div>
+<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html">tsm::TimedExecutionPolicy</a></div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:70</div></div>
+<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_a71771c050ec7b54dc3466ab3ed145c9a"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#a71771c050ec7b54dc3466ab3ed145c9a">tsm::TimedExecutionPolicy::onExit</a></div><div class="ttdeci">void onExit(Event const &amp;e) override</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:86</div></div>
+<div class="ttc" id="astructtsm_1_1TimedExecutionPolicy_html_af9fa63735d05caef4ca420f3b9f8f941"><div class="ttname"><a href="structtsm_1_1TimedExecutionPolicy.html#af9fa63735d05caef4ca420f3b9f8f941">tsm::TimedExecutionPolicy::onEntry</a></div><div class="ttdeci">void onEntry(Event const &amp;e) override</div><div class="ttdef"><b>Definition:</b> TimedExecutionPolicy.h:78</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20

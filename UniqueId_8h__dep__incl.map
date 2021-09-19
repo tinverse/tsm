@@ -1,13 +1,14 @@
 <map id="include/UniqueId.h" name="include/UniqueId.h">
-<area shape="rect" id="node1" title=" " alt="" coords="521,5,663,32"/>
-<area shape="rect" id="node2" href="$Event_8h.html" title=" " alt="" coords="481,80,604,107"/>
-<area shape="rect" id="node8" href="$State_8h.html" title=" " alt="" coords="838,155,957,181"/>
-<area shape="rect" id="node3" href="$AsyncExecutionPolicy_8h.html" title=" " alt="" coords="205,229,429,256"/>
-<area shape="rect" id="node4" href="$tsm_8h.html" title=" " alt="" coords="486,468,597,495"/>
-<area shape="rect" id="node5" href="$Hsm_8h.html" title=" " alt="" coords="648,311,763,338"/>
-<area shape="rect" id="node6" href="$OrthogonalHsm_8h.html" title=" " alt="" coords="705,393,892,420"/>
-<area shape="rect" id="node7" href="$SingleThreadedExecutionPolicy_8h.html" title=" " alt="" coords="43,304,280,345"/>
-<area shape="rect" id="node9" href="$Transition_8h.html" title=" " alt="" coords="505,229,653,256"/>
-<area shape="rect" id="node10" href="$TimedExecutionPolicy_8h.html" title=" " alt="" coords="353,393,580,420"/>
-<area shape="rect" id="node11" href="$EventQueue_8cpp.html" title=" " alt="" coords="605,155,763,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="497,5,639,32"/>
+<area shape="rect" id="node2" href="$Event_8h.html" title=" " alt="" coords="457,80,580,107"/>
+<area shape="rect" id="node9" href="$State_8h.html" title=" " alt="" coords="839,155,958,181"/>
+<area shape="rect" id="node3" href="$AsyncExecutionPolicy_8h.html" title=" " alt="" coords="203,229,427,256"/>
+<area shape="rect" id="node4" href="$tsm_8h.html" title=" " alt="" coords="487,468,598,495"/>
+<area shape="rect" id="node5" href="$Hsm_8h.html" title=" " alt="" coords="649,311,764,338"/>
+<area shape="rect" id="node6" href="$OrthogonalHsm_8h.html" title=" " alt="" coords="708,393,895,420"/>
+<area shape="rect" id="node7" href="$LoggingPolicy_8h.html" title=" " alt="" coords="257,155,431,181"/>
+<area shape="rect" id="node8" href="$SingleThreadedExecutionPolicy_8h.html" title=" " alt="" coords="43,304,280,345"/>
+<area shape="rect" id="node10" href="$Transition_8h.html" title=" " alt="" coords="506,229,654,256"/>
+<area shape="rect" id="node11" href="$TimedExecutionPolicy_8h.html" title=" " alt="" coords="355,393,581,420"/>
+<area shape="rect" id="node12" href="$EventQueue_8cpp.html" title=" " alt="" coords="607,155,764,181"/>
 </map>

@@ -74,18 +74,22 @@ $(function() {
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetsm.html">tsm</a> {</div>
-<div class="line"><a name="l00005"></a><span class="lineno"><a class="line" href="structtsm_1_1Counter.html">    5</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtsm_1_1Counter.html">Counter</a> {</div>
-<div class="line"><a name="l00006"></a><span class="lineno"><a class="line" href="structtsm_1_1Counter.html#a7674c8edfee9799205eb6e48b8a499fa">    6</a></span>&#160;    <span class="keyword">static</span> uint64_t <a class="code" href="structtsm_1_1Counter.html#a7674c8edfee9799205eb6e48b8a499fa">counter_inc</a>() {</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;        thread_local uint64_t a = 0;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;        <span class="keywordflow">return</span> ++a;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    }</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;};</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;} <span class="comment">// namespace tsm</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno"><a class="line" href="namespacetsm.html#a228f3945e053a9637675097ff2b476e0">    5</a></span>&#160;<span class="keyword">using</span> <a class="code" href="namespacetsm.html#a228f3945e053a9637675097ff2b476e0">id_t</a> = uint16_t;</div>
+<div class="line"><a name="l00006"></a><span class="lineno"><a class="line" href="structtsm_1_1Counter.html">    6</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtsm_1_1Counter.html">Counter</a></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;{</div>
+<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="structtsm_1_1Counter.html#a995ae835bd3dc19467ad9a7f7f0c0845">    8</a></span>&#160;    <span class="keyword">static</span> <a class="code" href="namespacetsm.html#a228f3945e053a9637675097ff2b476e0">id_t</a> <a class="code" href="structtsm_1_1Counter.html#a995ae835bd3dc19467ad9a7f7f0c0845">counter_inc</a>()</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;        thread_local <a class="code" href="namespacetsm.html#a228f3945e053a9637675097ff2b476e0">id_t</a> a = 0;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        <span class="keywordflow">return</span> ++a;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    }</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;};</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;} <span class="comment">// namespace tsm</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astructtsm_1_1Counter_html_a7674c8edfee9799205eb6e48b8a499fa"><div class="ttname"><a href="structtsm_1_1Counter.html#a7674c8edfee9799205eb6e48b8a499fa">tsm::Counter::counter_inc</a></div><div class="ttdeci">static uint64_t counter_inc()</div><div class="ttdef"><b>Definition:</b> UniqueId.h:6</div></div>
-<div class="ttc" id="anamespacetsm_html"><div class="ttname"><a href="namespacetsm.html">tsm</a></div><div class="ttdef"><b>Definition:</b> AsyncExecutionPolicy.h:12</div></div>
-<div class="ttc" id="astructtsm_1_1Counter_html"><div class="ttname"><a href="structtsm_1_1Counter.html">tsm::Counter</a></div><div class="ttdef"><b>Definition:</b> UniqueId.h:5</div></div>
+<div class="ttc" id="astructtsm_1_1Counter_html_a995ae835bd3dc19467ad9a7f7f0c0845"><div class="ttname"><a href="structtsm_1_1Counter.html#a995ae835bd3dc19467ad9a7f7f0c0845">tsm::Counter::counter_inc</a></div><div class="ttdeci">static id_t counter_inc()</div><div class="ttdef"><b>Definition:</b> UniqueId.h:8</div></div>
+<div class="ttc" id="anamespacetsm_html"><div class="ttname"><a href="namespacetsm.html">tsm</a></div><div class="ttdef"><b>Definition:</b> AsyncExecutionPolicy.h:13</div></div>
+<div class="ttc" id="anamespacetsm_html_a228f3945e053a9637675097ff2b476e0"><div class="ttname"><a href="namespacetsm.html#a228f3945e053a9637675097ff2b476e0">tsm::id_t</a></div><div class="ttdeci">uint16_t id_t</div><div class="ttdef"><b>Definition:</b> UniqueId.h:5</div></div>
+<div class="ttc" id="astructtsm_1_1Counter_html"><div class="ttname"><a href="structtsm_1_1Counter.html">tsm::Counter</a></div><div class="ttdef"><b>Definition:</b> UniqueId.h:7</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20

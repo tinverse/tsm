@@ -1,6 +1,7 @@
 <map id="include/Hsm.h" name="include/Hsm.h">
-<area shape="rect" id="node1" title=" " alt="" coords="69,5,183,32"/>
-<area shape="rect" id="node2" href="$OrthogonalHsm_8h.html" title=" " alt="" coords="98,80,285,107"/>
+<area shape="rect" id="node1" title=" " alt="" coords="169,5,283,32"/>
+<area shape="rect" id="node2" href="$OrthogonalHsm_8h.html" title=" " alt="" coords="133,80,319,107"/>
 <area shape="rect" id="node3" href="$tsm_8h.html" title=" " alt="" coords="5,155,116,181"/>
-<area shape="rect" id="node4" href="$OrthogonalCdPlayerHsm_8cpp.html" title=" " alt="" coords="140,155,379,181"/>
+<area shape="rect" id="node4" href="$Switch_8cpp.html" title=" " alt="" coords="177,229,299,256"/>
+<area shape="rect" id="node5" href="$OrthogonalCdPlayerHsm_8cpp.html" title=" " alt="" coords="140,155,379,181"/>
 </map>

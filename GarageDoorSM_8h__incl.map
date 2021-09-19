@@ -1,13 +1,13 @@
 <map id="test/GarageDoorSM.h" name="test/GarageDoorSM.h">
-<area shape="rect" id="node1" title=" " alt="" coords="237,5,398,32"/>
-<area shape="rect" id="node2" href="$tsm_8h.html" title=" " alt="" coords="288,80,347,107"/>
-<area shape="rect" id="node3" href="$AsyncExecutionPolicy_8h.html" title=" " alt="" coords="355,155,528,181"/>
-<area shape="rect" id="node4" href="$Event_8h.html" title=" " alt="" coords="262,453,333,480"/>
-<area shape="rect" id="node5" href="$EventQueue_8h.html" title=" " alt="" coords="659,229,773,256"/>
-<area shape="rect" id="node6" href="$Hsm_8h.html" title=" " alt="" coords="216,229,280,256"/>
-<area shape="rect" id="node7" href="$State_8h.html" title=" " alt="" coords="157,379,225,405"/>
-<area shape="rect" id="node8" href="$Transition_8h.html" title=" " alt="" coords="301,304,398,331"/>
-<area shape="rect" id="node9" href="$OrthogonalHsm_8h.html" title=" " alt="" coords="93,155,229,181"/>
-<area shape="rect" id="node10" href="$SingleThreadedExecutionPolicy_8h.html" title=" " alt="" coords="552,155,787,181"/>
-<area shape="rect" id="node11" href="$TimedExecutionPolicy_8h.html" title=" " alt="" coords="862,155,1037,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="265,5,426,32"/>
+<area shape="rect" id="node2" href="$tsm_8h.html" title=" " alt="" coords="316,80,375,107"/>
+<area shape="rect" id="node3" href="$AsyncExecutionPolicy_8h.html" title=" " alt="" coords="516,155,689,181"/>
+<area shape="rect" id="node4" href="$Event_8h.html" title=" " alt="" coords="258,453,329,480"/>
+<area shape="rect" id="node5" href="$EventQueue_8h.html" title=" " alt="" coords="714,229,827,256"/>
+<area shape="rect" id="node6" href="$Hsm_8h.html" title=" " alt="" coords="227,229,291,256"/>
+<area shape="rect" id="node7" href="$State_8h.html" title=" " alt="" coords="153,379,221,405"/>
+<area shape="rect" id="node8" href="$Transition_8h.html" title=" " alt="" coords="297,304,394,331"/>
+<area shape="rect" id="node9" href="$OrthogonalHsm_8h.html" title=" " alt="" coords="101,155,237,181"/>
+<area shape="rect" id="node10" href="$SingleThreadedExecutionPolicy_8h.html" title=" " alt="" coords="419,304,653,331"/>
+<area shape="rect" id="node11" href="$TimedExecutionPolicy_8h.html" title=" " alt="" coords="765,155,939,181"/>
 </map>

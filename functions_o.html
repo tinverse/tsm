@@ -74,28 +74,41 @@ $(function() {
 <li>obstruct_event
 : <a class="el" href="structtsmtest_1_1GarageDoorHsm.html#a4ee789635cce6a4eacaa7984c44102a4">tsmtest::GarageDoorHsm</a>
 </li>
+<li>off
+: <a class="el" href="structtsmtest_1_1Switch.html#adc5a32165eb4d231873ef27010e93d3a">tsmtest::Switch</a>
+</li>
 <li>oHsm
 : <a class="el" href="structtsmtest_1_1DHsm.html#acd30dbacfbb3a71377d53d29f8ecd166">tsmtest::DHsm</a>
+</li>
+<li>on
+: <a class="el" href="structtsmtest_1_1Switch.html#a74b27093b8474aeba1aea07b847dfe54">tsmtest::Switch</a>
 </li>
 <li>onEntry()
 : <a class="el" href="structtsm_1_1AsyncExecutionPolicy.html#aa8d9a1a601e2b7093c89d6a6bc7b4784">tsm::AsyncExecutionPolicy&lt; StateType &gt;</a>
 , <a class="el" href="structtsm_1_1IHsm.html#a952d92a4e89ebac04135a1f3b37ff38e">tsm::IHsm</a>
+, <a class="el" href="structtsm_1_1LoggingPolicy.html#a77e605955bf90f8b9e7e7274e5062242">tsm::LoggingPolicy&lt; StateType &gt;</a>
 , <a class="el" href="structtsm_1_1NamedState.html#a97fd426d6f89f1055137b6a0c6c51497">tsm::NamedState</a>
 , <a class="el" href="structtsm_1_1State.html#ae7bc4fa4f86ae30307e0301bd09126a0">tsm::State</a>
 , <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#af9fa63735d05caef4ca420f3b9f8f941">tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;</a>
 , <a class="el" href="structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm.html#a87b255ec3f40b1996354e5b0fa502589">tsmtest::CdPlayerHsm&lt; ControllerType &gt;::PlayingHsm</a>
+, <a class="el" href="structtsmtest_1_1SwitchLoggingPolicy.html#a3cb4adb6da237c7d7b654d61953e9582">tsmtest::SwitchLoggingPolicy&lt; StateType &gt;</a>
 </li>
 <li>onExit()
 : <a class="el" href="structtsm_1_1AsyncExecutionPolicy.html#aba320fbb0db568d73ed07a5a8830ab66">tsm::AsyncExecutionPolicy&lt; StateType &gt;</a>
 , <a class="el" href="structtsm_1_1IHsm.html#ad4869d5f14a0a4d7a63217c5ff56c0c8">tsm::IHsm</a>
+, <a class="el" href="structtsm_1_1LoggingPolicy.html#a927c8650c839080cad5babda9574ef04">tsm::LoggingPolicy&lt; StateType &gt;</a>
 , <a class="el" href="structtsm_1_1NamedState.html#a869dd5e788b169eaa03cb51fc80d89af">tsm::NamedState</a>
 , <a class="el" href="structtsm_1_1SingleThreadedExecutionPolicy.html#a045506badb36caff5d5477d6b3ef50d3">tsm::SingleThreadedExecutionPolicy&lt; StateType &gt;</a>
 , <a class="el" href="structtsm_1_1State.html#ab455a503d929a5d3e01bf7218fae3a72">tsm::State</a>
 , <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#a71771c050ec7b54dc3466ab3ed145c9a">tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;</a>
 , <a class="el" href="structtsmtest_1_1CdPlayerHsm_1_1PlayingHsm.html#a36dd8471b3a48c56515a56464bc80e9a">tsmtest::CdPlayerHsm&lt; ControllerType &gt;::PlayingHsm</a>
+, <a class="el" href="structtsmtest_1_1SwitchLoggingPolicy.html#ae62cde6c08b987ee51f54cbefcbb13f6">tsmtest::SwitchLoggingPolicy&lt; StateType &gt;</a>
 </li>
 <li>onTimerExpired()
 : <a class="el" href="structtsm_1_1TimedExecutionPolicy.html#a1d2b787b5d502f8e2d90477a380dcb79">tsm::TimedExecutionPolicy&lt; StateType, TimerType, DurationType &gt;</a>
+</li>
+<li>onToggle()
+: <a class="el" href="structtsmtest_1_1Switch.html#a57b3524c3a72b6415e61d68ef62071da">tsmtest::Switch</a>
 </li>
 <li>Open
 : <a class="el" href="structtsmtest_1_1CdPlayerHsm.html#ac2fc61f124fabc98df72ab7fb7d244cc">tsmtest::CdPlayerHsm&lt; ControllerType &gt;</a>
@@ -119,9 +132,10 @@ $(function() {
 , <a class="el" href="structtsm_1_1State.html#ac07b029f8d98b00b0b36a7f4cb528e05">tsm::State</a>
 </li>
 <li>operator=()
-: <a class="el" href="structtsm_1_1AsyncExecutionPolicy.html#aedd60a638f2e76fbcc8167f9d2c3432d">tsm::AsyncExecutionPolicy&lt; StateType &gt;</a>
-, <a class="el" href="structtsm_1_1NamedState.html#a5e650211df662a39c46ea9093f8d00ac">tsm::NamedState</a>
-, <a class="el" href="structtsm_1_1State.html#a937e2e0bf31fb5f07b41ae2cae49e525">tsm::State</a>
+: <a class="el" href="structtsm_1_1AsyncExecutionPolicy.html#afe2c70ce900e4a954d2ff7b766bf46b0">tsm::AsyncExecutionPolicy&lt; StateType &gt;</a>
+, <a class="el" href="structtsm_1_1EventQueueT.html#a69a223a69ed1615f19d0fa5a1a99b3f7">tsm::EventQueueT&lt; Event, LockType &gt;</a>
+, <a class="el" href="structtsm_1_1NamedState.html#a553ed8a5483aa6ca4f3e942ae3e6cdf4">tsm::NamedState</a>
+, <a class="el" href="structtsm_1_1State.html#a8a0b2c899a98601d446b2010556abf99">tsm::State</a>
 , <a class="el" href="structtsm_1_1ThreadSleepTimer.html#a5fb1204984c76b3aff1a25294e0a4d69">tsm::ThreadSleepTimer&lt; DurationType &gt;</a>
 </li>
 <li>operator==()

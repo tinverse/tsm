@@ -1,5 +1,5 @@
 <map id="tsm::Hsm&lt; HsmDef &gt;" name="tsm::Hsm&lt; HsmDef &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="1679,596,1847,747"/>
+<area shape="rect" id="node1" title=" " alt="" coords="1898,596,2066,747"/>
 <area shape="rect" id="node4" href="$structtsmtest_1_1AHsm.html" title=" " alt="" coords="5,861,193,1070"/>
 <area shape="rect" id="node5" href="$structtsmtest_1_1BHsm.html" title=" " alt="" coords="217,919,405,1011"/>
 <area shape="rect" id="node6" href="$structtsmtest_1_1CdPlayerHsm.html" title=" " alt="" coords="430,839,694,1092"/>
@@ -8,14 +8,16 @@
 <area shape="rect" id="node9" href="$structtsmtest_1_1DHsm.html" title=" " alt="" coords="1171,824,1361,1107"/>
 <area shape="rect" id="node10" href="$structtsmtest_1_1ErrorHsm.html" title=" " alt="" coords="1386,890,1538,1041"/>
 <area shape="rect" id="node11" href="$structtsmtest_1_1GarageDoorHsm.html" title=" " alt="" coords="1563,853,1751,1077"/>
-<area shape="rect" id="node12" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="1775,890,1968,1041"/>
-<area shape="rect" id="node13" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="1993,890,2147,1041"/>
-<area shape="rect" id="node14" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="2171,890,2326,1041"/>
-<area shape="rect" id="node15" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="2351,890,2573,1041"/>
-<area shape="rect" id="node16" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="2598,890,2774,1041"/>
-<area shape="rect" id="node17" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="2799,883,2987,1048"/>
-<area shape="rect" id="node18" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="3011,890,3166,1041"/>
-<area shape="rect" id="node19" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="3190,890,3345,1041"/>
-<area shape="rect" id="node2" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="1690,293,1837,547"/>
-<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="1701,5,1825,244"/>
+<area shape="rect" id="node12" href="$structtsmtest_1_1Switch.html" title=" " alt="" coords="1775,897,1971,1033"/>
+<area shape="rect" id="node13" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="1995,890,2188,1041"/>
+<area shape="rect" id="node14" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="2213,890,2367,1041"/>
+<area shape="rect" id="node15" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="2391,890,2546,1041"/>
+<area shape="rect" id="node16" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="2571,890,2729,1041"/>
+<area shape="rect" id="node17" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="2753,890,2976,1041"/>
+<area shape="rect" id="node18" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="3001,890,3177,1041"/>
+<area shape="rect" id="node19" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="3201,883,3389,1048"/>
+<area shape="rect" id="node20" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="3414,890,3569,1041"/>
+<area shape="rect" id="node21" href="$structtsm_1_1Hsm.html" title=" " alt="" coords="3593,890,3747,1041"/>
+<area shape="rect" id="node2" href="$structtsm_1_1IHsm.html" title=" " alt="" coords="1909,293,2055,547"/>
+<area shape="rect" id="node3" href="$structtsm_1_1State.html" title=" " alt="" coords="1920,5,2044,244"/>
 </map>

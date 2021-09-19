@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['main_2ecpp_323',['main.cpp',['../main_8cpp.html',1,'']]]
+  ['loggingpolicy_2eh_332',['LoggingPolicy.h',['../LoggingPolicy_8h.html',1,'']]]
 ];

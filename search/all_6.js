@@ -15,6 +15,7 @@ var searchData=
   ['getstartstate_88',['getStartState',['../structtsm_1_1IHsm.html#afacd769e02cc0d0710f91a1c95f7bd4e',1,'tsm::IHsm::getStartState()'],['../structtsm_1_1OrthogonalHsm.html#a372aab9ff7897cd96d086a68575cb8c9',1,'tsm::OrthogonalHsm::getStartState()']]],
   ['getstopstate_89',['getStopState',['../structtsm_1_1IHsm.html#a3f9964061b555e040eea2244ff0b11e7',1,'tsm::IHsm']]],
   ['gettable_90',['getTable',['../structtsm_1_1Hsm.html#a1d3af770b72f2fbac9e7ec91ce70c6cc',1,'tsm::Hsm']]],
-  ['guard_91',['guard',['../structtsm_1_1StateTransitionTableT_1_1Transition.html#a0d0048e7fe7ba647a05ea72c73b29864',1,'tsm::StateTransitionTableT::Transition']]],
-  ['guardfn_92',['GuardFn',['../structtsm_1_1Hsm.html#a3ea708490e876b809f16b7f7f41b1e22',1,'tsm::Hsm::GuardFn()'],['../structtsm_1_1StateTransitionTableT.html#a4998bdd351f047c670f61ff8a56f94ad',1,'tsm::StateTransitionTableT::GuardFn()']]]
+  ['gettoggles_91',['getToggles',['../structtsmtest_1_1Switch.html#a9b9698566dbf52f16fb30407b403203d',1,'tsmtest::Switch']]],
+  ['guard_92',['guard',['../structtsm_1_1StateTransitionTableT_1_1Transition.html#a0d0048e7fe7ba647a05ea72c73b29864',1,'tsm::StateTransitionTableT::Transition']]],
+  ['guardfn_93',['GuardFn',['../structtsm_1_1Hsm.html#a3ea708490e876b809f16b7f7f41b1e22',1,'tsm::Hsm::GuardFn()'],['../structtsm_1_1StateTransitionTableT.html#a4998bdd351f047c670f61ff8a56f94ad',1,'tsm::StateTransitionTableT::GuardFn()']]]
 ];

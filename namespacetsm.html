@@ -91,9 +91,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IHsm.html">IHsm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1NamedState.html">NamedState</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1LoggingPolicy.html">LoggingPolicy</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1null__mutex.html">null_mutex</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1NamedState.html">NamedState</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1OrthogonalHsm.html">OrthogonalHsm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,9 +110,6 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a8ab573af17042f875e8406c0d5d29fb8"><td class="memTemplParams" colspan="2">template&lt;typename Event &gt; </td></tr>
-<tr class="memitem:a8ab573af17042f875e8406c0d5d29fb8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a8ab573af17042f875e8406c0d5d29fb8">SimpleEventQueue</a> = <a class="el" href="structtsm_1_1EventQueueT.html">EventQueueT</a>&lt; <a class="el" href="structtsm_1_1Event.html">Event</a>, <a class="el" href="structtsm_1_1null__mutex.html">null_mutex</a> &gt;</td></tr>
-<tr class="separator:a8ab573af17042f875e8406c0d5d29fb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03933a5ba08e2b42b53337dd429cf707"><td class="memTemplParams" colspan="2">template&lt;typename Event &gt; </td></tr>
 <tr class="memitem:a03933a5ba08e2b42b53337dd429cf707"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a03933a5ba08e2b42b53337dd429cf707">EventQueue</a> = <a class="el" href="structtsm_1_1EventQueueT.html">EventQueueT</a>&lt; <a class="el" href="structtsm_1_1Event.html">Event</a>, std::mutex &gt;</td></tr>
 <tr class="separator:a03933a5ba08e2b42b53337dd429cf707"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,6 +128,8 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a72a4172983bd10b31d430035416ac8e6"><td class="memTemplParams" colspan="2">template&lt;typename Hsm , template&lt; typename &gt; class TimerType, typename DurationType &gt; </td></tr>
 <tr class="memitem:a72a4172983bd10b31d430035416ac8e6"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a72a4172983bd10b31d430035416ac8e6">ClockedMooreHsm</a> = <a class="el" href="structtsm_1_1TimedExecutionPolicy.html">TimedExecutionPolicy</a>&lt; <a class="el" href="namespacetsm.html#a4efc6de0a3a23bcb01d12f8b525223c5">MooreHsm</a>&lt; <a class="el" href="structtsm_1_1Hsm.html">Hsm</a> &gt;, TimerType, DurationType &gt;</td></tr>
 <tr class="separator:a72a4172983bd10b31d430035416ac8e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a228f3945e053a9637675097ff2b476e0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a228f3945e053a9637675097ff2b476e0">id_t</a> = uint16_t</td></tr>
+<tr class="separator:a228f3945e053a9637675097ff2b476e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -200,6 +199,20 @@ template&lt;typename Event &gt; </div>
 
 </div>
 </div>
+<a id="a228f3945e053a9637675097ff2b476e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a228f3945e053a9637675097ff2b476e0">&#9670;&nbsp;</a></span>id_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacetsm.html#a228f3945e053a9637675097ff2b476e0">tsm::id_t</a> = typedef uint16_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="af3b3e6cd57f8962efd500120daa25134"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af3b3e6cd57f8962efd500120daa25134">&#9670;&nbsp;</a></span>MealyHsm</h2>
 
@@ -226,22 +239,6 @@ template&lt;typename Hsm &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespacetsm.html#a4efc6de0a3a23bcb01d12f8b525223c5">tsm::MooreHsm</a> = typedef <a class="el" href="namespacetsm.html#a0a6cca971bf6a22142c3aafc4d4022e7">SingleThreadedHsm</a>&lt;<a class="el" href="structtsm_1_1Hsm.html">Hsm</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a8ab573af17042f875e8406c0d5d29fb8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8ab573af17042f875e8406c0d5d29fb8">&#9670;&nbsp;</a></span>SimpleEventQueue</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Event &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="namespacetsm.html#a8ab573af17042f875e8406c0d5d29fb8">tsm::SimpleEventQueue</a> = typedef <a class="el" href="structtsm_1_1EventQueueT.html">EventQueueT</a>&lt;<a class="el" href="structtsm_1_1Event.html">Event</a>, <a class="el" href="structtsm_1_1null__mutex.html">null_mutex</a>&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
