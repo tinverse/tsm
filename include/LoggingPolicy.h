@@ -1,8 +1,6 @@
 #include "Event.h"
 #include "tsm_log.h"
 
-#include <iostream>
-
 namespace tsm {
 ///
 /// A simple and Generic LoggingPolicy. When inserted between say
@@ -19,14 +17,10 @@ struct LoggingPolicy : public StateType
     {
         if (StateType::getCurrentState()) {
             LOG(INFO) << "Entering State:" << StateType::getCurrentState()->id
-                      << " on"
-                         " Event:"
-                      << e.id;
+                      << " on Event:" << e.id;
         } else {
             LOG(INFO) << "Entering State:" << StateType::getStartState()->id
-                      << " on"
-                         " Event:"
-                      << e.id;
+                      << " on Event:" << e.id;
         }
         StateType::onEntry(e);
     }
@@ -42,9 +36,7 @@ struct LoggingPolicy : public StateType
     void onExit(Event const& e) override
     {
         LOG(INFO) << "Exiting State:" << StateType::getCurrentState()->id
-                  << " on"
-                     " Event:"
-                  << e.id;
+                  << " on Event:" << e.id;
         StateType::onExit(e);
     }
 };
