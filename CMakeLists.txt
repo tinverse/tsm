@@ -127,7 +127,7 @@ if (NOT_SUBPROJECT)
 
     install(
       DIRECTORY
-        "include/"
+        "include"
       DESTINATION
         "${CMAKE_INSTALL_INCLUDEDIR}"
     )
@@ -231,6 +231,6 @@ if(BUILD_DOCUMENTATION)
 endif(BUILD_DOCUMENTATION)
 
 if (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
-    install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_PREFIX}
+    install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX}
         FILES_MATCHING PATTERN "*.h")
 endif (NOT "${CMAKE_INSTALL_PREFIX}" STREQUAL "/var/empty/local")
