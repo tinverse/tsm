@@ -25,7 +25,7 @@ struct LoggingPolicy : public StateType
         StateType::onEntry(e);
     }
 
-    void handle(Event const& nextEvent) override
+    void handle(Event const& nextEvent) noexcept override
     {
         LOG(INFO) << "Attempting transition from State: "
                   << StateType::getCurrentState()->id

@@ -1,30 +1,24 @@
 #pragma once
-#include <iostream>
+#ifndef USE_EXTERNAL_LOG
 enum LogLevel
 {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
+    SM_DEBUG,
+    SM_INFO,
+    SM_WARNING,
+    SM_ERROR,
 };
 
-struct null_ostream : public std::ostream
+template <typename LogLevelT>
+struct NullStream
 {
-    struct null_buffer : public std::streambuf
-    {
-        int overflow(int c) override { return c; }
-    };
-
-    explicit null_ostream(const char* /* filename */,
+    __attribute__((noinline)) explicit NullStream(const char* /* filename */,
                           int /* lineno */,
-                          LogLevel const& /* unused */)
-      : std::ostream(&sb_)
+                          LogLevelT const& /* unused */) noexcept
     {}
+    template<typename T>
+    __attribute__((noinline)) NullStream& operator<<(T& /* */) noexcept { return *this; }
 
-  private:
-    null_buffer sb_;
+    __attribute__((noinline)) NullStream& operator<<(int /**/) noexcept { return *this; }
 };
-
-#ifndef USE_EXTERNAL_LOG
-#define LOG(Level) null_ostream(__FILE__, __LINE__, Level)
+#define LOG(Level) NullStream<LogLevel>(__FILE__, __LINE__, Level)
 #endif

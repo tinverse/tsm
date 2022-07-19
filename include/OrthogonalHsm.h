@@ -74,7 +74,7 @@ struct OrthogonalHsm : public IHsm
         for_each_hsm(sms_, [&](auto& sm) { sm.onEntry(tsm::null_event); });
     }
 
-    void handle(Event const& nextEvent) override
+    void handle(Event const& nextEvent) noexcept override
     {
         // Get the first hsm that handles the event
         auto sm_index = find_if(sms_, [&](auto& hsm) {
@@ -90,7 +90,7 @@ struct OrthogonalHsm : public IHsm
                 // Don't dispatch, directly handle here.
                 this->getParent()->handle(nextEvent);
             } else {
-                LOG(ERROR) << "Reached top level Hsm. Cannot handle event";
+                LOG(ERRORL) << "Reached top level Hsm. Cannot handle event";
             }
         }
     }

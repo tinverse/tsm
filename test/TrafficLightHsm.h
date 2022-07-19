@@ -35,10 +35,10 @@ struct TrafficLightHsm : public IHsm
 
     void pressWalk() { walkPressed = true; }
 
-    void handle(Event const& /*unused*/) override
+    void handle(Event const& /*unused*/) noexcept override
     {
         ++ticks_;
-        auto* state = dynamic_cast<LightState*>(this->currentState_);
+        auto* state = static_cast<LightState*>(this->currentState_);
         bool guard = (this->ticks_ > state->getLimit());
         if (state->id == G2.id) {
             guard |= (walkPressed && (this->ticks_ > G2WALK));

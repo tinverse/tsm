@@ -22,7 +22,6 @@ struct StateTransitionTableT
           , action(action)
           , guard(guard)
         {}
-
         bool doTransition(FsmDef* hsm, Event const& e)
         {
             bool transitioned = false;

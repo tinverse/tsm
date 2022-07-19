@@ -4,7 +4,6 @@
 #include "UniqueId.h"
 #include "tsm_log.h"
 
-#include <iostream>
 #include <string>
 
 namespace tsm {
@@ -27,25 +26,19 @@ struct State
     bool operator==(State const& rhs) const { return this->id == rhs.id; }
     bool operator!=(State& rhs) const { return !(*this == rhs); }
 
-    std::ostream& operator<<(std::ostream& os) const
-    {
-        os << this->id;
-        return os;
-    }
-
     virtual void execute(Event const& /*e*/)
     {
-        LOG(INFO) << "Executing: " << this->id << std::endl;
+        LOG(INFO) << "Executing: " << this->id;
     }
 
     virtual void onEntry(Event const& /*unused*/)
     {
-        LOG(INFO) << "Entering: " << this->id << std::endl;
+        LOG(INFO) << "Entering: " << this->id;
     }
 
     virtual void onExit(Event const& /*unused*/)
     {
-        LOG(INFO) << "Exiting: " << this->id << std::endl;
+        LOG(INFO) << "Exiting: " << this->id;
     }
     const id_t id;
 };
@@ -71,23 +64,17 @@ struct NamedState : public State
 
     void execute(Event const& /*unused*/) override
     {
-        LOG(INFO) << "Executing: " << this->name << std::endl;
+        LOG(INFO) << "Executing: " << this->name;
     }
 
     void onEntry(Event const& /*unused*/) override
     {
-        LOG(INFO) << "Entering: " << this->name << std::endl;
+        LOG(INFO) << "Entering: " << this->name;
     }
 
     void onExit(Event const& /*unused*/) override
     {
-        LOG(INFO) << "Exiting: " << this->name << std::endl;
-    }
-
-    std::ostream& operator<<(std::ostream& os)
-    {
-        os << this->name;
-        return os;
+        LOG(INFO) << "Exiting: " << this->name;
     }
 
     const std::string name;

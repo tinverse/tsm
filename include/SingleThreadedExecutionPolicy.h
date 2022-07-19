@@ -15,6 +15,7 @@ namespace tsm {
 template<typename StateType>
 struct SingleThreadedExecutionPolicy : public StateType
 {
+    ~SingleThreadedExecutionPolicy() = delete;
     using EventQueue = std::deque<Event>;
 
     void onExit(Event const& e) override { StateType::onExit(e); }

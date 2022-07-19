@@ -29,6 +29,10 @@ endif(MSVC)
 
 target_link_libraries(${TEST_PROJECT}
   PRIVATE Catch2::Catch2 Threads::Threads tsm::tsm)
+# add_custom_command(TARGET ${TEST_PROJECT} POST_BUILD
+#     COMMAND "strip" -g -S  --strip-debug --verbose
+#     "$<TARGET_FILE:${TEST_PROJECT}>"
+#             COMMENT "strip debug symbols done on final binary.")
 
 include(CTest)
 include(Catch)

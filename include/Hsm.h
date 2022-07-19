@@ -57,7 +57,7 @@ struct IHsm : public State
         }
     }
 
-    virtual void handle(Event const&) = 0;
+    virtual void handle(Event const&) noexcept = 0;
 
     IHsm* getParent() const { return parent_; }
     void setParent(IHsm* parent) { parent_ = parent; }
@@ -96,7 +96,7 @@ struct Hsm : public IHsm
       : IHsm(parent)
     {}
 
-    void handle(Event const& nextEvent) override
+    void handle(Event const& nextEvent) noexcept override
     {
         Transition* t = this->next(*this->currentState_, nextEvent);
 
@@ -108,7 +108,7 @@ struct Hsm : public IHsm
                 // state machines this->onExit(nextEvent);
                 this->getParent()->handle(nextEvent);
             } else {
-                LOG(ERROR) << "Reached top level Hsm. Cannot handle event";
+                LOG(ERRORL) << "Reached top level Hsm. Cannot handle event";
             }
         } else {
 
@@ -128,12 +128,12 @@ struct Hsm : public IHsm
              Event const& onEvent,
              State& toState,
              ActionFn action = nullptr,
-             GuardFn guard = nullptr)
+             GuardFn guard = nullptr) noexcept
     {
         table_.add(fromState, onEvent, toState, action, guard);
     }
 
-    Transition* next(State& currentState, Event const& nextEvent)
+    Transition* next(State& currentState, Event const& nextEvent) noexcept
     {
         return table_.next(currentState, nextEvent);
     }
