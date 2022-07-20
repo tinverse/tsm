@@ -9,11 +9,13 @@
 #include <unordered_map>
 namespace tsm {
 
-template<typename FsmDef>
+template<typename FsmDef,
+         typename ActionFnT = void (FsmDef::*)(),
+         typename GuardFnT = bool (FsmDef::*)()>
 struct StateTransitionTableT
 {
-    using ActionFn = void (FsmDef::*)();
-    using GuardFn = bool (FsmDef::*)();
+    using ActionFn = ActionFnT;
+    using GuardFn = GuardFnT;
 
     struct Transition
     {
