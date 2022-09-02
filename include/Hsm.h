@@ -84,13 +84,13 @@ struct IHsm : public State
 ///
 /// Implements a Hierarchical State Machine.
 ///
-template<typename HsmDef>
+template<typename HsmDef,
+         typename StateTransitionTable = StateTransitionTableT<HsmDef>>
 struct Hsm : public IHsm
 {
-    using StateTransitionTable = StateTransitionTableT<HsmDef>;
     using Transition = typename StateTransitionTableT<HsmDef>::Transition;
-    using ActionFn = void (HsmDef::*)();
-    using GuardFn = bool (HsmDef::*)();
+    using ActionFn = typename StateTransitionTable::ActionFn;
+    using GuardFn = typename StateTransitionTable::GuardFn;
 
     explicit Hsm(IHsm* parent = nullptr)
       : IHsm(parent)
