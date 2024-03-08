@@ -2,8 +2,12 @@
 
 #include "Event.h"
 #include "EventQueue.h"
-
+#ifdef __FREE_RTOS__
+#include "FreeRTOS.h"
+#include "task.h"
+#else
 #include <thread>
+#endif
 ///
 /// The default policy class for asynchronous event processing. This policy is
 /// mixed in with a Hsm class to create an AsynchronousHsm. The client uses
@@ -11,7 +15,76 @@
 /// thread is created and blocks wating on events in the step method.
 ///
 namespace tsm {
+#ifdef __FREE_RTOS__
 
+template<typename StateType>
+class AsyncExecutionPolicy : public StateType {
+public:
+    // using EventQueue = FreeRTOSEventQueue<Event>; // Adapted for FreeRTOS
+    using TaskCallback = void (*)(AsyncExecutionPolicy*);
+
+    AsyncExecutionPolicy() : taskCallback(AsyncExecutionPolicy::StepTask) {
+        interrupt_ = pdFALSE;
+    }
+
+    AsyncExecutionPolicy(const AsyncExecutionPolicy&) = delete;
+    AsyncExecutionPolicy& operator=(const AsyncExecutionPolicy&) = delete;
+    AsyncExecutionPolicy(AsyncExecutionPolicy&&) = delete;
+    AsyncExecutionPolicy& operator=(AsyncExecutionPolicy&&) = delete;
+
+    virtual ~AsyncExecutionPolicy() {
+        interrupt_ = pdTRUE;
+        // Proper FreeRTOS task deletion if needed, ensuring clean-up.
+    }
+
+    void onEntry(const Event& e) override {
+        StateType::onEntry(e);
+        // Create a FreeRTOS task instead of a C++ thread
+        xTaskCreate(reinterpret_cast<TaskFunction_t>(taskCallback), "AsyncPolicyTask", configMINIMAL_STACK_SIZE, this, tskIDLE_PRIORITY, &smTaskHandle);
+    }
+
+    void onExit(const Event& e) override {
+        eventQueue.stop();
+        interrupt_ = pdTRUE;
+        if (smTaskHandle != NULL) {
+            vTaskDelete(smTaskHandle);
+            smTaskHandle = NULL;
+        }
+        StateType::onExit(e);
+    }
+
+    void sendEvent(const Event& event) {
+        eventQueue.addEvent(event);
+    }
+
+protected:
+    TaskCallback taskCallback;
+    TaskHandle_t smTaskHandle = NULL;
+    EventQueue eventQueue;
+    BaseType_t interrupt_;
+
+    static void StepTask(void* pvParameters) {
+        auto* policy = static_cast<AsyncExecutionPolicy*>(pvParameters);
+        policy->step();
+    }
+
+    void step() {
+        while (!interrupt_) {
+            processEvent();
+        }
+    }
+
+    void processEvent() {
+        Event const& nextEvent = eventQueue.nextEvent();
+        if (!eventQueue.interrupted()) {
+            StateType::dispatch(nextEvent);
+        } else {
+            // Replace with FreeRTOS logging mechanism or custom logger
+            // For example, printf("ID %d: Exiting event loop on interrupt", this->id);
+        }
+    }
+};
+#else
 template<typename StateType>
 struct AsyncExecutionPolicy : public StateType
 {
@@ -77,7 +150,7 @@ struct AsyncExecutionPolicy : public StateType
         }
     }
 };
-
+#endif
 ///
 /// Another asynchronous execution policy. The only difference with above is
 /// that an Observer's notify method will be invoked at the end of processing
