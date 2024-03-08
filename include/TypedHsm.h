@@ -465,3 +465,42 @@ struct convert_to_hsm<T, std::enable_if_t<is_state_trait_v<T>>>
     };
     using type = Hsm<Traits>;
 };
+
+// Orthogonal HSM
+template<typename... Hsms>
+struct OrthogonalHsm
+{
+    static constexpr bool is_hsm = true;
+    using type = OrthogonalHsm<Hsms...>;
+
+    template<typename Event>
+    void entry(Event e = Event())
+    {
+        std::apply([e](auto&... hsm) { (hsm.entry(e), ...); }, hsms_);
+    }
+
+    template<typename Event>
+    void exit(Event e = Event())
+    {
+        std::apply([e](auto&... hsm) { (hsm.exit(e), ...); }, hsms_);
+    }
+
+    template<typename Event>
+    bool handle(Event e = Event())
+    {
+        return std::apply([e](auto&... hsm) { return (hsm.handle(e) || ...); },
+                          hsms_);
+    }
+
+    std::tuple<Hsms...> hsms_;
+};
+
+// make orthogonal hsm from traits
+template<typename... Ts>
+struct make_orthogonal_hsm
+{
+    using type = OrthogonalHsm<convert_to_hsm_t<Ts>...>;
+};
+
+template<typename... Ts>
+using make_orthogonal_hsm_t = typename make_orthogonal_hsm<Ts...>::type;
