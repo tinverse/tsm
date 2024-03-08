@@ -6,51 +6,57 @@
 #include <utility>
 #include <variant>
 
-// The wrap metafunction accepts a tuple of types and a template template
-// parameter (Wrapper)
-template<template<typename> class Wrapper, typename Tuple>
-struct wrap_type;
+#include <iostream>
 
-// Specialization of wrap for std::tuple
-template<template<typename> class Wrapper, typename... Ts>
-struct wrap_type<Wrapper, std::tuple<Ts...>>
+// Apply a wrapper to a tuple of types
+template<template<class> class Wrapper, typename Tuple>
+struct wrap_type_impl;
+
+template<template<class> class Wrapper, typename... Ts>
+struct wrap_type_impl<Wrapper, std::tuple<Ts...>>
 {
     using type = std::tuple<typename Wrapper<Ts>::type...>;
 };
 
-// Specialization for an empty tuple.
+template<template<class> class Wrapper, typename Tuple>
+using wrap_type = typename wrap_type_impl<Wrapper, Tuple>::type;
+
+// Append unique type to a tuple
 template<typename T, typename Tuple>
-struct append_unique;
+struct append_unique_impl;
 
 template<typename T>
-struct append_unique<T, std::tuple<>>
+struct append_unique_impl<T, std::tuple<>>
 {
     using type = std::tuple<T>;
 };
 
-// Specialization for a non-empty tuple.
 template<typename T, typename... Ts>
-struct append_unique<T, std::tuple<Ts...>>
+struct append_unique_impl<T, std::tuple<Ts...>>
 {
-    // Add T to the tuple if the condition is true and T is not found among
-    // Ts..., otherwise, leave as is.
+    // Add T to the tuple if it is not found among Ts..., otherwise, leave as
+    // is.
     using type = std::conditional_t<!(std::is_same_v<T, Ts> || ...),
                                     std::tuple<Ts..., T>,
                                     std::tuple<Ts...>>;
 };
 
-// Pull out the Ts... from a tuple and create a std::
+template<typename T, typename Tuple>
+using append_unique = typename append_unique_impl<T, Tuple>::type;
+
+// Rename tuple to variant
 template<typename Tuple>
-struct tuple_to_variant;
+struct tuple_to_variant_impl;
 
 template<typename... Ts>
-struct tuple_to_variant<std::tuple<Ts...>>
+struct tuple_to_variant_impl<std::tuple<Ts...>>
 {
     using type = std::variant<Ts...>;
 };
 
+// Pull out the Ts... from a tuple and create a std::
 template<typename Tuple>
-using tuple_to_variant_t = typename tuple_to_variant<Tuple>::type;
+using tuple_to_variant_t = typename tuple_to_variant_impl<Tuple>::type;
 
 // Transition
 
@@ -58,21 +64,31 @@ using tuple_to_variant_t = typename tuple_to_variant<Tuple>::type;
 auto dummy_action = [](auto&&) {};
 auto dummy_guard = [](auto&&) { return true; };
 
-template<typename From,
-         typename Event,
-         typename To,
-         typename Action = decltype(dummy_action),
-         typename Guard = decltype(dummy_guard)>
-struct Transition
+template<typename From, typename Event, typename To>
+struct BaseTransition
 {
     using from = From;
     using event = Event;
     using to = To;
+};
+
+template<typename From,
+         typename Event,
+         typename To,
+         typename Action = void,
+         typename Guard = void>
+struct Transition : BaseTransition<From, Event, To>
+{
     using action = Action;
     using guard = Guard;
-
-    Action action_;
-    Guard guard_;
+    // These will only be used if Action and Guard are not void.
+    std::conditional_t<!std::is_same_v<Action, void>,
+                       Action,
+                       decltype(dummy_action)>
+      action_{};
+    std::
+      conditional_t<!std::is_same_v<Guard, void>, Guard, decltype(dummy_guard)>
+        guard_{};
 };
 
 // get_states from TransitionTable
@@ -92,11 +108,9 @@ template<typename Tuple, typename First, typename... Rest>
 struct get_states_impl<Tuple, First, Rest...>
 {
     // Accumulate 'from' state
-    using from_states =
-      typename append_unique<typename First::from, Tuple>::type;
+    using from_states = append_unique<typename First::from, Tuple>;
     // Accumulate 'to' state
-    using to_states =
-      typename append_unique<typename First::to, from_states>::type;
+    using to_states = append_unique<typename First::to, from_states>;
 
     // Recurse with the updated tuple and the remaining transitions
     using type = typename get_states_impl<to_states, Rest...>::type;
@@ -316,27 +330,20 @@ struct Hsm : T
         return std::visit(
           [this, e](auto* state) {
               using State = std::decay_t<decltype(*state)>;
+              bool handled = false;
               // if current_state is a state machine, call handle on it
               if constexpr (is_hsm_trait_t<State>::value) {
-                  if (!state->handle(e)) {
-                      if constexpr (has_valid_transition_v<State,
-                                                           Event,
-                                                           transitions>) {
-                          this->handleEventForState<Event>(state);
-                          return true;
-                      } else {
-                          return false;
-                      }
-                  } else {
-                      return true;
+                  handled = std::get<State>(states_).handle(e);
+              }
+              if (!handled) {
+                  if constexpr (has_valid_transition_v<State,
+                                                       Event,
+                                                       transitions>) {
+                      this->handleEventForState<Event>(state);
+                      handled = true;
                   }
               }
-
-              if constexpr (has_valid_transition_v<State, Event, transitions>) {
-                  this->handleEventForState<Event>(state);
-                  return true;
-              }
-              return false;
+              return handled;
           },
           current_state_);
     }
@@ -344,8 +351,10 @@ struct Hsm : T
     template<typename Event, typename State>
     void handleEventForState(State* state)
     {
-        using transition = typename TransitionMap<State, Event, transitions>::
-          type; // Assume TransitionMap provides the matching transition
+        // Assume TransitionMap provides the matching transition
+        using transition =
+          typename TransitionMap<State, Event, transitions>::type;
+
         // Optional Guard
         if constexpr (std::is_invocable_v<typename transition::guard, type>) {
             transition& t = std::get<transition>(transitions_);
@@ -360,7 +369,6 @@ struct Hsm : T
         if constexpr (std::is_invocable_v<State, type>) {
             std::invoke(*state, *this);
         } else {
-            // Call from State's exit if exists
             if constexpr (std::is_invocable_v<State>) {
                 std::invoke(*state);
             }
@@ -396,8 +404,7 @@ struct Hsm : T
 
     States states_;
     transitions transitions_;
-    using StatesPtr = typename wrap_type<std::add_pointer, States>::type;
-    tuple_to_variant_t<StatesPtr> current_state_;
+    tuple_to_variant_t<wrap_type<std::add_pointer, States>> current_state_;
 };
 
 template<typename T, typename = void>
