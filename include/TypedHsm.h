@@ -56,10 +56,18 @@ struct tuple_to_variant_impl<std::tuple<Ts...>>
 template<typename Tuple>
 using tuple_to_variant_t = typename tuple_to_variant_impl<Tuple>::type;
 
+// Event
+struct Event
+{};
+
+template<typename T>
+struct wrapped_event : Event
+{
+    using type = T;
+};
+
 // Transition
 // Dummy action and guard - hopefully, these will be optimized away
-auto dummy_action = [](auto&&) {};
-auto dummy_guard = [](auto&&) { return true; };
 
 template<typename From, typename Event, typename To>
 struct BaseTransition
@@ -72,28 +80,22 @@ struct BaseTransition
 template<typename From,
          typename Event,
          typename To,
-         typename Action = void,
-         typename Guard = void>
+         typename Action = void (*)(),
+         typename Guard = bool (*)()>
 struct Transition : BaseTransition<From, Event, To>
 {
     using action = Action;
     using guard = Guard;
-    // These will only be used if Action and Guard are not void.
-    std::conditional_t<!std::is_same_v<Action, void>,
-                       Action,
-                       decltype(dummy_action)>
-      action_{};
-    std::
-      conditional_t<!std::is_same_v<Guard, void>, Guard, decltype(dummy_guard)>
-        guard_{};
+    Action action_{}; // for lambdas
+    Guard guard_{};
 };
 
 struct ClockTickEvent
 {};
 template<typename From,
          typename To,
-         typename Guard = void,
-         typename Action = void>
+         typename Guard = bool (*)(void),
+         typename Action = void (*)(void)>
 struct ClockedTransition : Transition<From, ClockTickEvent, To, Action, Guard>
 {
 };
