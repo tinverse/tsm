@@ -59,7 +59,6 @@ template<typename Tuple>
 using tuple_to_variant_t = typename tuple_to_variant_impl<Tuple>::type;
 
 // Transition
-
 // Dummy action and guard - hopefully, these will be optimized away
 auto dummy_action = [](auto&&) {};
 auto dummy_guard = [](auto&&) { return true; };
@@ -89,6 +88,16 @@ struct Transition : BaseTransition<From, Event, To>
     std::
       conditional_t<!std::is_same_v<Guard, void>, Guard, decltype(dummy_guard)>
         guard_{};
+};
+
+struct ClockTickEvent
+{};
+template<typename From,
+         typename To,
+         typename Guard = void,
+         typename Action = void>
+struct ClockedTransition : Transition<From, ClockTickEvent, To, Action, Guard>
+{
 };
 
 // get_states from TransitionTable
@@ -210,7 +219,10 @@ struct has_exit : std::false_type
 };
 
 template<typename T>
-struct has_exit<T, std::void_t<decltype(std::declval<T>().exit())>>
+struct has_exit<
+  T,
+  std::void_t<std::disjunction<std::is_invocable<decltype(&T::exit), T>,
+                               std::is_invocable<decltype(&T::exit), T, T&>>>>
   : std::true_type
 {
 };
@@ -225,7 +237,10 @@ struct has_entry : std::false_type
 };
 
 template<typename T>
-struct has_entry<T, std::void_t<decltype(std::declval<T>().entry())>>
+struct has_entry<
+  T,
+  std::void_t<std::disjunction<std::is_invocable<decltype(&T::entry), T>,
+                               std::is_invocable<decltype(&T::entry), T&>>>>
   : std::true_type
 {
 };
@@ -272,21 +287,64 @@ template<typename T>
 inline constexpr bool is_state_trait_v =
   std::conjunction_v<has_transitions<T>, std::negation<is_hsm_trait<T>>>;
 
+// Check if T has ::base_traits defined
+template<typename T, typename = void>
+struct has_base_trait : std::false_type
+{
+};
+
+template<typename T>
+struct has_base_trait<T, std::void_t<typename T::base_trait>> : std::true_type
+{
+};
+
+template<typename T>
+inline constexpr bool has_base_trait_v = has_base_trait<T>::value;
+
+struct clocked_trait
+{
+    constexpr static bool is_clocked = true;
+    int ticks_{};
+};
+// Check if type has is_clocked or inherits from a type with is_clocked
+template<typename T, typename = void>
+struct is_clocked_trait : std::false_type
+{
+};
+
+template<typename T>
+struct is_clocked_trait<T, std::void_t<decltype(T::is_clocked)>>
+  : std::true_type
+{
+};
+
+template<typename T>
+inline constexpr bool is_clocked_trait_v = is_clocked_trait<T>::value;
+
 template<typename T>
 struct Hsm : T
 {
     static constexpr bool is_hsm = true;
+    // set base_traits to T if not already set in T
+    using base_trait =
+      std::conditional_t<has_base_trait_v<T>, typename T::base_trait, T>;
     using type = Hsm<T>;
     using transitions = typename T::transitions;
-    using initial_state =
-      typename std::decay_t<decltype(std::get<0>(transitions{}))>::from;
+    using initial_state = typename std::tuple_element_t<0, transitions>::from;
     using States = get_states_t<transitions>;
 
     Hsm()
     {
         current_state_ = &std::get<initial_state>(states_);
         if constexpr (has_entry_v<initial_state>) {
-            std::get<initial_state*>(current_state_)->entry();
+            initial_state* state = std::get<initial_state*>(current_state_);
+            if constexpr (std::is_invocable_v<decltype(&initial_state::entry),
+                                              initial_state*,
+                                              base_trait&>) {
+                state->entry(static_cast<base_trait&>(*this));
+            } else {
+                state->entry();
+            }
         }
     }
 
@@ -300,7 +358,14 @@ struct Hsm : T
                   std::get<State>(states_).entry(e);
               } else {
                   if constexpr (has_entry_v<State>) {
-                      std::get<State>(states_).entry();
+                      State* state = std::get<State*>(current_state_);
+                      if constexpr (std::is_invocable_v<decltype(&State::entry),
+                                                        State*,
+                                                        base_trait&>) {
+                          state->entry(static_cast<base_trait&>(*this));
+                      } else {
+                          state->entry();
+                      }
                   }
               }
           },
@@ -317,7 +382,14 @@ struct Hsm : T
                   std::get<State>(states_).exit(e);
               } else {
                   if constexpr (has_exit_v<State>) {
-                      std::get<State>(states_).exit();
+                      State* state = std::get<State*>(current_state_);
+                      if constexpr (std::is_invocable_v<decltype(&State::exit),
+                                                        State*,
+                                                        base_trait&>) {
+                          state->exit(static_cast<base_trait&>(*this));
+                      } else {
+                          state->exit();
+                      }
                   }
               }
           },
@@ -336,6 +408,7 @@ struct Hsm : T
                   handled = std::get<State>(states_).handle(e);
               }
               if (!handled) {
+                  // Does State implement handle for Event?
                   if constexpr (has_valid_transition_v<State,
                                                        Event,
                                                        transitions>) {
@@ -348,6 +421,35 @@ struct Hsm : T
           current_state_);
     }
 
+    // Check Guard
+    template<typename Tn, typename State = typename Tn::from>
+    bool check_guard(State* state)
+    {
+        if constexpr (std::is_invocable_v<typename Tn::guard, base_trait&>) {
+            Tn& t = std::get<Tn>(transitions_);
+            return std::invoke(t.guard_, static_cast<base_trait&>(*this));
+        } else if constexpr (std::is_invocable_v<typename Tn::guard,
+                                                 State*,
+                                                 base_trait&>) {
+
+            return state->guard(static_cast<base_trait&>(*this));
+        }
+        return true;
+    }
+
+    // Perform action
+    template<typename Tn, typename State = typename Tn::from>
+    void perform_action(State* state)
+    {
+        if constexpr (std::is_invocable_v<typename Tn::action, base_trait&>) {
+            Tn& t = std::get<Tn>(transitions_);
+            std::invoke(t.action_, static_cast<base_trait&>(*this));
+        } else if constexpr (std::is_invocable_v<typename Tn::action,
+                                                 State*,
+                                                 base_trait&>) {
+            state->action(static_cast<base_trait&>(*this));
+        }
+    }
     template<typename Event, typename State>
     void handleEventForState(State* state)
     {
@@ -355,51 +457,27 @@ struct Hsm : T
         using transition =
           typename TransitionMap<State, Event, transitions>::type;
 
-        // Optional Guard
-        if constexpr (std::is_invocable_v<typename transition::guard, type>) {
-            transition& t = std::get<transition>(transitions_);
-            if (!std::invoke(t.guard_, *this)) {
-                return; // Do not proceed with the transition
-            }
+        if (!this->check_guard<transition>(state)) {
+            return;
         }
 
-        // Sometimes the state itself is a callable object.
-        // If so, check and invoke it like a transition action
-        // This is equivalent to the entry -> execute -> exit pattern
-        if constexpr (std::is_invocable_v<State, type>) {
-            std::invoke(*state, *this);
-        } else {
-            if constexpr (std::is_invocable_v<State>) {
-                std::invoke(*state);
-            }
-        }
-
-        if constexpr (is_hsm_trait_v<State>) {
-            std::get<State*>(current_state_)->exit(Event());
-        } else {
-            // Call from State's exit if exists
-            if constexpr (has_exit_v<State>) {
-                std::get<State*>(current_state_)->exit();
-            }
-        }
+        this->exit(Event());
 
         // Optional Action
-        if constexpr (std::is_invocable_v<typename transition::action, type>) {
-            transition& t = std::get<transition>(transitions_);
-            std::invoke(t.action_, *this);
-        }
+        this->perform_action<transition>(state);
+
+        using to = typename transition::to;
 
         // switch to the new state
-        current_state_ = &std::get<typename transition::to>(states_);
+        current_state_ = &std::get<to>(states_);
 
-        if constexpr (is_hsm_trait_v<typename transition::to>) {
-            std::get<typename transition::to*>(current_state_)->entry(Event());
-        } else {
-            // Call to State's entry if exists
-            if constexpr (has_entry_v<typename transition::to>) {
-                std::get<typename transition::to*>(current_state_)->entry();
-            }
-        }
+        this->entry(Event());
+    }
+
+    template<typename State>
+    void current_state()
+    {
+        current_state_ = &std::get<State>(states_);
     }
 
     States states_;
@@ -446,12 +524,24 @@ struct wrap_transitions;
 template<typename... Ts>
 struct wrap_transitions<std::tuple<Ts...>>
 {
-    using type =
-      decltype(std::tuple_cat(std::tuple<wrap_transition_t<Ts>>{}...));
+    using type = std::tuple<wrap_transition_t<Ts>...>;
 };
 
 template<typename... Ts>
 using wrap_transitions_t = typename wrap_transitions<Ts...>::type;
+
+// Clocked HSM - react to events after a certain time period
+// This is a wrapper around HSM that adds a tick method to the HSM
+template<typename HsmType>
+struct ClockedHsm : HsmType
+{
+    using type = ClockedHsm<HsmType>;
+    bool tick()
+    {
+        this->ticks_++;
+        return HsmType::handle(ClockTickEvent());
+    }
+};
 
 // Define the wrapper for state traits to convert them into HSMs including their
 // transitions
@@ -460,10 +550,16 @@ struct convert_to_hsm<T, std::enable_if_t<is_state_trait_v<T>>>
 {
     struct Traits : T
     {
+        // base traits for callbacks
+        using base_trait = T;
+
         // shadow the transitions with the wrapped transitions
         using transitions = wrap_transitions_t<typename T::transitions>;
     };
-    using type = Hsm<Traits>;
+
+    using type = std::conditional_t<is_clocked_trait_v<T>,
+                                    ClockedHsm<Hsm<Traits>>,
+                                    Hsm<Traits>>;
 };
 
 // Orthogonal HSM
