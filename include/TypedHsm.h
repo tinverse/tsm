@@ -6,8 +6,6 @@
 #include <utility>
 #include <variant>
 
-#include <iostream>
-
 // Apply a wrapper to a tuple of types
 template<template<class> class Wrapper, typename Tuple>
 struct wrap_type_impl;
@@ -486,16 +484,16 @@ struct Hsm : T
 };
 
 template<typename T, typename = void>
-struct convert_to_hsm;
+struct make_hsm;
 
 template<typename T>
-struct convert_to_hsm<T, std::enable_if_t<!is_state_trait_v<T>>>
+struct make_hsm<T, std::enable_if_t<!is_state_trait_v<T>>>
 {
     using type = T;
 };
 
 template<typename T>
-using convert_to_hsm_t = typename convert_to_hsm<T>::type;
+using make_hsm_t = typename make_hsm<T>::type;
 
 // Recursively wrap states in HSMs if they are state traits
 template<typename T>
@@ -508,9 +506,9 @@ struct wrap_transition
     using guard = typename T::guard;
 
     using wrap_from =
-      std::conditional_t<is_state_trait_v<from>, convert_to_hsm_t<from>, from>;
+      std::conditional_t<is_state_trait_v<from>, make_hsm_t<from>, from>;
     using wrap_to =
-      std::conditional_t<is_state_trait_v<to>, convert_to_hsm_t<to>, to>;
+      std::conditional_t<is_state_trait_v<to>, make_hsm_t<to>, to>;
 
     using type = Transition<wrap_from, event, wrap_to, action, guard>;
 };
@@ -536,17 +534,25 @@ template<typename HsmType>
 struct ClockedHsm : HsmType
 {
     using type = ClockedHsm<HsmType>;
-    bool tick()
+    bool tick() { return this->handle(ClockTickEvent()); }
+
+    template<typename Event>
+    bool handle(Event e = Event())
+    {
+        return HsmType::handle(e);
+    }
+
+    bool handle(ClockTickEvent e)
     {
         this->ticks_++;
-        return HsmType::handle(ClockTickEvent());
+        return HsmType::handle(e);
     }
 };
 
 // Define the wrapper for state traits to convert them into HSMs including their
 // transitions
 template<typename T>
-struct convert_to_hsm<T, std::enable_if_t<is_state_trait_v<T>>>
+struct make_hsm<T, std::enable_if_t<is_state_trait_v<T>>>
 {
     struct Traits : T
     {
@@ -584,7 +590,7 @@ struct OrthogonalHsm
     template<typename Event>
     bool handle(Event e = Event())
     {
-        return std::apply([e](auto&... hsm) { return (hsm.handle(e) || ...); },
+        return std::apply([e](auto&... hsm) { return (hsm.handle(e) && ...); },
                           hsms_);
     }
 
@@ -595,7 +601,7 @@ struct OrthogonalHsm
 template<typename... Ts>
 struct make_orthogonal_hsm
 {
-    using type = OrthogonalHsm<convert_to_hsm_t<Ts>...>;
+    using type = OrthogonalHsm<make_hsm_t<Ts>...>;
 };
 
 template<typename... Ts>

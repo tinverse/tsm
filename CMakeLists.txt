@@ -14,8 +14,7 @@ LIST(APPEND CMAKE_MODULE_PATH
 include (CMakePackageConfigHelpers)
 include (GNUInstallDirs)
 
-#Compiler MUST be at least CXX 11 compliant
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)

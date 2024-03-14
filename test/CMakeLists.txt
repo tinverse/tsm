@@ -11,14 +11,7 @@ endif(NOT VALGRIND_PATH)
 set (TEST_PROJECT tsm_test)
 
 add_executable(${TEST_PROJECT}
-  main.cpp
-  CdPlayerHsm.cpp
-  EventQueue.cpp
-  GarageDoorSM.cpp
-  OrthogonalCdPlayerHsm.cpp
-  Switch.cpp
-  TestMachines.cpp
-  TrafficLightHsm.cpp
+  TestHsm.cpp
 )
 
 if(MSVC)
