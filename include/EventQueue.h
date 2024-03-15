@@ -1,7 +1,5 @@
 #pragma once
 
-#include "tsm_log.h"
-
 #ifdef __FREE_RTOS__
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -80,33 +78,13 @@ public:
         xEventGroupSetBits(eventGroup, 0x01); // Wake up waiting tasks
         xSemaphoreGive(mutex);
     }
-
-    void addFront(const Event& e) {
-        xSemaphoreTake(mutex, portMAX_DELAY);
-        front = (front - 1 + MaxEvents) % MaxEvents; // Move front backwards
-        if (front != rear) { // Check space
-            events[front] = e;
-            xEventGroupSetBits(eventGroup, 0x01); // Set event bit
-        } else {
-            // Queue is full, move front back to original position
-            front = (front + 1) % MaxEvents;
-        }
-        xSemaphoreGive(mutex);
-    }
 };
 
 #else
 
 template<typename Event, typename LockType>
-struct EventQueueT : private deque<Event>
+struct EventQueueT
 {
-    using deque<Event>::empty;
-    using deque<Event>::front;
-    using deque<Event>::pop_front;
-    using deque<Event>::push_back;
-    using deque<Event>::push_front;
-    using deque<Event>::size;
-
   public:
     EventQueueT() = default;
     EventQueueT(EventQueueT const&) = delete;
@@ -115,6 +93,22 @@ struct EventQueueT : private deque<Event>
     EventQueueT operator=(EventQueueT&&) = delete;
 
     ~EventQueueT() { stop(); }
+    bool empty() { return push_index_ == pop_index_; }
+    Event const& front() { return data_[pop_index_]; }
+    void pop_front() {
+        if (!empty()) {
+            pop_index_ = (pop_index_ + 1) % data_.size();
+        }
+    }
+
+    bool push_back(Event const&e) {
+        if ( (push_index_ + 1) % data_.size() != pop_index_) {
+            data_[push_index_] = e;
+            push_index_ = (push_index_ + 1) % data_.size();
+            return true;
+        }
+        return false;
+    }
 
     // Block until you get an event
     Event nextEvent()
@@ -151,17 +145,13 @@ struct EventQueueT : private deque<Event>
 
     bool interrupted() { return interrupt_; }
 
-    void addFront(Event const& e)
-    {
-        std::lock_guard<LockType> lock(eventQueueMutex_);
-        push_front(e);
-        cvEventAvailable_.notify_all();
-    }
-
   private:
     LockType eventQueueMutex_;
     std::condition_variable_any cvEventAvailable_;
     bool interrupt_{};
+    size_t push_index_{0};
+    size_t pop_index_{0};
+    std::array<Event, 50> data_;
 };
 
 template<typename Event>
