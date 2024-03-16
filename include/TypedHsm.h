@@ -331,7 +331,7 @@ struct Hsm : T
     }
 
     template<typename Event>
-    void entry(Event e = Event())
+    void entry(Event e = Event()) noexcept
     {
         std::visit(
           [this, e](auto* state) {
@@ -410,9 +410,8 @@ struct Hsm : T
         if constexpr (std::is_invocable_v<typename Tn::guard, T&>) {
             Tn& t = std::get<Tn>(transitions_);
             return std::invoke(t.guard_, static_cast<T&>(*this));
-        } else if constexpr (std::is_invocable_v<typename Tn::guard,
-                                                 State*,
-                                                 T&>) {
+        } else if constexpr (std::
+                               is_invocable_v<typename Tn::guard, State*, T&>) {
 
             return state->guard(static_cast<T&>(*this));
         }
@@ -584,3 +583,408 @@ struct make_orthogonal_hsm
 
 template<typename... Ts>
 using make_orthogonal_hsm_t = typename make_orthogonal_hsm<Ts...>::type;
+
+// EventQueue
+#ifdef __FREE_RTOS__
+#include "FreeRTOS.h"
+#include "semphr.h"
+#include "task.h"
+// #include "event_groups.h"
+#else
+#include <condition_variable>
+#include <mutex>
+#include <thread>
+
+#endif // __FREE_RTOS__
+
+// A thread safe event queue. Any thread can call addEvent if it has a pointer
+// to the event queue. The call to nextEvent is a blocking call
+template<typename Event, typename LockType, typename ConditionVarType>
+struct EventQueueT
+{
+  public:
+    EventQueueT() = default;
+    EventQueueT(EventQueueT const&) = delete;
+    EventQueueT(EventQueueT&&) = delete;
+    EventQueueT operator=(EventQueueT const&) = delete;
+    EventQueueT operator=(EventQueueT&&) = delete;
+
+    ~EventQueueT() { stop(); }
+    bool empty() { return push_index_ == pop_index_; }
+    Event const& front() { return data_[pop_index_]; }
+    void pop_front()
+    {
+        if (!empty()) {
+            pop_index_ = (pop_index_ + 1) % data_.size();
+        }
+    }
+
+    bool push_back(Event const& e)
+    {
+        if ((push_index_ + 1) % data_.size() != pop_index_) {
+            data_[push_index_] = e;
+            push_index_ = (push_index_ + 1) % data_.size();
+            return true;
+        }
+        return false;
+    }
+
+    // Block until you get an event
+    Event nextEvent()
+    {
+        std::unique_lock<LockType> lock(eventQueueMutex_);
+        cvEventAvailable_.wait(
+          lock, [this] { return (!this->empty() || this->interrupt_); });
+        if (interrupt_) {
+            return Event();
+        }
+        const Event e = std::move(front());
+        // LOG(INFO) << "Thread:" << std::this_thread::get_id()
+        //          << " Popping Event:" << e.id;
+        pop_front();
+        return e;
+    }
+
+    void addEvent(Event const& e)
+    {
+        std::lock_guard<LockType> lock(eventQueueMutex_);
+        // LOG(INFO) << "Thread:" << std::this_thread::get_id()
+        //          << " Adding Event:" << e.id;
+        push_back(e);
+        cvEventAvailable_.notify_all();
+    }
+
+    void stop()
+    {
+        interrupt_ = true;
+        cvEventAvailable_.notify_all();
+        // Log the events that are going to get dumped if the queue is not
+        // empty
+    }
+
+    bool interrupted() { return interrupt_; }
+
+  private:
+    LockType eventQueueMutex_;
+    ConditionVarType cvEventAvailable_;
+    bool interrupt_{};
+    size_t push_index_{ 0 };
+    size_t pop_index_{ 0 };
+    std::array<Event, 50> data_;
+};
+
+#ifdef __FREE_RTOS__
+constexpr int MaxEvents = 10; // Define your own queue size
+
+class FreeRTOSMutex
+{
+  public:
+    FreeRTOSMutex()
+    {
+        // Create the FreeRTOS mutex
+        this->mutex = xSemaphoreCreateMutex();
+    }
+
+    ~FreeRTOSMutex()
+    {
+        // Delete the FreeRTOS mutex
+        vSemaphoreDelete(this->mutex);
+    }
+
+    void lock()
+    {
+        // Wait forever for the mutex to become available
+        xSemaphoreTake(this->mutex, portMAX_DELAY);
+    }
+
+    bool try_lock()
+    {
+        // Try to take the mutex without blocking
+        return xSemaphoreTake(this->mutex, 0) == pdTRUE;
+    }
+
+    void unlock()
+    {
+        // Release the mutex
+        xSemaphoreGive(this->mutex);
+    }
+
+    // Return the native handle of the mutex
+    SemaphoreHandle_t native_handle() { return this->mutex; }
+
+  private:
+    SemaphoreHandle_t mutex;
+};
+
+class FreeRTOSConditionVariable
+{
+  public:
+    FreeRTOSConditionVariable()
+      : semaphore_(xSemaphoreCreateBinary())
+      , waitersCount_(0)
+    {
+        // Ensure the semaphore is in a non-signalled state initially.
+        xSemaphoreTake(semaphore_, 0);
+    }
+
+    ~FreeRTOSConditionVariable() { vSemaphoreDelete(semaphore_); }
+
+    template<typename Lock>
+    void wait(Lock& lock)
+    {
+        // Increment the count of waiters.
+        UBaseType_t oldISRState = taskENTER_CRITICAL_FROM_ISR();
+        ++waitersCount_;
+        taskEXIT_CRITICAL_FROM_ISR(oldISRState);
+
+        // Unlock the external mutex and wait for notification.
+        lock.unlock();
+        xSemaphoreTake(semaphore_, portMAX_DELAY);
+
+        // Decrement the count of waiters.
+        oldISRState = taskENTER_CRITICAL_FROM_ISR();
+        --waitersCount_;
+        taskEXIT_CRITICAL_FROM_ISR(oldISRState);
+
+        // Re-acquire the mutex before exiting.
+        lock.lock();
+    }
+
+    void notify_one()
+    {
+        if (waitersCount_ > 0) {        // Check if there are any waiters.
+            xSemaphoreGive(semaphore_); // Wake up one waiter.
+        }
+    }
+
+    void notify_all()
+    {
+        while (waitersCount_ > 0) { // Keep waking all waiters.
+            xSemaphoreGive(semaphore_);
+            // Small delay to allow other tasks to respond to the semaphore.
+            vTaskDelay(pdMS_TO_TICKS(10));
+        }
+    }
+
+  private:
+    SemaphoreHandle_t semaphore_;
+    volatile UBaseType_t waitersCount_;
+};
+template<typename Event>
+using EventQueue = EventQueueT<Event, FreeRTOSMutex, FreeRTOSConditionVariable>;
+
+template<typename HsmType, typename Events>
+class AsyncExecutionPolicy : public HsmType
+{
+  public:
+    using Event = tuple_to_variant_t<Events>;
+    // using EventQueue = FreeRTOSEventQueue<Event>; // Adapted for FreeRTOS
+    using TaskCallback = void (*)(AsyncExecutionPolicy*);
+
+    AsyncExecutionPolicy()
+      : taskCallback(AsyncExecutionPolicy::StepTask)
+    {
+        interrupt_ = pdFALSE;
+        xTaskCreate(reinterpret_cast<TaskFunction_t>(taskCallback),
+                    "AsyncPolicyTask",
+                    configMINIMAL_STACK_SIZE,
+                    this,
+                    tskIDLE_PRIORITY,
+                    &smTaskHandle);
+    }
+
+    AsyncExecutionPolicy(const AsyncExecutionPolicy&) = delete;
+    AsyncExecutionPolicy& operator=(const AsyncExecutionPolicy&) = delete;
+    AsyncExecutionPolicy(AsyncExecutionPolicy&&) = delete;
+    AsyncExecutionPolicy& operator=(AsyncExecutionPolicy&&) = delete;
+
+    virtual ~AsyncExecutionPolicy()
+    {
+        interrupt_ = pdTRUE;
+        // Proper FreeRTOS task deletion if needed, ensuring clean-up.
+        if (smTaskHandle != nullptr) {
+            vTaskDelete(smTaskHandle);
+            smTaskHandle = nullptr;
+        }
+    }
+
+    void send_event(const Event& event) { eventQueue.addEvent(event); }
+
+  protected:
+    TaskCallback taskCallback{};
+    TaskHandle_t smTaskHandle{};
+    EventQueue eventQueue;
+    BaseType_t interrupt_;
+
+    static void StepTask(void* pvParameters)
+    {
+        auto* policy = static_cast<AsyncExecutionPolicy*>(pvParameters);
+        policy->step();
+    }
+
+    void step()
+    {
+        while (!interrupt_) {
+            processEvent();
+        }
+    }
+
+    void process_event()
+    {
+        Event const& nextEvent = eventQueue.nextEvent();
+        if (!eventQueue.interrupted()) {
+            std::visit([this](auto const& e) { return this->handle(e); },
+                       nextEvent);
+        }
+    }
+};
+
+#else // __FREE_RTOS__ is not defined
+
+template<typename Event>
+using EventQueue = EventQueueT<Event, std::mutex, std::condition_variable_any>;
+#endif
+
+// Single threaded execution policy
+template<typename HsmType, typename Events>
+struct SingleThreadedExecutionPolicy : public HsmType
+{
+    using Event = tuple_to_variant_t<Events>;
+
+    bool step()
+    {
+        // This is a blocking wait
+        Event const& nextEvent = eventQueue_.nextEvent();
+        // go down the Hsm hierarchy to handle the event as that is the
+        // "most active state"
+        return std::visit(
+          [this](auto&& e) -> bool { return HsmType::handle(e); }, nextEvent);
+    }
+
+    void send_event(Event const& event) { eventQueue_.push_back(event); }
+
+  private:
+    EventQueue<Event> eventQueue_;
+    bool interrupt_{};
+    tuple_to_variant_t<Events> event_;
+};
+
+// Asynchronous execution policy
+template<typename HsmType, typename Events>
+struct AsyncExecutionPolicy : public HsmType
+{
+    using Event = tuple_to_variant_t<Events>;
+    using ThreadCallback = void (AsyncExecutionPolicy::*)();
+
+    AsyncExecutionPolicy()
+      : threadCallback_(&AsyncExecutionPolicy::step)
+    {
+        smThread_ = std::thread(threadCallback_, this);
+    }
+
+    AsyncExecutionPolicy(AsyncExecutionPolicy const&) = delete;
+    AsyncExecutionPolicy operator=(AsyncExecutionPolicy const&) = delete;
+    AsyncExecutionPolicy(AsyncExecutionPolicy&&) = delete;
+    AsyncExecutionPolicy operator=(AsyncExecutionPolicy&&) = delete;
+
+    virtual ~AsyncExecutionPolicy()
+    {
+        eventQueue_.stop();
+        interrupt_ = true;
+        if (smThread_.joinable()) {
+            smThread_.join();
+        }
+    }
+
+    void send_event(Event const& event) { eventQueue_.addEvent(event); }
+
+  protected:
+    ThreadCallback threadCallback_;
+    std::thread smThread_;
+    EventQueue<Event> eventQueue_;
+    bool interrupt_{};
+
+    virtual void step()
+    {
+        while (!interrupt_) {
+            process_event();
+        }
+    };
+
+    void process_event()
+    {
+        // This is a blocking wait
+        Event const& nextEvent = eventQueue_.nextEvent();
+        if (!eventQueue_.interrupted()) {
+            std::visit([this](auto const& e) { return this->handle(e); },
+                       nextEvent);
+        }
+    }
+};
+
+///
+/// A simple observer class. The notify method will be invoked by an
+/// AsyncExecWithObserver state machine after event processing. This observer
+/// also implements a blocking wait so that test methods can invoke the wait
+/// method to synchronize with the event processing.
+///
+template<typename LockType, typename ConditionVarType>
+struct BlockingObserverT
+{
+    void notify()
+    {
+        std::unique_lock<std::mutex> lock(smBusyMutex_);
+        notified_ = true;
+        cv_.notify_all();
+    }
+
+    void wait()
+    {
+        std::unique_lock<std::mutex> lock(smBusyMutex_);
+        cv_.wait(lock, [this] { return this->notified_ == true; });
+        notified_ = false;
+    }
+
+  private:
+    LockType smBusyMutex_;
+    ConditionVarType cv_;
+    bool notified_{};
+};
+
+#ifdef __FREE_RTOS__
+using BlockingObserver =
+  BlockingObserverT<FreeRTOSMutex, FreeRTOSConditionVariable>;
+#else
+using BlockingObserver = BlockingObserverT<std::mutex, std::condition_variable>;
+#endif
+
+///
+/// Another asynchronous execution policy. The only difference with
+/// AnsycExecutionPolicy is that an Observer's notify method will be invoked at
+/// the end of processing each event - specifically, right before the blocking
+/// wait for the next event.
+///
+template<typename HsmType, typename Observer, typename Events>
+struct AsyncExecWithObserver
+  : public AsyncExecutionPolicy<HsmType, Events>
+  , public Observer
+{
+    using AsyncExecutionPolicy<HsmType, Events>::interrupt_;
+    using Observer::notify;
+
+    void step() override
+    {
+        while (!interrupt_) {
+            Observer::notify();
+            AsyncExecutionPolicy<HsmType, Events>::process_event();
+        }
+    }
+};
+
+///
+/// Execution policy that uses a BlockingObserver.
+/// This is illustrative of chaining policies together.
+///
+template<typename HsmType, typename Events>
+using AsyncBlockingObserver =
+  AsyncExecWithObserver<HsmType, BlockingObserver, Events>;
