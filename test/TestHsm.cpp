@@ -6,17 +6,13 @@
 
 // Example usage
 // A Switch HSM
-struct SwitchHsmTraits
-{
+struct SwitchHsmTraits {
     // Events
-    struct Toggle
-    {};
+    struct Toggle {};
 
     // States
-    struct Off
-    {};
-    struct On
-    {};
+    struct Off {};
+    struct On {};
 
     using transitions =
       std::tuple<Transition<Off, Toggle, On>, Transition<On, Toggle, Off>>;
@@ -24,8 +20,7 @@ struct SwitchHsmTraits
 
 using SwitchHsm = make_hsm_t<SwitchHsmTraits>;
 
-TEST_CASE("SwitchHsm")
-{
+TEST_CASE("SwitchHsm") {
     SwitchHsm hsm;
     REQUIRE(std::holds_alternative<SwitchHsmTraits::Off*>(hsm.current_state_));
     hsm.handle(SwitchHsmTraits::Toggle());
@@ -36,14 +31,11 @@ TEST_CASE("SwitchHsm")
 
 namespace TrafficLight {
 
-struct LightTraits : clocked_trait
-{
-    struct G1
-    {
+struct LightTraits : clocked_trait {
+    struct G1 {
         void exit(LightTraits& t) { t.ticks_ = 0; }
 
-        auto guard(LightTraits& t) -> bool
-        {
+        auto guard(LightTraits& t) -> bool {
             if (t.ticks_ >= 30) {
                 return true;
             }
@@ -51,8 +43,7 @@ struct LightTraits : clocked_trait
         };
     };
 
-    struct Y1
-    {
+    struct Y1 {
         void entry(LightTraits& t) { t.walk_pressed_ = false; }
 
         void exit(LightTraits& t) { t.ticks_ = 0; }
@@ -60,17 +51,14 @@ struct LightTraits : clocked_trait
         auto guard(LightTraits& t) -> bool { return t.ticks_ >= 5; };
     };
 
-    struct G2
-    {
+    struct G2 {
         void exit(LightTraits& t) { t.ticks_ = 0; }
-        auto guard(LightTraits& t) -> bool
-        {
+        auto guard(LightTraits& t) -> bool {
             return (!t.walk_pressed_) ? t.ticks_ >= 60 : t.ticks_ >= 30;
         };
     };
 
-    struct Y2
-    {
+    struct Y2 {
         void exit(LightTraits& t) { t.ticks_ = 0; }
 
         auto guard(LightTraits& t) -> bool { return t.ticks_ >= 5; };
@@ -90,38 +78,29 @@ struct LightTraits : clocked_trait
 // Emergency override trait. G1 and G2 will transition every five ticks. If
 // walk_pressed_ is true, the light will transition to Y2 after 30 ticks. This
 // will be part of a hierarchical state machine
-struct EmergencyOverrideTraits : clocked_trait
-{
-    struct G1
-    {
+struct EmergencyOverrideTraits : clocked_trait {
+    struct G1 {
         void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
 
-        auto guard(EmergencyOverrideTraits& t) -> bool
-        {
+        auto guard(EmergencyOverrideTraits& t) -> bool {
             return t.ticks_ >= 5;
         };
     };
-    struct Y1
-    {
+    struct Y1 {
         void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
-        auto guard(EmergencyOverrideTraits& t) -> bool
-        {
+        auto guard(EmergencyOverrideTraits& t) -> bool {
             return t.ticks_ >= 5;
         };
     };
-    struct G2
-    {
+    struct G2 {
         void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
-        auto guard(EmergencyOverrideTraits& t) -> bool
-        {
+        auto guard(EmergencyOverrideTraits& t) -> bool {
             return t.ticks_ >= 5;
         };
     };
-    struct Y2
-    {
+    struct Y2 {
         void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
-        auto guard(EmergencyOverrideTraits& t) -> bool
-        {
+        auto guard(EmergencyOverrideTraits& t) -> bool {
             return t.ticks_ >= 5;
         };
     };
@@ -135,13 +114,10 @@ struct EmergencyOverrideTraits : clocked_trait
 };
 
 // Parent HSM - TrafficLight
-struct TrafficLightHsmTraits
-{
+struct TrafficLightHsmTraits {
     // Events
-    struct EmergencySwitchOn
-    {};
-    struct EmergencySwitchOff
-    {};
+    struct EmergencySwitchOn {};
+    struct EmergencySwitchOff {};
 
     using transitions = std::tuple<
       Transition<LightTraits, EmergencySwitchOn, EmergencyOverrideTraits>,
@@ -151,8 +127,7 @@ struct TrafficLightHsmTraits
 }
 
 // Clocked HSM
-TEST_CASE("TrafficLight")
-{
+TEST_CASE("TrafficLight") {
     using LightHsm = make_hsm_t<TrafficLight::LightTraits>;
     LightHsm hsm;
     REQUIRE(std::holds_alternative<TrafficLight::LightTraits::G1*>(
@@ -179,8 +154,7 @@ TEST_CASE("TrafficLight")
       hsm.current_state_));
 }
 
-TEST_CASE("TrafficLight with walk pressed")
-{
+TEST_CASE("TrafficLight with walk pressed") {
     using LightHsm = make_hsm_t<TrafficLight::LightTraits>;
     LightHsm hsm;
     REQUIRE(std::holds_alternative<TrafficLight::LightTraits::G1*>(
@@ -209,8 +183,7 @@ TEST_CASE("TrafficLight with walk pressed")
 }
 
 // // Test TrafficLightHsm
-TEST_CASE("TrafficLightHsm")
-{
+TEST_CASE("TrafficLightHsm") {
     using LightHsm = make_hsm_t<TrafficLight::LightTraits>;
     using EmergencyOverrideHsm =
       make_hsm_t<TrafficLight::EmergencyOverrideTraits>;
@@ -252,8 +225,7 @@ TEST_CASE("TrafficLightHsm")
 // Test OrthogonalHsm
 // Multiple TrafficLightHsm instances in parallel - sort of like a city street
 namespace CityStreet {
-struct Broadway
-{
+struct Broadway {
     // Traffic on Park Ave
     using ParkAveLights = TrafficLight::LightTraits;
     // Traffic on 5th Ave - specialize if needed
@@ -263,8 +235,7 @@ struct Broadway
 }
 
 // Test CityStreet
-TEST_CASE("CityStreet")
-{
+TEST_CASE("CityStreet") {
     using BroadwayHsm = CityStreet::Broadway::type;
     BroadwayHsm hsm;
     auto& park_ave = std::get<0>(hsm.hsms_);
@@ -304,8 +275,7 @@ TEST_CASE("CityStreet")
 }
 
 // Test StateMachine SingleThreadedExecutionPolicy
-TEST_CASE("Test SingleThreadedExecutionPolicy")
-{
+TEST_CASE("Test SingleThreadedExecutionPolicy") {
     // apply policy
     using Events =
       std::tuple<TrafficLight::TrafficLightHsmTraits::EmergencySwitchOn,
@@ -337,17 +307,16 @@ TEST_CASE("Test SingleThreadedExecutionPolicy")
       current_hsm->current_state_));
 }
 
-// Test StateMachine AsyncExecutionPolicy
-TEST_CASE("Test AsyncExecutionPolicy")
-{
+// Test StateMachine ThreadedExecutionPolicy
+TEST_CASE("Test ThreadedExecutionPolicy") {
     // apply policy
     using Events =
       std::tuple<TrafficLight::TrafficLightHsmTraits::EmergencySwitchOn,
                  TrafficLight::TrafficLightHsmTraits::EmergencySwitchOff,
                  ClockTickEvent>;
     using TrafficLightHsm =
-      AsyncBlockingObserver<make_hsm_t<TrafficLight::TrafficLightHsmTraits>,
-                            Events>;
+      ThreadedBlockingObserver<make_hsm_t<TrafficLight::TrafficLightHsmTraits>,
+                               Events>;
     using LightHsm = make_hsm_t<TrafficLight::LightTraits>;
     using EmergencyOverrideHsm =
       make_hsm_t<TrafficLight::EmergencyOverrideTraits>;
@@ -371,3 +340,49 @@ TEST_CASE("Test AsyncExecutionPolicy")
     hsm.wait();
     REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
 }
+
+// Test RealTimeExecutionPolicy
+#ifdef __linux__
+TEST_CASE("Test RealTimeExecutionPolicy") {
+    using Event =
+      std::variant<TrafficLight::TrafficLightHsmTraits::EmergencySwitchOn,
+                   TrafficLight::TrafficLightHsmTraits::EmergencySwitchOff,
+                   ClockTickEvent>;
+    using TrafficLightHsm = RealTimeExecutionPolicy<
+      make_hsm_t<TrafficLight::TrafficLightHsmTraits>,
+      EventQueueT<Event, std::mutex, std::condition_variable>>;
+    using EmergencyOverrideHsm =
+      make_hsm_t<TrafficLight::EmergencyOverrideTraits>;
+
+    TrafficLightHsm hsm;
+    hsm.send_event(TrafficLight::TrafficLightHsmTraits::EmergencySwitchOn());
+    hsm.start();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    REQUIRE(std::holds_alternative<EmergencyOverrideHsm*>(hsm.current_state_));
+    auto current_hsm = std::get<EmergencyOverrideHsm*>(hsm.current_state_);
+    REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideTraits::G1*>(
+      current_hsm->current_state_));
+    for (int i = 0; i < 5; i++) {
+        hsm.send_event(ClockTickEvent{});
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideTraits::Y1*>(
+      current_hsm->current_state_));
+    hsm.stop();
+}
+
+// Test RealTimePeriodicExecutionPolicy - use traffic light HSM
+TEST_CASE("Test RealTimePeriodicExecutionPolicy") {
+    using TrafficLightHsm = RealTimePeriodicExecutionPolicy<
+      make_hsm_t<TrafficLight::TrafficLightHsmTraits>>;
+
+    using LightHsm = make_hsm_t<TrafficLight::LightTraits>;
+
+    TrafficLightHsm hsm;
+    hsm.start();
+    std::cout << "Started" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
+    hsm.stop();
+}
+#endif // __linux__
