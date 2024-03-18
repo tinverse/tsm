@@ -328,7 +328,8 @@ struct Hsm : T {
     Hsm() {
         current_state_ = &std::get<initial_state>(states_);
         if constexpr (has_entry_v<initial_state>) {
-            initial_state* state = std::get<initial_state*>(current_state_);
+            initial_state* state =
+              *std::get_if<initial_state*>(&current_state_);
             if constexpr (std::is_invocable_v<decltype(&initial_state::entry),
                                               initial_state*,
                                               T&>) {
@@ -339,50 +340,36 @@ struct Hsm : T {
         }
     }
 
-    template<typename Event>
+    template<typename Event, typename State>
     void entry(Event e = Event()) noexcept {
-        std::visit(
-          [this, e](auto* state) {
-              using State = std::decay_t<decltype(*state)>;
-              if constexpr (is_hsm_trait_v<State>) {
-                  std::get<State>(states_).entry(e);
-              } else {
-                  if constexpr (has_entry_v<State>) {
-                      State* state = std::get<State*>(current_state_);
-                      if constexpr (std::is_invocable_v<decltype(&State::entry),
-                                                        State*,
-                                                        T&>) {
-                          state->entry(static_cast<T&>(*this));
-                      } else {
-                          state->entry();
-                      }
-                  }
-              }
-          },
-          current_state_);
+        State* state = *std::get_if<State*>(&current_state_);
+        if constexpr (is_hsm_trait_v<State>) {
+            state->template entry<Event, typename State::initial_state>(e);
+        } else {
+            if constexpr (has_entry_v<State>) {
+                if constexpr (std::is_invocable_v<decltype(&State::entry),
+                                                  State*,
+                                                  T&>) {
+                    state->entry(static_cast<T&>(*this));
+                } else {
+                    state->entry();
+                }
+            }
+        }
     }
 
-    template<typename Event>
-    void exit(Event e = Event()) {
-        std::visit(
-          [this, e](auto* state) {
-              using State = std::decay_t<decltype(*state)>;
-              if constexpr (is_hsm_trait_v<State>) {
-                  std::get<State>(states_).exit(e);
-              } else {
-                  if constexpr (has_exit_v<State>) {
-                      State* state = std::get<State*>(current_state_);
-                      if constexpr (std::is_invocable_v<decltype(&State::exit),
-                                                        State*,
-                                                        T&>) {
-                          state->exit(static_cast<T&>(*this));
-                      } else {
-                          state->exit();
-                      }
-                  }
-              }
-          },
-          current_state_);
+    template<typename Event, typename State>
+    void exit() {
+        State* state = *std::get_if<State*>(&current_state_);
+        if constexpr (has_exit_v<State>) {
+            if constexpr (std::is_invocable_v<decltype(&State::exit),
+                                              State*,
+                                              T&>) {
+                state->exit(static_cast<T&>(*this));
+            } else {
+                state->exit();
+            }
+        }
     }
 
     template<typename Event>
@@ -393,7 +380,7 @@ struct Hsm : T {
               bool handled = false;
               // if current_state is a state machine, call handle on it
               if constexpr (is_hsm_trait_t<State>::value) {
-                  handled = std::get<State>(states_).handle(e);
+                  handled = state->handle(e);
               }
               if (!handled) {
                   // Does State implement handle for Event?
@@ -445,7 +432,7 @@ struct Hsm : T {
             return;
         }
 
-        this->exit(Event());
+        this->template exit<Event, State>();
 
         // Optional Action
         this->perform_action<transition>(state);
@@ -455,7 +442,7 @@ struct Hsm : T {
         // switch to the new state
         current_state_ = &std::get<to>(states_);
 
-        this->entry(Event());
+        this->template entry<Event, to>();
     }
 
     template<typename State>
