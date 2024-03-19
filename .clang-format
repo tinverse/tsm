@@ -3,5 +3,6 @@ BasedOnStyle: Mozilla
 IndentWidth: '4'
 TabWidth: '4'
 UseTab: Never
-
+BreakBeforeBraces: Attach 
+AllowShortBlocksOnASingleLine: true
 ...

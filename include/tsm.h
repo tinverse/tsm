@@ -1,14 +1,6 @@
 #pragma once
 
-#include "AsyncExecutionPolicy.h"
-#include "Event.h"
-#include "EventQueue.h"
-#include "Hsm.h"
-#include "OrthogonalHsm.h"
-#include "SingleThreadedExecutionPolicy.h"
-#include "State.h"
-#include "TimedExecutionPolicy.h"
-#include "Transition.h"
+#include "TypedHsm.h"
 
 namespace tsm {
 
@@ -30,8 +22,8 @@ namespace tsm {
 /// 5. To process the event, call the step method
 /// sm.step();
 ///
-template<typename Hsm>
-using SingleThreadedHsm = SingleThreadedExecutionPolicy<Hsm>;
+template<typename HsmTrait>
+using SingleThreadedHsm = SingleThreadedExecutionPolicy<HsmTrait>;
 
 ///
 /// An Asynchronous state machine. Event processing is done in a separate
@@ -43,24 +35,25 @@ using SingleThreadedHsm = SingleThreadedExecutionPolicy<Hsm>;
 /// the HsmDefinition is done processing the previous event. It also simplifies
 /// the interface in that only one call to sendEvent is required.
 ///
-template<typename Hsm>
-using AsynchronousHsm = AsyncExecutionPolicy<Hsm>;
+template<typename HsmTrait>
+using ThreadedHsm = ThreadedExecutionPolicy<HsmTrait>;
 
-// The difference between Mealy and Moore machines is that Moore machines are
-// synchronously driven by a clock whereas Mealy machines are asynchronous. The
-// following are just aliases for SingleThreadedHsm and AsynchronousHsm.
-template<typename Hsm>
-using MooreHsm = SingleThreadedHsm<Hsm>;
-
-template<typename Hsm>
-using MealyHsm = AsynchronousHsm<Hsm>;
-
-// This Moore machine is driven by a periodic timer.
-template<typename Hsm,
-         template<typename>
+// This state machine is driven by a periodic timer.
+template<typename HsmTrait,
+         template<class, class>
          class TimerType,
+         typename ClockType,
          typename DurationType>
-using ClockedMooreHsm =
-  TimedExecutionPolicy<MooreHsm<Hsm>, TimerType, DurationType>;
+using PeriodicHsm =
+  PeriodicExecutionPolicy<HsmTrait, TimerType<ClockType, DurationType>>;
+
+// Real-time state machine. This state machine is driven by a periodic timer.
+template<typename HsmTrait,
+         template<class, class>
+         class TimerType,
+         typename ClockType,
+         typename DurationType>
+using RealTimePeriodicHsm =
+  RealTimeExecutionPolicy<HsmTrait, TimerType<ClockType, DurationType>>;
 
 } // namespace tsm
