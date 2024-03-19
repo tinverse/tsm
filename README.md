@@ -9,30 +9,32 @@ The [C++ API documentation](https://tinverse.github.io/tsm/index.html) has an ov
 tsm is a state machine framework with support for Hierarchical and Orthogonal State Machines.
 
 ### Features:
-    * Hierarchical State machine.
+    * Typed Hierarchical State machine.
     * Thread safe event queue.
-    * Single Threaded (Moore) or Asynchronous (Mealy) execution.
-    * Timer driven execution policy.
+    * Single Threaded, Asynchronous, Periodic, Concurrent and real-time execution policies out of the box.
     * Ease of installation and integration - Header only, CMake and Nix support.
     * Policy Based - Ability to customize behavior by defining execution policies.
+
+### Issues:
+    * Mostly Linux only. There is some freeRTOS support, but the status is unknown.
+    * C++17 required.
+    * std::variant is used.
 
 ### Quick Overview
 #### A Finite State Machine
 
 ```cpp
-struct Switch : Hsm<Switch>
-{
-    Switch()
-    {
-        setStartState(&off);
+struct SwitchTraits {
+    // Events
+    struct Toggle {};
 
-        add(on, toggle, off);
-        add(off, toggle, on);
-    }
+    // States
+    struct Off {};
+    struct On {};
 
-    State on, off;
-
-    Event toggle;
+    using transitions =
+      std::tuple<Transition<Off, Toggle, On>,
+                 Transition<On, Toggle, Off>>;
 };
 ```
 
@@ -41,287 +43,248 @@ Clients can interact with this state machine in two ways - Synchronously and Asy
 ##### Single Threaded Execution Policy
 
 ```cpp
-using SwitchFsm = SingleThreadedHsm<Switch>;
+using SwitchFsm = SingleThreadedHsm<SwitchTraits>;
 int main() {
     SwitchFsm s;
-    s.startSM();
-    s.sendEvent(s.toggle);
+    s.sendEvent(Toggle{});
     s.step();
     // ...
-    s.stopSM();
 }
 ```
 
 ##### Asynchronous Execution Policy
 
 ```cpp
-using SwitchFsm = AsynchronousHsm<Switch>;
+using SwitchSM = ThreadedHsm<SwitchTraits>;
 int main() {
-    SwitchFsm s;
-    s.startSM();
+    SwitchSM s;
+    s.start(); // Starts the state machine/event processing thread.
     s.sendEvent(s.toggle);
     // ...
-    s.stopSM();
+    s.stop(); // Shuts down the event processing thread.
 }
 ```
 
-`s.step()` is missing in the AsynchronousHsm. The EventQueue blocks waiting for the next event to arrive and processes it as soon as it arrives.
-
-#### A Hierarchical State Machine
-Assume you are trying to model a `CdPlayer` as a state machine.
-
-```cpp
-struct CdPlayer : public Hsm<CdPlayer>
-{
-    // Actions
-    void PlaySong()
-    {
-        LOG(INFO) << "Play Song";
-    }
-
-    // Guards
-    bool PlaySongGuard()
-    {
-        DLOG(INFO) << "Play Song Guard";
-        return true;
-    }
-    // States
-    State Stopped, Paused, Empty, Open;
-    PlayingHsm Playing; // <-------- Note
-
-    // Events
-    Event play, open_close, stop_event, cd_detected, pause, end_pause;
-}
-```
-
-If you noticed, `Playing` is another state machine hidden among the CdPlayer's states declared above. State Machines are states too. When you have the ability to integrate them in this manner, you get a Hierarchical State Machine aka State Chart aka Harel State Chart. What does `Playing` look like?
-
-```cpp
-// Playing Hsm
-struct Playing : public Hsm<PlayingHsm>
-{
-
-    // ... ignoring boiler plate stuff ...
-
-    // States
-    State Song1, Song2, Song3;
-
-    // Events
-    Event next_song, prev_song;
-
-};
-
-```
-
-Let's see how the state transition table looks like for the CdPlayer.
-
-##### State Transition Table
-
-```cpp
-// Goes in the header along with your State Machine class or .cpp file.
-CdPlayerHsm::CdPlayerHsm()
-{
-    setStartState(&Empty);
-
-    // Tell Playing who's the parent. <---------------- Note
-    Playing.setParent(this);
-
-    // State Transition Table
-    add(Stopped, play, Playing); // <-------- Note
-    add(Stopped, open_close, Open);
-    add(Stopped, stop_event, Stopped);
-    //-------------------------------------------------
-    add(Open, open_close, Empty);
-    //-------------------------------------------------
-    add(Empty, open_close, Open);
-    add(Empty, cd_detected, Stopped);
-    add(Empty, cd_detected, Playing);
-    //-------------------------------------------------
-    add(Playing, stop_event, Stopped);
-    add(Playing, pause, Paused);
-    add(Playing, open_close, Open);
-    //-------------------------------------------------
-    add(Paused, end_pause, Playing);
-    add(Paused, stop_event, Stopped);
-    add(Paused, open_close, Open);
-}
-
-```
-
-`Playing` is just treated just as any other (atomic) state. A transition like `add(Stopped, play, Playing);`, is read as "When the machine is `Stopped` and gets a `play` event, it transitions to the `Playing` state". Transitions can have actions and guards attached to them.
-
-##### Actions and Guards
-Looking at `Playing`'s state transition table,
-
-```cpp
-PlayingHsm()
-{
-    setStartState(&Song1);
-
-    add(Song1, next_song, Song2, &PlayingHsm::PlaySong, &PlayingHsm::PlaySongGuard);  // <-------- Note
-    add(Song2, next_song, Song3);
-    add(Song3, prev_song, Song2);
-    add(Song2, prev_song, Song1);
-}
-
-```
-
-we notice `PlaySong` and `PlaySongGuard`. Guards of course prevent a transition from taking place. To make such decisions, they must have access to some additional information pertaining to the system.
-
-```cpp
-bool PlaySongGuard()
-{
-    // purely made up
-    if (currentSong_.noiseLevel() > 50) {
-        return false;
-    }
-    return true;
-}
-```
-
-Actions perform an action *after* exiting the current state and *before* entering the next. Ideally, they are able to perform the action based on some knowledge of the system state. Hence they are implemented as member functions of an Hsm. As seen for SwitchFsm, we can do:
-
-```cpp
-#include <tsm.h>
-int main() {
-    SingleThreadedHsm<CdPlayer> sm;
-    sm.startSM();
-    sm.sendEvent(play);
-    sm.step(); // take the 'play' event from the event queue and transition to the next state
-    // ...
-    sm.stopSM();
-}
-```
-
-or
-
-```cpp
-AsynchronousHsm<CdPlayer> sm;
-sm.sendEvent(play);
-```
-
-Note again that the call to `sm.step()` is not required for the `AsynchronousHsm`. Events will be processed in a separate thread.
+`s.step()` is missing in the ThreadedHsm. The State Machine thread blocks waiting for the next event to arrive in the event queue and processes it as soon as it arrives. So far, the "contract" is that the user creates a "Traits" struct. When a policy is applied to it, the `Traits` type is transformed into a state machine. The only *must have* requirement for a Traits struct is that it must have a `transitions` type which defines the state transition table.
 
 ##### Start and Stop States
 
-Specify the start state within the Hsm's constructor `setStartState(&Song1)`. This is required. If there is a termination state, that has to be specified as well e.g. `setStopState(&Song3)`.
+Initial states are implied by the first "from" state in the first transition. There isn't support for stop states.
 
-#### TimedExecutionPolicy
+#### PeriodicExecutionPolicy
 
 A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :). This problem is modeled with a custom "handle" method without a state transition table and a LightState type inherited from the State struct.
 
+To model a solution, we first implement the `TrafficLight` traits. To reduce repetition in the transition table, `Transition`s are marked as `ClockedTransition`s. The `Traits` struct also inherits from a `clocked_trait` so that a Policy class can appropriately "clock" or "tick" the state machine. This is a very important pattern that abstracts away the notion of time. Now we are able to run any trait that inherits from `clocked_trait` at any `Duration` (1ms, 1s, 1us) or multiples for e.g. every 42ms. This makes testing easier as we can test the clocking separately from the state machine logic.
+
+Summary so far. `Trait`s can have `transition`s. Implicit in that statement is that `Trait`s have to define `States` and `Events`. `States` can have `entry`, `exit`, `guard` and `actions` associated with them.
+
+Below is a good start. From the description above, the state transitions are pretty clear. We've defined the states and a boolean that keeps track of the `walk_pressed_` button.
+
 ```cpp
-struct TrafficLightHsm : public IHsm
-{
-    // ... with a few details removed...
+namespace TrafficLight {
 
+struct LightTraits : clocked_trait {
     // States
-    LightState g1, y1, y2;
-    G2 g2;      // G2 is derived from LightState, which in turn is inherited from State.
+    struct G1 { };
 
-    // Events
-    Event timer_event;
+    struct Y1 { };
 
-    // Walk button
-    bool walkPressed;
-    uint64_t ticks_;
+    struct G2 { };
+
+    struct Y2 { };
+
+    bool walk_pressed_{};
+
+    using transitions =
+      std::tuple<ClockedTransition<G1, Y1>,
+                 ClockedTransition<Y1, G2>,
+                 ClockedTransition<G2, Y2>,
+                 ClockedTransition<Y2, G1>>;
 };
 ```
-`LightState` looks like this:
+Once we "start" the traffic light, `G1` is not allowed to transition to `Y1` until it has been on for 30s. A good candidate is a `guard` function. So we add a guard to `G1` and modify the state transition table accordingly. Also, on exiting this state, `Y1` will have to count to 5 and then transition to `G2`. So the tick count is reset. We add the `guard` and `exit` functions to `G1`
 
 ```cpp
-    struct LightState : public State
-    {
-        LightState(std::string const& name, uint64_t limit, LightState& next)
-          : State(name)
-          , limit_(limit)
-          , next_(next)
-        {}
+  struct G1 {
+        void exit(LightTraits& t) { t.ticks_ = 0; }
 
-        ~LightState() override = default;
+        auto guard(LightTraits& t) -> bool {
+            if (t.ticks_ >= 30) {
+                return true;
+            }
+            return false;
+        };
 
-        uint64_t getLimit() const { return limit_; }
-        LightState& nextState() { return next_; }
+```
+Then modify the transition table to know about the guard.
 
-      private:
-        const uint64_t limit_;
-        LightState& next_;
+```cpp
+      std::tuple<ClockedTransition<G1, Y1, decltype(&G1::guard)>
+```
+
+A more complete state trait implementation will look like this. Look at the signatures of the exit and guard functions. Any information like `walk_pressed_` is retained in the state trait itself. The state machine itself is trait agnostic and doesn't care about the trait's implementation details.
+
+```cpp
+namespace TrafficLight {
+
+struct LightTraits : clocked_trait {
+    struct G1 {
+        void exit(LightTraits& t) { t.ticks_ = 0; }
+
+        auto guard(LightTraits& t) -> bool {
+            if (t.ticks_ >= 30) {
+                return true;
+            }
+            return false;
+        };
     };
 
+    struct Y1 {
+        void entry(LightTraits& t) { t.walk_pressed_ = false; }
+
+        void exit(LightTraits& t) { t.ticks_ = 0; }
+
+        auto guard(LightTraits& t) -> bool { return t.ticks_ >= 5; };
+    };
+
+    struct G2 {
+        void exit(LightTraits& t) { t.ticks_ = 0; }
+        auto guard(LightTraits& t) -> bool {
+            return (!t.walk_pressed_) ? t.ticks_ >= 60 : t.ticks_ >= 30;
+        };
+    };
+
+    struct Y2 {
+        void exit(LightTraits& t) { t.ticks_ = 0; }
+
+        auto guard(LightTraits& t) -> bool { return t.ticks_ >= 5; };
+
+        auto action(LightTraits& t) -> void { t.walk_pressed_ = false; }
+    };
+
+    bool walk_pressed_{};
+
+    using transitions =
+      std::tuple<ClockedTransition<G1, Y1, decltype(&G1::guard)>,
+                 ClockedTransition<Y1, G2, decltype(&Y1::guard)>,
+                 ClockedTransition<G2, Y2, decltype(&G2::guard)>,
+                 ClockedTransition<Y2, G1, decltype(&Y2::guard)>>;
+};
 ```
-
-Event handling, guard/action transition table functionality etc. are all captured here:
-
-```cpp
-    void TrafficLightHsm::handle(Event const&) override
-    {
-        ++ticks_;
-        auto* state = static_cast<LightState*>(this->currentState_);
-        bool guard = (this->ticks_ > state->getLimit());
-        if (state->id == G2.id) {
-            guard |= (walkPressed && (this->ticks_ > G2WALK));
-        }
-
-        if (guard) { // ok to transition?
-            // disable walkPressed when exiting G2
-            if ((state->id == G2.id) && walkPressed) {
-                walkPressed = false;
-            }
-
-            ticks_ = 0;
-            // set the next state
-            this->currentState_ = &state->nextState();
-        }
-    }
-```
-To turn it into a timer driven state machine,
+A namespace is used as an additional encapsulation mechanism. Now that there is a "simulated" model for this traffic light, we can drive it with a timer that "ticks" the state machine at a frequency of 1Hz. To turn this trait into a periodic state machine,
 
 ```cpp
 #include <tsm.h>
-using TrafficLightTimedHsm = tsm::ClockedMooreHsm<TrafficLightHsm,
-                                                  tsm::ThreadSleepTimer,
-                                                  std::chrono::microseconds>;
+using TrafficLightHsm = tsm::PeriodicHsm<LightTraits,
+                                                  PeriodicSleepTimer,
+                                                  AccurateClock, // provided within TypedHsm.h
+                                                  std::chrono::seconds>;
+```
+... and voila! We have transformed the LightTraits type by applying a policy that sends ticks at 1s intervals. Usage:
 
-using AsyncTrafficLightTimedHsm =
-  TimedExecutionPolicy<AsynchronousHsm<TrafficLightHsm>,  // <----- Note use of AsynchronousHsm
-                       tsm::ThreadSleepTimer,
-                       std::chrono::milliseconds>;
+```cpp
 int main() {
-    using namespace std::chrono_literals;
-    // Painfully named as such to showcase capabilities.
-    AsyncTrafficLightTimedHsm t(1ms);
-    t.startSM();
+    TrafficLightHsm hsm;
+    hsm.start();
     // ...
 }
 ```
 
-`t.start()` will start a timer with a period of 1s. At the expiration of this timer, a `timer_event` will be placed in the event queue.
+`hsm.start()` will start a timer with a period of 1s. At the expiration of this timer, a `ClockTickEvent` will be placed in the event queue. After 30 such ticks are processed, the state machine will use the transition table information to perform the transition to `Y1`.
+
+A couple more "contract"s to note. `entry`, `exit`, `action` and `guard`s are named as such. You can optionally pass a reference to the trait type. Having these methods within a state is also optional.
+
+#### A Hierarchical State Machine
+
+Traits can be nested as "states" within a transition table. Let's say the TrafficLight has to transition to an "EmergencyMode".
+
+```cpp
+struct EmergencyOverrideTraits : clocked_trait {
+    struct G1 {
+        void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
+
+        auto guard(EmergencyOverrideTraits& t) -> bool {
+            return t.ticks_ >= 5;
+        };
+    };
+    struct Y1 {
+        void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
+        auto guard(EmergencyOverrideTraits& t) -> bool {
+            return t.ticks_ >= 5;
+        };
+    };
+    struct G2 {
+        void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
+        auto guard(EmergencyOverrideTraits& t) -> bool {
+            return t.ticks_ >= 5;
+        };
+    };
+    struct Y2 {
+        void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
+        auto guard(EmergencyOverrideTraits& t) -> bool {
+            return t.ticks_ >= 5;
+        };
+    };
+
+    bool walk_pressed_{};
+    using transitions =
+      std::tuple<ClockedTransition<G1, Y1, decltype(&G1::guard)>,
+                 ClockedTransition<Y1, G2, decltype(&Y1::guard)>,
+                 ClockedTransition<G2, Y2, decltype(&G2::guard)>,
+                 ClockedTransition<Y2, G1, decltype(&Y2::guard)>>;
+};
+```
+We've defined the traits for emergency override above. Simply, it cycles through each state at 5s. Here is the trait with both these traits:
+
+```cpp
+struct TrafficLightHsmTraits {
+    // Events
+    struct EmergencySwitchOn {};
+    struct EmergencySwitchOff {};
+
+    using transitions = std::tuple<
+      Transition<LightTraits, EmergencySwitchOn, EmergencyOverrideTraits>,
+      Transition<EmergencyOverrideTraits, EmergencySwitchOff, LightTraits>>;
+};
+```
+We've added two events to transition to emergency mode and back to normal mode. To create a Hsm with two nested state machines, the application of policy classes is no different.
+
+```cpp
+    using LightHsm = ThreadedHsm<TrafficLight::LightTraits>;
+
+    REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
+
+    hsm.send_event(TrafficLight::TrafficLightHsmTraits::EmergencySwitchOn());
+
+    REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideTraits::G1*>(
+      current_hsm->current_state_));
+```
+For details see `TestHsm.cpp`.
+
+#### An Orthogonal State Machine
+Pushing the traffic light example a little farther:
+
+```cpp
+namespace CityStreet {
+struct Broadway {
+    // Traffic on Park Ave
+    using ParkAveLights = TrafficLight::LightTraits;
+    // Traffic on 5th Ave - specialize if needed
+    using FifthAveLights = TrafficLight::LightTraits;
+    using type = make_orthogonal_hsm_t<ParkAveLights, FifthAveLights>;
+};
+}
+```
+
+#### A Concurrent State Machine
+The same example above can be turned into a concurrent state machine when instantiated with:
+```cpp
+    using type = make_concurrent_hsm_t<ParkAveLights, FifthAveLights>;
+```
 
 ### Policy Based Design
-
-We could just as well have created a timer driven traffic light in this manner:
-
-```cpp
-#include <tsm.h>
-
-using TrafficLightTimedHsm = tsm::ClockedMooreHsm<TrafficLightHsm,
-                                                  tsm::ThreadSleepTimer,
-                                                  std::chrono::milliseconds>;
-int main() {
-    using namespace std::chrono_literals;
-    // Painfully named as such to showcase capabilities.
-    TrafficLightTimedHsm t(1ms);
-    t.startSM();
-    // ...
-}
-```
-
-The only difference is that we are creating a TrafficLightTimedHsm where we have to drive the state machine with `t.step()` for event processing. That is flexible... and powerful. We can also write policies to
-
-    * Persist state changes to log file
-    * Calculate statistics on transitions
-    * Write 'watchers' for particular conditions
-    * Notify observers on events
+Policy classes are provided for several scenarios. Threaded (Asynchronous), Single threaded, Periodic, Real-time and concurrent execution.
 
 Like it? Try it.
 
@@ -373,4 +336,3 @@ Please feel free to write up issues and submit pull requests. There is a .clang-
 
 ### TODOs
     * UML front end to define State Machine.
-    * Implement concurrent execution policy for OrthogonalHsmExecutor.

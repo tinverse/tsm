@@ -22,6 +22,7 @@ struct SwitchHsmTraits {
 using SwitchHsm = make_hsm_t<SwitchHsmTraits>;
 
 TEST_CASE("SwitchHsm") {
+    using SwitchHsm = make_hsm_t<SwitchHsmTraits>;
     SwitchHsm hsm;
     REQUIRE(std::holds_alternative<SwitchHsmTraits::Off*>(hsm.current_state_));
     hsm.handle(SwitchHsmTraits::Toggle());
@@ -279,7 +280,7 @@ TEST_CASE("CityStreet") {
 TEST_CASE("Test SingleThreadedExecutionPolicy") {
     // apply policy
     using TrafficLightHsm = SingleThreadedExecutionPolicy<
-      make_hsm_t<TrafficLight::TrafficLightHsmTraits>>;
+      TrafficLight::TrafficLightHsmTraits>;
     using LightHsm = make_hsm_t<TrafficLight::LightTraits>;
     using EmergencyOverrideHsm =
       make_hsm_t<TrafficLight::EmergencyOverrideTraits>;
@@ -307,7 +308,7 @@ TEST_CASE("Test SingleThreadedExecutionPolicy") {
 TEST_CASE("Test ThreadedExecutionPolicy") {
     // apply policy
     using TrafficLightHsm =
-      ThreadedBlockingObserver<make_hsm_t<TrafficLight::TrafficLightHsmTraits>>;
+      ThreadedBlockingObserver<TrafficLight::TrafficLightHsmTraits>;
     using LightHsm = make_hsm_t<TrafficLight::LightTraits>;
     using EmergencyOverrideHsm =
       make_hsm_t<TrafficLight::EmergencyOverrideTraits>;
@@ -334,11 +335,11 @@ TEST_CASE("Test ThreadedExecutionPolicy") {
     hsm.stop();
 }
 
-// Test RealTimeExecutionPolicy
+// Test RealtimeExecutionPolicy
 #ifdef __linux__
-TEST_CASE("Test RealTimeExecutionPolicy") {
+TEST_CASE("Test RealtimeExecutionPolicy") {
     using TrafficLightHsm =
-      RealTimeExecutionPolicy<make_hsm_t<TrafficLight::TrafficLightHsmTraits>>;
+      RealtimeExecutionPolicy<TrafficLight::TrafficLightHsmTraits>;
     using EmergencyOverrideHsm =
       make_hsm_t<TrafficLight::EmergencyOverrideTraits>;
 
@@ -359,10 +360,10 @@ TEST_CASE("Test RealTimeExecutionPolicy") {
     hsm.stop();
 }
 
-// Test RealTimePeriodicExecutionPolicy - use traffic light HSM
+// Test RealtimePeriodicExecutionPolicy - use traffic light HSM
 TEST_CASE("Test PeriodicExecutionPolicy") {
     using TrafficLightHsm =
-      PeriodicExecutionPolicy<make_hsm_t<TrafficLight::TrafficLightHsmTraits>>;
+      RealtimePeriodicExecutionPolicy<TrafficLight::TrafficLightHsmTraits>;
 
     using LightHsm = make_hsm_t<TrafficLight::LightTraits>;
 
@@ -370,6 +371,9 @@ TEST_CASE("Test PeriodicExecutionPolicy") {
     hsm.start();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
+    auto current_hsm = std::get<LightHsm*>(hsm.current_state_);
+    REQUIRE(std::holds_alternative<TrafficLight::LightTraits::G1*>(
+      current_hsm->current_state_));
     hsm.stop();
 }
 #endif // __linux__

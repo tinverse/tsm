@@ -304,7 +304,7 @@ inline constexpr bool is_state_trait_v =
 
 struct clocked_trait {
     constexpr static bool is_clocked = true;
-    int ticks_{};
+    volatile int ticks_{};
 };
 
 // Check if type has is_clocked or inherits from a type with is_clocked
@@ -387,7 +387,7 @@ struct Hsm : T {
                   if constexpr (has_valid_transition_v<State,
                                                        Event,
                                                        transitions>) {
-                      this->handleEventForState<Event>(state);
+                      this->handle_transition<Event>(state);
                       handled = true;
                   }
               }
@@ -423,7 +423,7 @@ struct Hsm : T {
         }
     }
     template<typename Event, typename State>
-    void handleEventForState(State* state) {
+    void handle_transition(State* state) {
         // Assume TransitionMap provides the matching transition
         using transition =
           typename TransitionMap<State, Event, transitions>::type;
@@ -510,7 +510,7 @@ struct ClockedHsm : HsmType {
     }
 
     bool handle(ClockTickEvent e) {
-        this->ticks_++;
+        ++this->ticks_;
         return HsmType::handle(e);
     }
 };
@@ -879,8 +879,9 @@ using get_events_t =
   unique_tuple_t<typename get_events_from_hsm<HsmType>::type>;
 
 // Single threaded execution policy
-template<typename HsmType>
-struct SingleThreadedExecutionPolicy : HsmType {
+template<typename TraitType>
+struct SingleThreadedExecutionPolicy : make_hsm_t<TraitType> {
+    using HsmType = make_hsm_t<TraitType>;
     using Event = tuple_to_variant_t<get_events_t<HsmType>>;
 
     bool step() {
@@ -900,8 +901,9 @@ struct SingleThreadedExecutionPolicy : HsmType {
 };
 
 // Asynchronous execution policy
-template<typename HsmType>
-struct ThreadedExecutionPolicy : HsmType {
+template<typename TraitType>
+struct ThreadedExecutionPolicy : make_hsm_t<TraitType> {
+    using HsmType = make_hsm_t<TraitType>;
     using Event = tuple_to_variant_t<get_events_t<HsmType>>;
 
     void start() {
@@ -1002,9 +1004,9 @@ struct ThreadedExecWithObserver
 /// Execution policy that uses a BlockingObserver.
 /// This is illustrative of chaining policies together.
 ///
-template<typename HsmT>
+template<typename TraitType>
 using ThreadedBlockingObserver =
-  ThreadedExecWithObserver<HsmT, BlockingObserver>;
+  ThreadedExecWithObserver<TraitType, BlockingObserver>;
 
 /// Helper to implement a Timed Execution Policy
 template<typename Clock = std::chrono::steady_clock,
@@ -1070,7 +1072,7 @@ struct IntervalTimer : public Timer<Clock, Duration> {
 // Periodic Timer
 // Lock up the calling thread for a period of time. Accuracy is determined by
 // real-time scheduler settings and OS scheduling policies
-template<typename Clock = std::chrono::steady_clock,
+template<typename Clock = AccurateClock,
          typename Duration = typename Clock::duration>
 struct PeriodicSleepTimer : public Timer<Clock, Duration> {
     PeriodicSleepTimer(Duration period = Duration(1))
@@ -1090,7 +1092,7 @@ struct PeriodicSleepTimer : public Timer<Clock, Duration> {
             .count();
         // remaining time if -1
         struct timespec remaining_ts;
-        while (nanosleep(&ts, &remaining_ts) == -1) {
+        while (nanosleep(&ts, &remaining_ts) == EINTR) {
             ts = remaining_ts;
         }
         // ensure that callback finishes within the period
@@ -1113,8 +1115,8 @@ struct RealtimeConfigurator {
     void config_realtime_thread() {
         // Set thread to real-time priority
         struct sched_param param;
-        param.sched_priority = PROCESS_PRIORITY;
-        if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &param) != 0) {
+        param.sched_priority = PROCESS_PRIORITY - 3;
+        if (pthread_setschedparam(pthread_self(), SCHED_RR, &param) != 0) {
             perror("pthread_setschedparam");
         }
 
@@ -1155,14 +1157,14 @@ struct RealtimeConfigurator {
 };
 
 // Real-time execution policy - set cpu isolation in grub
-template<typename HsmType>
-struct RealTimeExecutionPolicy
-  : ThreadedExecutionPolicy<HsmType>
+template<typename TraitType>
+struct RealtimeExecutionPolicy
+  : ThreadedExecutionPolicy<TraitType>
   , RealtimeConfigurator {
 
-    using ThreadedExecutionPolicy<HsmType>::smThread_;
-    using ThreadedExecutionPolicy<HsmType>::interrupt_;
-    using ThreadedExecutionPolicy<HsmType>::process_event;
+    using ThreadedExecutionPolicy<TraitType>::smThread_;
+    using ThreadedExecutionPolicy<TraitType>::interrupt_;
+    using ThreadedExecutionPolicy<TraitType>::process_event;
 
     void start() {
         smThread_ = RealtimeConfigurator::real_time_thread([this] {
@@ -1172,27 +1174,22 @@ struct RealTimeExecutionPolicy
         });
     }
 
-    virtual ~RealTimeExecutionPolicy() = default;
+    virtual ~RealtimeExecutionPolicy() = default;
 };
+
 // Periodic execution policy
-template<typename HsmType,
+template<typename TraitType,
          typename PeriodicTimer = PeriodicSleepTimer<std::chrono::steady_clock,
                                                      std::chrono::milliseconds>>
 struct PeriodicExecutionPolicy
-  : ThreadedExecutionPolicy<HsmType>
+  : ThreadedExecutionPolicy<TraitType>
   , PeriodicTimer {
-    using ThreadedExecutionPolicy<HsmType>::smThread_;
-    using ThreadedExecutionPolicy<HsmType>::interrupt_;
-    using ThreadedExecutionPolicy<HsmType>::process_event;
-    using ThreadedExecutionPolicy<HsmType>::send_event;
+    using ThreadedExecutionPolicy<TraitType>::interrupt_;
+    using ThreadedExecutionPolicy<TraitType>::send_event;
 
     void start() {
         PeriodicTimer::start();
-        smThread_ = std::thread([this] {
-            while (!interrupt_) {
-                process_event();
-            }
-        });
+        ThreadedExecutionPolicy<TraitType>::start();
 
         eventThread_ = std::thread([this] {
             while (!interrupt_) {
@@ -1203,8 +1200,7 @@ struct PeriodicExecutionPolicy
     }
 
     void stop() {
-        interrupt_ = true;
-        ThreadedExecutionPolicy<HsmType>::stop();
+        ThreadedExecutionPolicy<TraitType>::stop();
         if (eventThread_.joinable()) {
             eventThread_.join();
         }
@@ -1216,18 +1212,18 @@ struct PeriodicExecutionPolicy
 };
 
 // Periodic Real-time execution policy
-template<typename HsmType,
+template<typename TraitType,
          typename PeriodicTimer = PeriodicSleepTimer<std::chrono::steady_clock,
                                                      std::chrono::milliseconds>>
-struct RealTimePeriodicExecutionPolicy
+struct RealtimePeriodicExecutionPolicy
   : RealtimeConfigurator
-  , ThreadedExecutionPolicy<HsmType>
+  , ThreadedExecutionPolicy<TraitType>
   , PeriodicTimer {
 
-    using ThreadedExecutionPolicy<HsmType>::smThread_;
-    using ThreadedExecutionPolicy<HsmType>::interrupt_;
-    using ThreadedExecutionPolicy<HsmType>::process_event;
-    using ThreadedExecutionPolicy<HsmType>::send_event;
+    using ThreadedExecutionPolicy<TraitType>::smThread_;
+    using ThreadedExecutionPolicy<TraitType>::interrupt_;
+    using ThreadedExecutionPolicy<TraitType>::process_event;
+    using ThreadedExecutionPolicy<TraitType>::send_event;
 
     void start() {
         PeriodicTimer::start();
@@ -1246,17 +1242,51 @@ struct RealTimePeriodicExecutionPolicy
     }
 
     void stop() {
-        interrupt_ = true;
-        ThreadedExecutionPolicy<HsmType>::stop();
+        ThreadedExecutionPolicy<TraitType>::stop();
         if (eventThread_.joinable()) {
             eventThread_.join();
         }
     }
-    virtual ~RealTimePeriodicExecutionPolicy() { stop(); }
+    virtual ~RealtimePeriodicExecutionPolicy() { stop(); }
 
   protected:
     std::thread eventThread_;
 };
+
+// Concurrent HSMs
+template<typename... Hsms>
+struct ConcurrentHsm {
+    static constexpr bool is_hsm = true;
+    using type = ConcurrentHsm<Hsms...>;
+
+    template<typename Event>
+    void entry(Event e = Event()) {
+        std::apply([e](auto&... hsm) { (hsm.entry(e), ...); }, hsms_);
+    }
+
+    template<typename Event>
+    void exit(Event e = Event()) {
+        std::apply([e](auto&... hsm) { (hsm.exit(e), ...); }, hsms_);
+    }
+
+    template<typename Event>
+    bool handle(Event e = Event()) {
+        return std::apply(
+          [e](auto&... hsm) { return (hsm.send_event(e) || ...); }, hsms_);
+    }
+
+    std::tuple<Hsms...> hsms_;
+};
+
+// Each HSM in the concurrent HSM is wrapped with a ThreadedExecutionPolicy
+template<typename... Ts>
+struct make_concurrent_hsm {
+    using type = ConcurrentHsm<ThreadedExecutionPolicy<Ts>...>;
+};
+
+template<typename... Ts>
+using make_concurrent_hsm_t = typename make_concurrent_hsm<Ts...>::type;
+
 #endif // __linux__
 
 } // namespace hsm
