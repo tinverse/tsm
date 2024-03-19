@@ -14,7 +14,6 @@
 #include <condition_variable>
 #include <mutex>
 #include <thread>
-
 #endif // __FREE_RTOS__
 
 #ifdef __linux__
@@ -22,7 +21,6 @@
 #include <sys/mman.h>
 #include <time.h>
 #endif
-#include <iostream>
 namespace tsm {
 
 // Apply a wrapper to a tuple of types
@@ -579,8 +577,6 @@ struct EventQueueT {
             return Event();
         }
         const Event e = std::move(front());
-        // LOG(INFO) << "Thread:" << std::this_thread::get_id()
-        //          << " Popping Event:" << e.id;
         pop_front();
         return e;
     }
@@ -590,8 +586,6 @@ struct EventQueueT {
             return;
         }
         std::lock_guard<LockType> lock(eventQueueMutex_);
-        // LOG(INFO) << "Thread:" << std::this_thread::get_id()
-        //          << " Adding Event:" << e.id;
         push_back(e);
         cvEventAvailable_.notify_all();
     }
@@ -965,6 +959,24 @@ struct BlockingObserverT {
     LockType smBusyMutex_;
     ConditionVarType cv_;
     bool notified_{};
+};
+
+// Preserving for historical reasons
+struct CallbackObserver {
+    void add_callback(std::function<void()>&& cb) {
+        if (cb != nullptr) {
+            cbs_.push_back(cb);
+        }
+    }
+
+    void notify() {
+        for (auto const& cb : cbs_) {
+            cb();
+        }
+    }
+
+  private:
+    std::vector<std::function<void()>> cbs_;
 };
 
 #ifdef __FREE_RTOS__
