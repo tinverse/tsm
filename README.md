@@ -46,7 +46,7 @@ Clients can interact with this state machine in two ways - Synchronously and Asy
 using SwitchFsm = SingleThreadedHsm<SwitchTraits>;
 int main() {
     SwitchFsm s;
-    s.sendEvent(Toggle{});
+    s.send_event(Toggle{});
     s.step();
     // ...
 }
@@ -59,7 +59,7 @@ using SwitchSM = ThreadedHsm<SwitchTraits>;
 int main() {
     SwitchSM s;
     s.start(); // Starts the state machine/event processing thread.
-    s.sendEvent(s.toggle);
+    s.send_event(s.toggle);
     // ...
     s.stop(); // Shuts down the event processing thread.
 }
