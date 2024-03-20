@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/tinverse/tsm.svg?branch=main)](https://travis-ci.com/tinverse/tsm)
+[![Build Status](https://github.com/tinverse/tsm/actions/workflows/cpp_build.yml/badge.svg)](https://github.com/tinverse/tsm)
 [![codecov.io](http://codecov.io/github/tinverse/tsm/coverage.svg?branch=main)](http://codecov.io/github/tinverse/tsm?branch=main)
 [![Coverity Scan](https://scan.coverity.com/projects/17873/badge.svg)](https://scan.coverity.com/projects/tinverse-tsm)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -43,10 +43,10 @@ Clients can interact with this state machine in two ways - Synchronously and Asy
 ##### Single Threaded Execution Policy
 
 ```cpp
-using SwitchFsm = SingleThreadedHsm<SwitchTraits>;
+using SwitchSM = SingleThreadedHsm<SwitchTraits>;
 int main() {
-    SwitchFsm s;
-    s.send_event(Toggle{});
+    SwitchSM s;
+    s.sendEvent(Toggle{});
     s.step();
     // ...
 }
@@ -59,7 +59,7 @@ using SwitchSM = ThreadedHsm<SwitchTraits>;
 int main() {
     SwitchSM s;
     s.start(); // Starts the state machine/event processing thread.
-    s.send_event(s.toggle);
+    s.sendEvent(s.toggle);
     // ...
     s.stop(); // Shuts down the event processing thread.
 }

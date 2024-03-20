@@ -343,8 +343,8 @@ TEST_CASE("Test RealtimeExecutionPolicy") {
       make_hsm_t<TrafficLight::EmergencyOverrideTraits>;
 
     TrafficLightHsm hsm;
-    hsm.send_event(TrafficLight::TrafficLightHsmTraits::EmergencySwitchOn());
     hsm.start();
+    hsm.send_event(TrafficLight::TrafficLightHsmTraits::EmergencySwitchOn());
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     REQUIRE(std::holds_alternative<EmergencyOverrideHsm*>(hsm.current_state_));
     auto current_hsm = std::get<EmergencyOverrideHsm*>(hsm.current_state_);

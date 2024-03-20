@@ -47,13 +47,18 @@ template<typename HsmTrait,
 using PeriodicHsm =
   PeriodicExecutionPolicy<HsmTrait, TimerType<ClockType, DurationType>>;
 
-// Real-time state machine. This state machine is driven by a periodic timer.
+// This real-time state machine is driven by a periodic timer.
 template<typename HsmTrait,
          template<class, class>
          class TimerType,
          typename ClockType,
          typename DurationType>
-using RealTimePeriodicHsm =
-  RealTimeExecutionPolicy<HsmTrait, TimerType<ClockType, DurationType>>;
+using RealtimePeriodicHsm =
+  PeriodicExecutionPolicy<HsmTrait, TimerType<ClockType, DurationType>>;
+
+// Real-time state machine. This state machine is driven by a periodic timer.
+template<typename HsmTrait>
+using RealtimeHsm =
+  RealtimeExecutionPolicy<HsmTrait>;
 
 } // namespace tsm

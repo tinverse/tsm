@@ -23,7 +23,6 @@ target_link_libraries(${TEST_PROJECT}
 
 include(CTest)
 include(Catch)
-catch_discover_tests(${TEST_PROJECT})
 
 # configure unit tests via CTest
 if (TSM_USE_VALGRIND)
@@ -35,6 +34,7 @@ if (TSM_USE_VALGRIND)
     set_tests_properties(ValgrindListTags PROPERTIES PASS_REGULAR_EXPRESSION "no leaks are possible")
 endif()
 
+catch_discover_tests(${TEST_PROJECT})
 
 # test coverage
 include(coverage)
