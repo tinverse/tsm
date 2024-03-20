@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y build-essential cmake g++
+      run: sudo apt-get update && sudo apt-get install -y build-essential cmake ninja graphviz doxygen lcov g++
 
     - name: Configure CMake
       run: cmake -S . -B build
