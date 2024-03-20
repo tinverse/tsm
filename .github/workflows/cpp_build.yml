@@ -10,10 +10,10 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y build-essential cmake ninja graphviz doxygen lcov g++
+      run: sudo apt-get update && sudo apt-get install -y build-essential cmake ninja-build graphviz doxygen lcov g++
 
     - name: Configure CMake
-      run: cmake -S . -B build
+      run: cmake -S . -B build -G Ninja
 
     - name: Build
       run: cmake --build build -- -j2
