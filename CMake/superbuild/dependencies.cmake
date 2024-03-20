@@ -1,7 +1,7 @@
 #Automatically set build dependencies to on/off
 option(BUILD_DEPENDENCIES "" ON)
 if (BUILD_TESTS)
-  find_package(Catch2 CONFIG)
+    find_package(Catch2 3 QUIET)
 endif (BUILD_TESTS)
 
 if (CATCH2_FOUND)

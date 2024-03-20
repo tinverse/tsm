@@ -1,6 +1,4 @@
-find_package(Catch2 REQUIRED CONFIG)
-
-
+find_package(Catch2 3 REQUIRED)
 
 option(TSM_USE_VALGRIND "Use valgrind by default" ON)
 find_program(VALGRIND_PATH valgrind)
@@ -21,7 +19,7 @@ else(MSVC)
 endif(MSVC)
 
 target_link_libraries(${TEST_PROJECT}
-  PRIVATE Catch2::Catch2 Threads::Threads tsm::tsm)
+    PRIVATE Catch2::Catch2WithMain Threads::Threads tsm::tsm)
 
 include(CTest)
 include(Catch)

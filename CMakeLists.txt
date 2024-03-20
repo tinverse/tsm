@@ -191,6 +191,7 @@ message(STATUS "Module path:" ${CMAKE_MODULE_PATH})
 
 if (BUILD_TESTS)
   add_subdirectory(test)
+  enable_testing()
 endif(BUILD_TESTS)
 
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
