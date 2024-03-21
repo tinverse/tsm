@@ -1,29 +1,34 @@
 #pragma once
 
-#include "TypedHsm.h"
+#include "tsm_impl.h"
 
 namespace tsm {
 
 ///
 /// A "simple" state machine. It executes in the context of the parent thread.
-/// The user is expected to instantiate this with their Hsm definition class.
+/// The user is expected to instantiate this with their state machine context.
 /// Use it like this:
-/// 1. The first step is to create your own state machine definition.
-/// struct MyHsmDef : HsmDefinition<MyHsmDef> { ... };
+/// 1. The first step is to create your own Trait type.
+/// struct MyTraits {
+///    // States (structs)
+///    struct State1 {};
+///    struct State2 {};
+///    // Events (structs)
+///    struct Event1 {};
+///    // e.g. transition where
+///    using transitions = std::tuple<Transition<State1, Event1, State2>>;
+/// };
 /// 2. To create any statemachine, wrap an execution policy around the
-/// HsmDefinition generic defined in HsmExecutor.h. Here, SingleThreadedHsm
-/// is a mixin that combines the SingleThreadedExecutionPolicy along with the
-/// HsmDefinition class; which in turn takes a state machine definition(HsmDef)
-/// as seen in the using statement below.
+/// trait type. Here we use the SingleThreadedExecutionPolicy.
 /// 3. Now that you have your own SingleThreadedHsm, instantiate an object of
-/// your state machine type. SingleThreadedHsm<MyHsmDef> sm;
+/// your state machine type. SingleThreadedHsm<MyTraits> sm;
 /// 4. Send events to it using the sendEvent method.
-/// sm.sendEvent(sm.some_event);
+/// sm.send_event(MyTraits::Event1{});
 /// 5. To process the event, call the step method
 /// sm.step();
 ///
-template<typename HsmTrait>
-using SingleThreadedHsm = SingleThreadedExecutionPolicy<HsmTrait>;
+template<typename Context>
+using SingleThreadedHsm = SingleThreadedExecutionPolicy<Context>;
 
 ///
 /// An Asynchronous state machine. Event processing is done in a separate
@@ -35,30 +40,33 @@ using SingleThreadedHsm = SingleThreadedExecutionPolicy<HsmTrait>;
 /// the HsmDefinition is done processing the previous event. It also simplifies
 /// the interface in that only one call to sendEvent is required.
 ///
-template<typename HsmTrait>
-using ThreadedHsm = ThreadedExecutionPolicy<HsmTrait>;
+template<typename Context>
+using ThreadedHsm = ThreadedExecutionPolicy<Context>;
 
 // This state machine is driven by a periodic timer.
-template<typename HsmTrait,
+template<typename Context,
          template<class, class>
          class TimerType,
          typename ClockType,
          typename DurationType>
 using PeriodicHsm =
-  PeriodicExecutionPolicy<HsmTrait, TimerType<ClockType, DurationType>>;
+  PeriodicExecutionPolicy<Context, TimerType<ClockType, DurationType>>;
 
 // This real-time state machine is driven by a periodic timer.
-template<typename HsmTrait,
+template<typename Context,
          template<class, class>
          class TimerType,
          typename ClockType,
          typename DurationType>
 using RealtimePeriodicHsm =
-  PeriodicExecutionPolicy<HsmTrait, TimerType<ClockType, DurationType>>;
+  PeriodicExecutionPolicy<Context, TimerType<ClockType, DurationType>>;
 
 // Real-time state machine. This state machine is driven by a periodic timer.
-template<typename HsmTrait>
-using RealtimeHsm =
-  RealtimeExecutionPolicy<HsmTrait>;
+template<typename Context>
+using RealtimeHsm = RealtimeExecutionPolicy<Context>;
+
+// Concurrent Hsm
+template<template <typename> class Policy = ThreadedExecutionPolicy, typename... Contexts>
+using ConcurrentHsm = make_concurrent_hsm_t<Policy, Contexts...>;
 
 } // namespace tsm
