@@ -71,6 +71,10 @@ int main() {
 
 Initial states are implied by the first "from" state in the first transition. There isn't support for stop states.
 
+##### Memory Model.
+
+Every Hsm instance holds all the sub-states in a tuple. This tuple is initialized when the Hsm is instantiated. The current state is a variant holding a pointer to one of these states. Each Hsm also inherits from it's context type. So all data related to the context can be stored there and the Hsm class itself is unaware of the context's internals. When making call to the entry, exit and handle methods, the Hsm class will pass a reference to itself, but cast to the context type. This allows the Hsm to provide access the context's data. This allows the context to be a simple struct or a complex class with methods and data. If the context allocates any memory, it is the responsibility of the context to clean up all allocated memory in it's destructor. Declaring a virtual destructor guarantees that the context's destructor will be called when the Hsm is destroyed.
+
 #### PeriodicExecutionPolicy
 
 A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :). This problem is modeled with a custom "handle" method without a state transition table and a LightState type inherited from the State struct.
