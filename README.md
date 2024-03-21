@@ -24,7 +24,7 @@ tsm is a state machine framework with support for Hierarchical and Orthogonal St
 #### A Finite State Machine
 
 ```cpp
-struct SwitchTraits {
+struct SwitchContext {
     // Events
     struct Toggle {};
 
@@ -43,7 +43,7 @@ Clients can interact with this state machine in two ways - Synchronously and Asy
 ##### Single Threaded Execution Policy
 
 ```cpp
-using SwitchSM = SingleThreadedHsm<SwitchTraits>;
+using SwitchSM = SingleThreadedHsm<SwitchContext>;
 int main() {
     SwitchSM s;
     s.sendEvent(Toggle{});
@@ -55,7 +55,7 @@ int main() {
 ##### Asynchronous Execution Policy
 
 ```cpp
-using SwitchSM = ThreadedHsm<SwitchTraits>;
+using SwitchSM = ThreadedHsm<SwitchContext>;
 int main() {
     SwitchSM s;
     s.start(); // Starts the state machine/event processing thread.
@@ -65,7 +65,7 @@ int main() {
 }
 ```
 
-`s.step()` is missing in the ThreadedHsm. The State Machine thread blocks waiting for the next event to arrive in the event queue and processes it as soon as it arrives. So far, the "contract" is that the user creates a "Traits" struct. When a policy is applied to it, the `Traits` type is transformed into a state machine. The only *must have* requirement for a Traits struct is that it must have a `transitions` type which defines the state transition table.
+`s.step()` is missing in the ThreadedHsm. The State Machine thread blocks waiting for the next event to arrive in the event queue and processes it as soon as it arrives. So far, the "contract" is that the user creates a "Context" struct. When a policy is applied to it, the `Context` type is transformed into a state machine. The only *must have* requirement for a Context struct is that it must have a `transitions` type which defines the state transition table. The transition table is a std::tuple of `Transition`s.
 
 ##### Start and Stop States
 
@@ -75,7 +75,7 @@ Initial states are implied by the first "from" state in the first transition. Th
 
 A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :). This problem is modeled with a custom "handle" method without a state transition table and a LightState type inherited from the State struct.
 
-To model a solution, we first implement the `TrafficLight` traits. To reduce repetition in the transition table, `Transition`s are marked as `ClockedTransition`s. The `Traits` struct also inherits from a `clocked_trait` so that a Policy class can appropriately "clock" or "tick" the state machine. This is a very important pattern that abstracts away the notion of time. Now we are able to run any trait that inherits from `clocked_trait` at any `Duration` (1ms, 1s, 1us) or multiples for e.g. every 42ms. This makes testing easier as we can test the clocking separately from the state machine logic.
+To model a solution, we first implement the `TrafficLight` traits. To reduce repetition in the transition table, `Transition`s are marked as `ClockedTransition`s. The `Context` struct also inherits from a `clocked_trait` so that a Policy class can appropriately "clock" or "tick" the state machine. This is a very important pattern that abstracts away the notion of time. Now we are able to run any trait that inherits from `clocked_trait` at any `Duration` (1ms, 1s, 1us) or multiples for e.g. every 42ms. This makes testing easier as we can test the clocking separately from the state machine logic.
 
 Summary so far. `Trait`s can have `transition`s. Implicit in that statement is that `Trait`s have to define `States` and `Events`. `States` can have `entry`, `exit`, `guard` and `actions` associated with them.
 
@@ -84,7 +84,7 @@ Below is a good start. From the description above, the state transitions are pre
 ```cpp
 namespace TrafficLight {
 
-struct LightTraits : clocked_trait {
+struct LightContext : clocked_trait {
     // States
     struct G1 { };
 
@@ -107,9 +107,9 @@ Once we "start" the traffic light, `G1` is not allowed to transition to `Y1` unt
 
 ```cpp
   struct G1 {
-        void exit(LightTraits& t) { t.ticks_ = 0; }
+        void exit(LightContext& t) { t.ticks_ = 0; }
 
-        auto guard(LightTraits& t) -> bool {
+        auto guard(LightContext& t) -> bool {
             if (t.ticks_ >= 30) {
                 return true;
             }
@@ -128,11 +128,11 @@ A more complete state trait implementation will look like this. Look at the sign
 ```cpp
 namespace TrafficLight {
 
-struct LightTraits : clocked_trait {
+struct LightContext : clocked_trait {
     struct G1 {
-        void exit(LightTraits& t) { t.ticks_ = 0; }
+        void exit(LightContext& t) { t.ticks_ = 0; }
 
-        auto guard(LightTraits& t) -> bool {
+        auto guard(LightContext& t) -> bool {
             if (t.ticks_ >= 30) {
                 return true;
             }
@@ -141,26 +141,26 @@ struct LightTraits : clocked_trait {
     };
 
     struct Y1 {
-        void entry(LightTraits& t) { t.walk_pressed_ = false; }
+        void entry(LightContext& t) { t.walk_pressed_ = false; }
 
-        void exit(LightTraits& t) { t.ticks_ = 0; }
+        void exit(LightContext& t) { t.ticks_ = 0; }
 
-        auto guard(LightTraits& t) -> bool { return t.ticks_ >= 5; };
+        auto guard(LightContext& t) -> bool { return t.ticks_ >= 5; };
     };
 
     struct G2 {
-        void exit(LightTraits& t) { t.ticks_ = 0; }
-        auto guard(LightTraits& t) -> bool {
+        void exit(LightContext& t) { t.ticks_ = 0; }
+        auto guard(LightContext& t) -> bool {
             return (!t.walk_pressed_) ? t.ticks_ >= 60 : t.ticks_ >= 30;
         };
     };
 
     struct Y2 {
-        void exit(LightTraits& t) { t.ticks_ = 0; }
+        void exit(LightContext& t) { t.ticks_ = 0; }
 
-        auto guard(LightTraits& t) -> bool { return t.ticks_ >= 5; };
+        auto guard(LightContext& t) -> bool { return t.ticks_ >= 5; };
 
-        auto action(LightTraits& t) -> void { t.walk_pressed_ = false; }
+        auto action(LightContext& t) -> void { t.walk_pressed_ = false; }
     };
 
     bool walk_pressed_{};
@@ -176,12 +176,12 @@ A namespace is used as an additional encapsulation mechanism. Now that there is 
 
 ```cpp
 #include <tsm.h>
-using TrafficLightHsm = tsm::PeriodicHsm<LightTraits,
+using TrafficLightHsm = tsm::PeriodicHsm<LightContext,
                                                   PeriodicSleepTimer,
                                                   AccurateClock, // provided within TypedHsm.h
                                                   std::chrono::seconds>;
 ```
-... and voila! We have transformed the LightTraits type by applying a policy that sends ticks at 1s intervals. Usage:
+... and voila! We have transformed the LightContext type by applying a policy that sends ticks at 1s intervals. Usage:
 
 ```cpp
 int main() {
@@ -197,32 +197,32 @@ A couple more "contract"s to note. `entry`, `exit`, `action` and `guard`s are na
 
 #### A Hierarchical State Machine
 
-Traits can be nested as "states" within a transition table. Let's say the TrafficLight has to transition to an "EmergencyMode".
+Context can be nested as "states" within a transition table. Let's say the TrafficLight has to transition to an "EmergencyMode".
 
 ```cpp
-struct EmergencyOverrideTraits : clocked_trait {
+struct EmergencyOverrideContext : clocked_trait {
     struct G1 {
-        void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
+        void exit(EmergencyOverrideContext& t) { t.ticks_ = 0; }
 
-        auto guard(EmergencyOverrideTraits& t) -> bool {
+        auto guard(EmergencyOverrideContext& t) -> bool {
             return t.ticks_ >= 5;
         };
     };
     struct Y1 {
-        void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
-        auto guard(EmergencyOverrideTraits& t) -> bool {
+        void exit(EmergencyOverrideContext& t) { t.ticks_ = 0; }
+        auto guard(EmergencyOverrideContext& t) -> bool {
             return t.ticks_ >= 5;
         };
     };
     struct G2 {
-        void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
-        auto guard(EmergencyOverrideTraits& t) -> bool {
+        void exit(EmergencyOverrideContext& t) { t.ticks_ = 0; }
+        auto guard(EmergencyOverrideContext& t) -> bool {
             return t.ticks_ >= 5;
         };
     };
     struct Y2 {
-        void exit(EmergencyOverrideTraits& t) { t.ticks_ = 0; }
-        auto guard(EmergencyOverrideTraits& t) -> bool {
+        void exit(EmergencyOverrideContext& t) { t.ticks_ = 0; }
+        auto guard(EmergencyOverrideContext& t) -> bool {
             return t.ticks_ >= 5;
         };
     };
@@ -238,26 +238,26 @@ struct EmergencyOverrideTraits : clocked_trait {
 We've defined the traits for emergency override above. Simply, it cycles through each state at 5s. Here is the trait with both these traits:
 
 ```cpp
-struct TrafficLightHsmTraits {
+struct TrafficLightHsmContext {
     // Events
     struct EmergencySwitchOn {};
     struct EmergencySwitchOff {};
 
     using transitions = std::tuple<
-      Transition<LightTraits, EmergencySwitchOn, EmergencyOverrideTraits>,
-      Transition<EmergencyOverrideTraits, EmergencySwitchOff, LightTraits>>;
+      Transition<LightContext, EmergencySwitchOn, EmergencyOverrideContext>,
+      Transition<EmergencyOverrideContext, EmergencySwitchOff, LightContext>>;
 };
 ```
 We've added two events to transition to emergency mode and back to normal mode. To create a Hsm with two nested state machines, the application of policy classes is no different.
 
 ```cpp
-    using LightHsm = ThreadedHsm<TrafficLight::LightTraits>;
+    using LightHsm = ThreadedHsm<TrafficLight::LightContext>;
 
     REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
 
-    hsm.send_event(TrafficLight::TrafficLightHsmTraits::EmergencySwitchOn());
+    hsm.send_event(TrafficLight::TrafficLightHsmContext::EmergencySwitchOn());
 
-    REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideTraits::G1*>(
+    REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::G1*>(
       current_hsm->current_state_));
 ```
 For details see `TestHsm.cpp`.
@@ -269,9 +269,9 @@ Pushing the traffic light example a little farther:
 namespace CityStreet {
 struct Broadway {
     // Traffic on Park Ave
-    using ParkAveLights = TrafficLight::LightTraits;
+    using ParkAveLights = TrafficLight::LightContext;
     // Traffic on 5th Ave - specialize if needed
-    using FifthAveLights = TrafficLight::LightTraits;
+    using FifthAveLights = TrafficLight::LightContext;
     using type = make_orthogonal_hsm_t<ParkAveLights, FifthAveLights>;
 };
 }
