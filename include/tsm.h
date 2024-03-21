@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hsm.h"
+#include "tsm_impl.h"
 
 namespace tsm {
 
@@ -66,9 +66,7 @@ template<typename Context>
 using RealtimeHsm = RealtimeExecutionPolicy<Context>;
 
 // Concurrent Hsm
-template<typename Policy = ThreadedExecutionPolicy, typename... Contexts>
+template<template <typename> class Policy = ThreadedExecutionPolicy, typename... Contexts>
 using ConcurrentHsm = make_concurrent_hsm_t<Policy, Contexts...>;
-
-} // namespace tsm
 
 } // namespace tsm
