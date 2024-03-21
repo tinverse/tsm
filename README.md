@@ -10,6 +10,7 @@ tsm is a state machine framework with support for Hierarchical and Orthogonal St
 
 ### Features:
     * Typed Hierarchical State machine.
+    * Simple memory model.
     * Thread safe event queue.
     * Single Threaded, Asynchronous, Periodic, Concurrent and real-time execution policies out of the box.
     * Ease of installation and integration - Header only, CMake and Nix support.
