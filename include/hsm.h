@@ -529,9 +529,9 @@ struct make_hsm<T, std::enable_if_t<is_state_trait_v<T>>> {
 
 // Orthogonal HSM
 template<typename... Hsms>
-struct OrthogonalHsm {
+struct OrthogonalExecutionPolicy {
     static constexpr bool is_hsm = true;
-    using type = OrthogonalHsm<Hsms...>;
+    using type = OrthogonalExecutionPolicy<Hsms...>;
 
     template<typename Event>
     void entry(Event e = Event()) {
@@ -555,7 +555,7 @@ struct OrthogonalHsm {
 // make orthogonal hsm from traits
 template<typename... Ts>
 struct make_orthogonal_hsm {
-    using type = OrthogonalHsm<make_hsm_t<Ts>...>;
+    using type = OrthogonalExecutionPolicy<make_hsm_t<Ts>...>;
 };
 
 template<typename... Ts>
@@ -1269,9 +1269,9 @@ struct RealtimePeriodicExecutionPolicy
 
 // Concurrent HSMs
 template<typename... Hsms>
-struct ConcurrentHsm {
+struct ConcurrentExecutionPolicy {
     static constexpr bool is_hsm = true;
-    using type = ConcurrentHsm<Hsms...>;
+    using type = ConcurrentExecutionPolicy<Hsms...>;
 
     template<typename Event>
     void entry(Event e = Event()) {
@@ -1293,12 +1293,14 @@ struct ConcurrentHsm {
 };
 
 // Each HSM in the concurrent HSM is wrapped with a ThreadedExecutionPolicy
-template<template<typename> class Policy = ThreadedExecutionPolicy, typename... Ts>
+template<template<typename> class Policy = ThreadedExecutionPolicy,
+         typename... Ts>
 struct make_concurrent_hsm {
-    using type = ConcurrentHsm<Policy<Ts>...>;
+    using type = ConcurrentExecutionPolicy<Policy<Ts>...>;
 };
 
-template<template<typename> class Policy = ThreadedExecutionPolicy, typename... Ts>
+template<template<typename> class Policy = ThreadedExecutionPolicy,
+         typename... Ts>
 using make_concurrent_hsm_t = typename make_concurrent_hsm<Policy, Ts...>::type;
 
 #endif // __linux__

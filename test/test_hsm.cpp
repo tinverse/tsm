@@ -1,4 +1,4 @@
-#include "TypedHsm.h"
+#include "hsm.h"
 
 // Test the HSM using the Catch2 framework
 #include <catch2/catch_test_macros.hpp>
@@ -278,8 +278,8 @@ TEST_CASE("CityStreet") {
 // Test StateMachine SingleThreadedExecutionPolicy
 TEST_CASE("Test SingleThreadedExecutionPolicy") {
     // apply policy
-    using TrafficLightHsm = SingleThreadedExecutionPolicy<
-      TrafficLight::TrafficLightHsmContext>;
+    using TrafficLightHsm =
+      SingleThreadedExecutionPolicy<TrafficLight::TrafficLightHsmContext>;
     using LightHsm = make_hsm_t<TrafficLight::LightContext>;
     using EmergencyOverrideHsm =
       make_hsm_t<TrafficLight::EmergencyOverrideContext>;

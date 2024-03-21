@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TypedHsm.h"
+#include "hsm.h"
 
 namespace tsm {
 
@@ -63,10 +63,12 @@ using RealtimePeriodicHsm =
 
 // Real-time state machine. This state machine is driven by a periodic timer.
 template<typename Context>
-using RealtimeHsm =
-  RealtimeExecutionPolicy<Context>;
+using RealtimeHsm = RealtimeExecutionPolicy<Context>;
 
 // Concurrent Hsm
-template<typename Context>
+template<typename Policy = ThreadedExecutionPolicy, typename... Contexts>
+using ConcurrentHsm = make_concurrent_hsm_t<Policy, Contexts...>;
+
+} // namespace tsm
 
 } // namespace tsm

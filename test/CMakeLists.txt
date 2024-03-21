@@ -9,7 +9,7 @@ endif(NOT VALGRIND_PATH)
 set (TEST_PROJECT tsm_test)
 
 add_executable(${TEST_PROJECT}
-  TestHsm.cpp
+  test_hsm.cpp
 )
 
 if(MSVC)
