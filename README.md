@@ -111,7 +111,7 @@ struct LightContext : clocked_trait {
 Once we "start" the traffic light, `G1` is not allowed to transition to `Y1` until it has been on for 30s. A good candidate is a `guard` function. So we add a guard to `G1` and modify the state transition table accordingly. Also, on exiting this state, `Y1` will have to count to 5 and then transition to `G2`. So the tick count is reset. We add the `guard` and `exit` functions to `G1`
 
 ```cpp
-  struct G1 {
+    struct G1 {
         void exit(LightContext& t) { t.ticks_ = 0; }
 
         auto guard(LightContext& t) -> bool {
@@ -119,13 +119,27 @@ Once we "start" the traffic light, `G1` is not allowed to transition to `Y1` unt
                 return true;
             }
             return false;
-        };
+    };
+
+// Alternately, you can combine exit, guard and action by providing your own handle method
+    struct G1 {
+        bool handle(LightContext& t, ClockTickEvent) {
+            if (t.ticks_ >= 30) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
+    };
 
 ```
-Then modify the transition table to know about the guard.
+Then modify the transition table to know about the guard (Note: This is not really necessary as the `Hsm`'s `handle` method will look for an invocable `guard` method for the state).
 
 ```cpp
       std::tuple<ClockedTransition<G1, Y1, decltype(&G1::guard)>
+    or
+      std::tuple<ClockedTransition<G1, Y1>
 ```
 
 A more complete state trait implementation will look like this. Look at the signatures of the exit and guard functions. Any information like `walk_pressed_` is retained in the state trait itself. The state machine itself is trait agnostic and doesn't care about the trait's implementation details.

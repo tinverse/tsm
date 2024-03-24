@@ -34,14 +34,14 @@ namespace TrafficLight {
 
 struct LightContext : clocked_trait {
     struct G1 {
-        void exit(LightContext& t) { t.ticks_ = 0; }
-
-        auto guard(LightContext& t) -> bool {
+        bool handle(LightContext& t, ClockTickEvent) {
             if (t.ticks_ >= 30) {
+                // exit action
+                t.ticks_ = 0;
                 return true;
             }
             return false;
-        };
+        }
     };
 
     struct Y1 {
@@ -70,7 +70,7 @@ struct LightContext : clocked_trait {
     bool walk_pressed_{};
 
     using transitions =
-      std::tuple<ClockedTransition<G1, Y1, decltype(&G1::guard)>,
+      std::tuple<ClockedTransition<G1, Y1>,
                  ClockedTransition<Y1, G2, decltype(&Y1::guard)>,
                  ClockedTransition<G2, Y2, decltype(&G2::guard)>,
                  ClockedTransition<Y2, G1, decltype(&Y2::guard)>>;
