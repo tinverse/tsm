@@ -282,6 +282,28 @@ using has_transitions_t = typename has_transitions<T>::type;
 template<typename T>
 inline constexpr bool has_transitions_v = has_transitions<T>::value;
 
+// Define a trait to check for the presence of State::handle method for a given
+// Event and Context
+template<typename State,
+         typename Event,
+         typename Context,
+         typename = std::void_t<>>
+struct has_handle_method : std::false_type {};
+
+template<typename State, typename Event, typename Context>
+struct has_handle_method<
+  State,
+  Event,
+  Context,
+  std::void_t<decltype(std::declval<State>().handle(std::declval<Context&>(),
+                                                    std::declval<Event>()))>>
+  : std::true_type {};
+
+// Helper variable template
+template<typename State, typename Event, typename Context>
+inline constexpr bool has_handle_method_v =
+  has_handle_method<State, Event, Context>::value;
+
 // Trait to check for the presence of T::is_hsm
 template<typename, typename = std::void_t<>>
 struct is_hsm_trait : std::false_type {};
@@ -423,7 +445,8 @@ struct Hsm : T {
     }
 
     template<typename Event, typename State>
-    void handle_transition(State* state) {
+    std::enable_if_t<!has_handle_method_v<State, Event, T>, void>
+    handle_transition(State* state) {
         // Assume TransitionMap provides the matching transition
         using transition =
           typename TransitionMap<State, Event, transitions>::type;
@@ -436,6 +459,26 @@ struct Hsm : T {
 
         // Optional Action
         this->perform_action<transition>(state);
+
+        using to = typename transition::to;
+
+        // switch to the new state
+        current_state_ = &std::get<to>(states_);
+
+        this->template entry<Event, to>();
+    }
+
+    template<typename Event, typename State>
+    std::enable_if_t<has_handle_method_v<State, Event, T>, void>
+    handle_transition(State* state) {
+        // Assume TransitionMap provides the matching transition
+        using transition =
+          typename TransitionMap<State, Event, transitions>::type;
+
+        // A true gives permission to transition
+        if (!state->handle(static_cast<T&>(*this), Event{})) {
+            return;
+        }
 
         using to = typename transition::to;
 
