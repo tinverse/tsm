@@ -3,7 +3,7 @@
 
 #include <catch2/catch.hpp>
 #include <future>
-
+// TODO: Rewrite for new EventQueue implementation in tsm_impl.h
 using tsm::Event;
 using EventQueue = tsm::EventQueueT<tsm::Event, std::mutex>;
 
