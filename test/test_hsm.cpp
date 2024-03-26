@@ -32,9 +32,9 @@ TEST_CASE("SwitchHsm") {
 
 namespace TrafficLight {
 
-struct LightContext : clocked_trait {
+struct LightContext {
     struct G1 {
-        bool handle(LightContext& t, ClockTickEvent) {
+        bool handle(LightContext&, ClockTickEvent& t) {
             if (t.ticks_ >= 30) {
                 // exit action
                 t.ticks_ = 0;
@@ -45,73 +45,74 @@ struct LightContext : clocked_trait {
     };
 
     struct Y1 {
+        bool handle(LightContext&, ClockTickEvent& t) {
+            if (t.ticks_ >= 5) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
         void entry(LightContext& t) { t.walk_pressed_ = false; }
-
-        void exit(LightContext& t) { t.ticks_ = 0; }
-
-        auto guard(LightContext& t) -> bool { return t.ticks_ >= 5; };
     };
 
     struct G2 {
-        void exit(LightContext& t) { t.ticks_ = 0; }
-        auto guard(LightContext& t) -> bool {
-            return (!t.walk_pressed_) ? t.ticks_ >= 60 : t.ticks_ >= 30;
-        };
+        bool handle(LightContext& l, ClockTickEvent& t) {
+            if (t.ticks_ >= 60 || (l.walk_pressed_ && t.ticks_ >= 30)) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
     };
 
     struct Y2 {
-        void exit(LightContext& t) { t.ticks_ = 0; }
-
-        auto guard(LightContext& t) -> bool { return t.ticks_ >= 5; };
-
-        auto action(LightContext& t) -> void { t.walk_pressed_ = false; }
+        bool handle(LightContext&, ClockTickEvent& t) {
+            if (t.ticks_ >= 5) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
     };
 
     bool walk_pressed_{};
 
     using transitions =
       std::tuple<ClockedTransition<G1, Y1>,
-                 ClockedTransition<Y1, G2, decltype(&Y1::guard)>,
-                 ClockedTransition<G2, Y2, decltype(&G2::guard)>,
-                 ClockedTransition<Y2, G1, decltype(&Y2::guard)>>;
+                 ClockedTransition<Y1, G2>,
+                 ClockedTransition<G2, Y2>,
+                 ClockedTransition<Y2, G1>>;
 };
 
 // Emergency override trait. G1 and G2 will transition every five ticks. If
 // walk_pressed_ is true, the light will transition to Y2 after 30 ticks. This
 // will be part of a hierarchical state machine
-struct EmergencyOverrideContext : clocked_trait {
-    struct G1 {
-        void exit(EmergencyOverrideContext& t) { t.ticks_ = 0; }
+struct EmergencyOverrideContext {
+    struct BaseHandle {
+        bool handle(EmergencyOverrideContext&, ClockTickEvent& t) {
+            if (t.ticks_ >= 5) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
+    };
+    struct G1 : BaseHandle {};
 
-        auto guard(EmergencyOverrideContext& t) -> bool {
-            return t.ticks_ >= 5;
-        };
-    };
-    struct Y1 {
-        void exit(EmergencyOverrideContext& t) { t.ticks_ = 0; }
-        auto guard(EmergencyOverrideContext& t) -> bool {
-            return t.ticks_ >= 5;
-        };
-    };
-    struct G2 {
-        void exit(EmergencyOverrideContext& t) { t.ticks_ = 0; }
-        auto guard(EmergencyOverrideContext& t) -> bool {
-            return t.ticks_ >= 5;
-        };
-    };
-    struct Y2 {
-        void exit(EmergencyOverrideContext& t) { t.ticks_ = 0; }
-        auto guard(EmergencyOverrideContext& t) -> bool {
-            return t.ticks_ >= 5;
-        };
-    };
+    struct Y1 : BaseHandle {};
+    struct G2 : BaseHandle {};
+    struct Y2 : BaseHandle {};
 
     bool walk_pressed_{};
     using transitions =
-      std::tuple<ClockedTransition<G1, Y1, decltype(&G1::guard)>,
-                 ClockedTransition<Y1, G2, decltype(&Y1::guard)>,
-                 ClockedTransition<G2, Y2, decltype(&G2::guard)>,
-                 ClockedTransition<Y2, G1, decltype(&Y2::guard)>>;
+      std::tuple<ClockedTransition<G1, Y1>,
+                 ClockedTransition<Y1, G2>,
+                 ClockedTransition<G2, Y2>,
+                 ClockedTransition<Y2, G1>>;
 };
 
 // Parent HSM - TrafficLight
@@ -129,7 +130,12 @@ struct TrafficLightHsmContext {
 
 // Clocked HSM
 TEST_CASE("TrafficLight") {
-    using LightHsm = make_hsm_t<TrafficLight::LightContext>;
+    using LightHsm = ClockedHsm<make_hsm_t<TrafficLight::LightContext>>;
+    // check if transition from G1 to Y1 exists for ClockTickEvent
+    // static_assert(
+    //  has_valid_transition_v<TrafficLight::LightContext::G1, ClockTickEvent, LightHsm::transitions>);
+    //LightHsm::transitions transitions;
+    //transitions.blah();
     LightHsm hsm;
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::G1*>(
       hsm.current_state_));
@@ -156,7 +162,7 @@ TEST_CASE("TrafficLight") {
 }
 
 TEST_CASE("TrafficLight with walk pressed") {
-    using LightHsm = make_hsm_t<TrafficLight::LightContext>;
+    using LightHsm = ClockedHsm<make_hsm_t<TrafficLight::LightContext>>;
     LightHsm hsm;
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::G1*>(
       hsm.current_state_));
@@ -188,7 +194,7 @@ TEST_CASE("TrafficLightHsm") {
     using LightHsm = make_hsm_t<TrafficLight::LightContext>;
     using EmergencyOverrideHsm =
       make_hsm_t<TrafficLight::EmergencyOverrideContext>;
-    using TrafficLightHsm = make_hsm_t<TrafficLight::TrafficLightHsmContext>;
+    using TrafficLightHsm = ClockedHsm<make_hsm_t<TrafficLight::TrafficLightHsmContext>>;
 
     TrafficLightHsm hsm;
     REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
@@ -199,22 +205,22 @@ TEST_CASE("TrafficLightHsm") {
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::G1*>(
       current_hsm->current_state_));
     for (int i = 0; i < 5; i++) {
-        hsm.handle(ClockTickEvent{});
+        hsm.tick();
     }
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::Y1*>(
       current_hsm->current_state_));
     for (int i = 0; i < 5; i++) {
-        hsm.handle(ClockTickEvent{});
+        hsm.tick();
     }
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::G2*>(
       current_hsm->current_state_));
     for (int i = 0; i < 5; i++) {
-        hsm.handle(ClockTickEvent{});
+        hsm.tick();
     }
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::Y2*>(
       current_hsm->current_state_));
     for (int i = 0; i < 5; i++) {
-        hsm.handle(ClockTickEvent{});
+        hsm.tick();
     }
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::G1*>(
       current_hsm->current_state_));
@@ -223,7 +229,8 @@ TEST_CASE("TrafficLightHsm") {
     REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
 }
 
-// Test OrthogonalHsm
+
+// Test ConcurrentHsm
 // Multiple TrafficLightHsm instances in parallel - sort of like a city street
 namespace CityStreet {
 struct Broadway {
@@ -231,7 +238,11 @@ struct Broadway {
     using ParkAveLights = TrafficLight::LightContext;
     // Traffic on 5th Ave - specialize if needed
     using FifthAveLights = TrafficLight::LightContext;
-    using type = make_orthogonal_hsm_t<ParkAveLights, FifthAveLights>;
+    // create a policy by wrappint ThreadedExecutionPolicy around ClockedHsm
+    template <typename T>
+    using ThreadedClockedHsm = ThreadedExecutionPolicy<ClockedHsm<T>>;
+    // Each have an independent clock that can be ticked
+    using type = make_concurrent_hsm_t<ThreadedClockedHsm, ParkAveLights, FifthAveLights>;
 };
 }
 
@@ -246,28 +257,28 @@ TEST_CASE("CityStreet") {
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::G1*>(
       fifth_ave.current_state_));
     for (int i = 0; i < 30; i++) {
-        hsm.handle(ClockTickEvent{});
+        hsm.tick();
     }
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::Y1*>(
       park_ave.current_state_));
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::Y1*>(
       fifth_ave.current_state_));
     for (int i = 0; i < 5; i++) {
-        hsm.handle(ClockTickEvent{});
+        hsm.tick();
     }
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::G2*>(
       park_ave.current_state_));
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::G2*>(
       fifth_ave.current_state_));
     for (int i = 0; i < 60; i++) {
-        hsm.handle(ClockTickEvent{});
+        hsm.tick();
     }
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::Y2*>(
       park_ave.current_state_));
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::Y2*>(
       fifth_ave.current_state_));
     for (int i = 0; i < 5; i++) {
-        hsm.handle(ClockTickEvent{});
+        hsm.tick();
     }
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::G1*>(
       park_ave.current_state_));
@@ -288,13 +299,13 @@ TEST_CASE("Test SingleThreadedExecutionPolicy") {
 
     hsm.send_event(TrafficLight::TrafficLightHsmContext::EmergencySwitchOn());
     REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
-    // assert true 'step()'
-    REQUIRE(hsm.step());
+    hsm.step();
     auto current_hsm = std::get<EmergencyOverrideHsm*>(hsm.current_state_);
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::G1*>(
       current_hsm->current_state_));
+    ClockTickEvent tick;
     for (int i = 0; i < 5; i++) {
-        hsm.send_event(ClockTickEvent{});
+        hsm.send_event(tick);
     }
     for (int i = 0; i < 5; i++) {
         hsm.step();
@@ -341,17 +352,20 @@ TEST_CASE("Test RealtimeExecutionPolicy") {
       RealtimeExecutionPolicy<TrafficLight::TrafficLightHsmContext>;
     using EmergencyOverrideHsm =
       make_hsm_t<TrafficLight::EmergencyOverrideContext>;
-
+    using LightHsm = make_hsm_t<TrafficLight::LightContext>;
+    // write a better test than this
     TrafficLightHsm hsm;
     hsm.start();
+    REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
     hsm.send_event(TrafficLight::TrafficLightHsmContext::EmergencySwitchOn());
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     REQUIRE(std::holds_alternative<EmergencyOverrideHsm*>(hsm.current_state_));
     auto current_hsm = std::get<EmergencyOverrideHsm*>(hsm.current_state_);
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::G1*>(
       current_hsm->current_state_));
+    ClockTickEvent tick;
     for (int i = 0; i < 5; i++) {
-        hsm.send_event(ClockTickEvent{});
+        hsm.send_event(tick);
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::Y1*>(
@@ -361,18 +375,95 @@ TEST_CASE("Test RealtimeExecutionPolicy") {
 
 // Test RealtimePeriodicExecutionPolicy - use traffic light HSM
 TEST_CASE("Test PeriodicExecutionPolicy") {
+    // default is to send a timer tick event every 1ms
     using TrafficLightHsm =
-      RealtimePeriodicExecutionPolicy<TrafficLight::TrafficLightHsmContext>;
+      RealtimePeriodicHsm<TrafficLight::TrafficLightHsmContext>;
 
     using LightHsm = make_hsm_t<TrafficLight::LightContext>;
 
     TrafficLightHsm hsm;
     hsm.start();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     REQUIRE(std::holds_alternative<LightHsm*>(hsm.current_state_));
     auto current_hsm = std::get<LightHsm*>(hsm.current_state_);
     REQUIRE(std::holds_alternative<TrafficLight::LightContext::G1*>(
       current_hsm->current_state_));
+    while(!(std::holds_alternative<TrafficLight::LightContext::Y1*>(
+          current_hsm->current_state_)));
+    REQUIRE(std::holds_alternative<TrafficLight::LightContext::Y1*>(
+      current_hsm->current_state_));
+    while(!(std::holds_alternative<TrafficLight::LightContext::G2*>(
+          current_hsm->current_state_)));
+    REQUIRE(std::holds_alternative<TrafficLight::LightContext::G2*>(
+        current_hsm->current_state_));
+    while(!(std::holds_alternative<TrafficLight::LightContext::Y2*>(
+          current_hsm->current_state_)));
+    REQUIRE(std::holds_alternative<TrafficLight::LightContext::Y2*>(
+        current_hsm->current_state_));
+    while(!(std::holds_alternative<TrafficLight::LightContext::G1*>(
+          current_hsm->current_state_)));
+    REQUIRE(std::holds_alternative<TrafficLight::LightContext::G1*>(
+        current_hsm->current_state_));
     hsm.stop();
 }
 #endif // __linux__
+
+#include <iostream>
+// Rewrite TrafficLightHsm with actions, guards, entry and exit actions
+namespace TrafficLightAG {
+    struct LightContext {
+        struct G1 {
+            void entry(LightContext&, ClockTickEvent& t) { t.ticks_ = 0; }
+            bool guard(LightContext&, ClockTickEvent& t) { return t.ticks_ >= 30; }
+        };
+
+        struct Y1 {
+            bool guard(LightContext&, ClockTickEvent& t) { return t.ticks_ >= 5; }
+        };
+
+        struct G2 {
+            void entry(LightContext&, ClockTickEvent& t) { t.ticks_ = 0; }
+            bool guard(LightContext& l, ClockTickEvent& t) {
+                return t.ticks_ >= 60 || (l.walk_pressed_ && t.ticks_ >= 30);
+            }
+        };
+
+        struct Y2 {
+            void entry(LightContext&, ClockTickEvent& t) { t.ticks_ = 0; }
+            bool guard(LightContext&, ClockTickEvent& t) { return t.ticks_ >= 5; }
+            void action(LightContext& l, ClockTickEvent&) { l.walk_pressed_ = false; std::cout << "Y2\n"; }
+        };
+        using transitions =
+          std::tuple<ClockedTransition<G1, Y1>,
+            ClockedTransition<Y1, G2>,
+            ClockedTransition<G2, Y2>,
+            ClockedTransition<Y2, G1>>;
+        bool walk_pressed_{};
+    };
+}
+// Test TrafficLightAG
+TEST_CASE("TrafficLightAG") {
+    using LightHsm = ClockedHsm<TrafficLightAG::LightContext>;
+    LightHsm hsm;
+    REQUIRE(std::holds_alternative<TrafficLightAG::LightContext::G1*>(
+      hsm.current_state_));
+    for (int i = 0; i < 30; i++) {
+        hsm.tick();
+    }
+    REQUIRE(std::holds_alternative<TrafficLightAG::LightContext::Y1*>(
+      hsm.current_state_));
+    for (int i = 0; i < 5; i++) {
+        hsm.tick();
+    }
+    REQUIRE(std::holds_alternative<TrafficLightAG::LightContext::G2*>(
+      hsm.current_state_));
+    for (int i = 0; i < 60; i++) {
+        hsm.tick();
+    }
+    REQUIRE(std::holds_alternative<TrafficLightAG::LightContext::Y2*>(
+      hsm.current_state_));
+    for (int i = 0; i < 5; i++) {
+        hsm.tick();
+    }
+    REQUIRE(std::holds_alternative<TrafficLightAG::LightContext::G1*>(
+      hsm.current_state_));
+}

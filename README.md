@@ -80,7 +80,7 @@ Every Hsm instance holds all the sub-states in a tuple. This tuple is initialize
 
 A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :). This problem is modeled with a custom "handle" method without a state transition table and a LightState type inherited from the State struct.
 
-To model a solution, we first implement the `TrafficLight` traits. To reduce repetition in the transition table, `Transition`s are marked as `ClockedTransition`s. The `Context` struct also inherits from a `clocked_trait` so that a Policy class can appropriately "clock" or "tick" the state machine. This is a very important pattern that abstracts away the notion of time. Now we are able to run any trait that inherits from `clocked_trait` at any `Duration` (1ms, 1s, 1us) or multiples for e.g. every 42ms. This makes testing easier as we can test the clocking separately from the state machine logic.
+To model a solution, we first implement the `TrafficLight` traits. To reduce repetition in the transition table, `Transition`s are marked as `ClockedTransition`s.  This is a very important pattern that abstracts away the notion of time. Now, coupled with a timer, we are able to drive a state machine at any `Duration` (1ms, 1s, 1us) or multiples for e.g. every 42ms. This makes testing easier as we can test the clocking separately from the state machine logic.
 
 Summary so far. `Trait`s can have `transition`s. Implicit in that statement is that `Trait`s have to define `States` and `Events`. `States` can have `entry`, `exit`, `guard` and `actions` associated with them.
 
@@ -89,7 +89,7 @@ Below is a good start. From the description above, the state transitions are pre
 ```cpp
 namespace TrafficLight {
 
-struct LightContext : clocked_trait {
+struct LightContext {
     // States
     struct G1 { };
 
@@ -112,9 +112,9 @@ Once we "start" the traffic light, `G1` is not allowed to transition to `Y1` unt
 
 ```cpp
     struct G1 {
-        void exit(LightContext& t) { t.ticks_ = 0; }
+        void exit(LightContext&, ClockTickEvent& t) { t.ticks_ = 0; }
 
-        auto guard(LightContext& t) -> bool {
+        auto guard(LightContext& l, ClockTickEvent& t) -> bool {
             if (t.ticks_ >= 30) {
                 return true;
             }
@@ -123,7 +123,7 @@ Once we "start" the traffic light, `G1` is not allowed to transition to `Y1` unt
 
 // Alternately, you can combine exit, guard and action by providing your own handle method
     struct G1 {
-        bool handle(LightContext& t, ClockTickEvent) {
+        bool handle(LightContext&, ClockTickEvent& t) {
             if (t.ticks_ >= 30) {
                 // exit action
                 t.ticks_ = 0;
@@ -142,54 +142,102 @@ Then modify the transition table to know about the guard (Note: This is not real
       std::tuple<ClockedTransition<G1, Y1>
 ```
 
-A more complete state trait implementation will look like this. Look at the signatures of the exit and guard functions. Any information like `walk_pressed_` is retained in the state trait itself. The state machine itself is trait agnostic and doesn't care about the trait's implementation details.
+A more complete state `context` implementation will look like this. Look at the signatures of the exit and guard functions. Any information like `walk_pressed_` is retained in the state `context` itself. The state machine itself is `context` agnostic and doesn't care about the `context`'s implementation details.
 
+```cpp
+namespace TrafficLightAG {
+    struct LightHsm {
+        struct G1 {
+            void entry(LightHsm&, ClockTickEvent& t) { t.ticks_ = 0; }
+            bool guard(LightHsm&, ClockTickEvent& t) { return t.ticks_ >= 30; }
+        };
+
+        struct Y1 {
+            bool guard(LightHsm&, ClockTickEvent& t) { return t.ticks_ >= 5; }
+        };
+
+        struct G2 {
+            void entry(LightHsm&, ClockTickEvent& t) { t.ticks_ = 0; }
+            bool guard(LightHsm& l, ClockTickEvent& t) {
+                return t.ticks_ >= 60 || (l.walk_pressed_ && t.ticks_ >= 30);
+            }
+        };
+
+        struct Y2 {
+            void entry(LightHsm&, ClockTickEvent& t) { t.ticks_ = 0; }
+            bool guard(LightHsm&, ClockTickEvent& t) { return t.ticks_ >= 5; }
+            boid action(LightHsm& l, ClockTickEvent&) { l.walk_pressed_ = false; }
+        };
+        using transitions =
+          std::tuple<ClockedTransition<G1, Y1>,
+            ClockedTransition<Y1, G2>,
+            ClockedTransition<G2, Y2>,
+            ClockedTransition<Y2, G1>>;
+
+        bool walk_pressed_{};
+    };
+}
+```
+
+An alternate way to implement this context is shown below:
 ```cpp
 namespace TrafficLight {
 
-struct LightContext : clocked_trait {
+struct LightContext {
     struct G1 {
-        void exit(LightContext& t) { t.ticks_ = 0; }
-
-        auto guard(LightContext& t) -> bool {
+        bool handle(LightContext&, ClockTickEvent& t) {
             if (t.ticks_ >= 30) {
+                // exit action
+                t.ticks_ = 0;
                 return true;
             }
             return false;
-        };
+        }
     };
 
     struct Y1 {
+        bool handle(LightContext&, ClockTickEvent& t) {
+            if (t.ticks_ >= 5) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
         void entry(LightContext& t) { t.walk_pressed_ = false; }
-
-        void exit(LightContext& t) { t.ticks_ = 0; }
-
-        auto guard(LightContext& t) -> bool { return t.ticks_ >= 5; };
     };
 
     struct G2 {
-        void exit(LightContext& t) { t.ticks_ = 0; }
-        auto guard(LightContext& t) -> bool {
-            return (!t.walk_pressed_) ? t.ticks_ >= 60 : t.ticks_ >= 30;
-        };
+        bool handle(LightContext& l, ClockTickEvent& t) {
+            if (t.ticks_ >= 60 || (l.walk_pressed_ && t.ticks_ >= 30)) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
     };
 
     struct Y2 {
-        void exit(LightContext& t) { t.ticks_ = 0; }
-
-        auto guard(LightContext& t) -> bool { return t.ticks_ >= 5; };
-
-        auto action(LightContext& t) -> void { t.walk_pressed_ = false; }
+        bool handle(LightContext&, ClockTickEvent& t) {
+            if (t.ticks_ >= 5) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
     };
 
     bool walk_pressed_{};
 
     using transitions =
-      std::tuple<ClockedTransition<G1, Y1, decltype(&G1::guard)>,
-                 ClockedTransition<Y1, G2, decltype(&Y1::guard)>,
-                 ClockedTransition<G2, Y2, decltype(&G2::guard)>,
-                 ClockedTransition<Y2, G1, decltype(&Y2::guard)>>;
+      std::tuple<ClockedTransition<G1, Y1>,
+                 ClockedTransition<Y1, G2>,
+                 ClockedTransition<G2, Y2>,
+                 ClockedTransition<Y2, G1>>;
 };
+} // namespace TrafficLight
 ```
 A namespace is used as an additional encapsulation mechanism. Now that there is a "simulated" model for this traffic light, we can drive it with a timer that "ticks" the state machine at a frequency of 1Hz. To turn this trait into a periodic state machine,
 
@@ -219,7 +267,7 @@ A couple more "contract"s to note. `entry`, `exit`, `action` and `guard`s are na
 Context can be nested as "states" within a transition table. Let's say the TrafficLight has to transition to an "EmergencyMode".
 
 ```cpp
-struct EmergencyOverrideContext : clocked_trait {
+struct EmergencyOverrideContext {
     struct G1 {
         void exit(EmergencyOverrideContext& t) { t.ticks_ = 0; }
 
@@ -248,10 +296,10 @@ struct EmergencyOverrideContext : clocked_trait {
 
     bool walk_pressed_{};
     using transitions =
-      std::tuple<ClockedTransition<G1, Y1, decltype(&G1::guard)>,
-                 ClockedTransition<Y1, G2, decltype(&Y1::guard)>,
-                 ClockedTransition<G2, Y2, decltype(&G2::guard)>,
-                 ClockedTransition<Y2, G1, decltype(&Y2::guard)>>;
+      std::tuple<ClockedTransition<G1, Y1>,
+                 ClockedTransition<Y1, G2>,
+                 ClockedTransition<G2, Y2>,
+                 ClockedTransition<Y2, G1>>;
 };
 ```
 We've defined the traits for emergency override above. Simply, it cycles through each state at 5s. Here is the trait with both these traits:
@@ -299,11 +347,17 @@ struct Broadway {
 #### A Concurrent State Machine
 The same example above can be turned into a concurrent state machine when instantiated with:
 ```cpp
-    using type = make_concurrent_hsm_t<ParkAveLights, FifthAveLights>;
+    using type = make_concurrent_hsm_t<ClockedHsm, ParkAveLights, FifthAveLights>;
 ```
 
 ### Policy Based Design
-Policy classes are provided for several scenarios. Threaded (Asynchronous), Single threaded, Periodic, Real-time and concurrent execution.
+Policy classes are provided for several scenarios. Threaded (Asynchronous), Single threaded, Periodic, Real-time and concurrent execution. You can combine policies like this:
+```cpp
+template <typename T>
+    using ThreadedClockedHsm = ThreadedExecutionPolicy<ClockedHsm<T>>;
+    // Both ParkAveLights and FifthAveLights can be `tick`-ed
+    using type = make_concurrent_hsm_t<ThreadedClockedHsm, ParkAveLights, FifthAveLights>;
+```
 
 Like it? Try it.
 
