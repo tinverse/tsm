@@ -129,7 +129,10 @@ struct Transition : BaseTransition<From, Event, To> {
     Guard guard_{};
 };
 
-struct ClockTickEvent {};
+struct ClockTickEvent {
+    int ticks_;
+};
+
 template<typename From,
          typename To,
          typename Guard = bool (*)(void),
@@ -234,6 +237,10 @@ struct TransitionMap {
     using type = typename transition_map_helper<From, Event, Transitions>::type;
 };
 
+// find transition
+template<typename From, typename Event, typename Transitions>
+using find_transition_t = typename TransitionMap<From, Event, Transitions>::type;
+
 // variable template to check for the existence of a valid transition
 template<typename State, typename Event, typename Transitions>
 inline constexpr bool has_valid_transition_v =
@@ -241,32 +248,68 @@ inline constexpr bool has_valid_transition_v =
                   void>;
 
 // SFINAE test for exit method
-template<typename T, typename = void>
+template<typename T, typename Event, typename = void>
 struct has_exit : std::false_type {};
 
-template<typename T>
+template<typename T, typename Event>
 struct has_exit<
   T,
+  Event,
   std::void_t<std::disjunction<std::is_invocable<decltype(&T::exit), T>,
-                               std::is_invocable<decltype(&T::exit), T, T&>>>>
+                               std::is_invocable<decltype(&T::exit), T, T&>,
+                               std::is_invocable<decltype(&T::exit), T, Event>>>>
   : std::true_type {};
 
-template<typename T>
-inline constexpr bool has_exit_v = has_exit<T>::value;
+template<typename T, typename Event>
+inline constexpr bool has_exit_v = has_exit<T, Event>::value;
 
 // SFINAE test for entry method
-template<typename T, typename = void>
+template<typename T, typename Event, typename = void>
 struct has_entry : std::false_type {};
 
-template<typename T>
+template<typename T, typename Event>
 struct has_entry<
   T,
+  Event,
   std::void_t<std::disjunction<std::is_invocable<decltype(&T::entry), T>,
-                               std::is_invocable<decltype(&T::entry), T&>>>>
+                               std::is_invocable<decltype(&T::entry), T&>,
+                               std::is_invocable<decltype(&T::entry), T, Event>>>>
   : std::true_type {};
 
-template<typename T>
-inline constexpr bool has_entry_v = has_entry<T>::value;
+template<typename T, typename Event>
+inline constexpr bool has_entry_v = has_entry<T, Event>::value;
+
+// SFINAE test for guard method
+template<typename T, typename Event, typename = void>
+struct has_guard : std::false_type {};
+
+template<typename T, typename Event>
+struct has_guard<
+  T,
+  Event,
+  std::void_t<std::disjunction<std::is_invocable<decltype(&T::guard), T>,
+                               std::is_invocable<decltype(&T::guard), T&>,
+                               std::is_invocable<decltype(&T::guard), T, Event>>>>
+  : std::true_type {};
+
+template<typename T, typename Event>
+inline constexpr bool has_guard_v = has_guard<T, Event>::value;
+
+// SFINAE test for action method
+template<typename T, typename Event, typename = void>
+struct has_action : std::false_type {};
+
+template<typename T, typename Event>
+struct has_action<
+  T,
+  Event,
+  std::void_t<std::disjunction<std::is_invocable<decltype(&T::action), T>,
+                               std::is_invocable<decltype(&T::action), T&>,
+                               std::is_invocable<decltype(&T::action), T, Event>>>>
+  : std::true_type {};
+
+template<typename T, typename Event>
+inline constexpr bool has_action_v = has_action<T, Event>::value;
 
 // Trait to check for the presence of T::transitions
 template<typename, typename = std::void_t<>>
@@ -322,61 +365,51 @@ template<typename T>
 inline constexpr bool is_state_trait_v =
   std::conjunction_v<has_transitions<T>, std::negation<is_hsm_trait<T>>>;
 
-struct clocked_trait {
-    constexpr static bool is_clocked = true;
-    volatile int ticks_{};
-};
 
-// Check if type has is_clocked or inherits from a type with is_clocked
 template<typename T, typename = void>
-struct is_clocked_trait : std::false_type {};
+struct is_clocked_hsm : std::false_type {};
 
 template<typename T>
-struct is_clocked_trait<T, std::void_t<decltype(T::is_clocked)>>
+struct is_clocked_hsm<T, std::void_t<decltype(T::is_clocked_hsm)>>
   : std::true_type {};
 
 template<typename T>
-inline constexpr bool is_clocked_trait_v = is_clocked_trait<T>::value;
+inline constexpr bool is_clocked_hsm_v = is_clocked_hsm<T>::value;
 
 // Hsm
 template<typename T, typename transitions = typename T::transitions>
 struct Hsm : T {
     static constexpr bool is_hsm = true;
     using type = Hsm<T, transitions>;
+    using HsmType = type; // alias for policy classes
     using initial_state = typename std::tuple_element_t<0, transitions>::from;
     using States = get_states_t<transitions>;
 
-    Hsm() {
-        current_state_ = &std::get<initial_state>(states_);
-        if constexpr (has_entry_v<initial_state>) {
-            initial_state* state =
-              *std::get_if<initial_state*>(&current_state_);
-            if constexpr (std::is_invocable_v<decltype(&initial_state::entry),
-                                              initial_state*,
-                                              T&>) {
-                state->entry(static_cast<T&>(*this));
-            } else {
-                state->entry();
-            }
-        }
-    }
+    Hsm()
+        : current_state_ (&std::get<initial_state>(states_))
+    {}
 
+    // for rvalue reference and copy
     template<typename Event>
-    bool handle(Event e = Event()) {
+    bool handle(Event&& e) {
+        // using Event = std::decay_t<Evt>;
+        // Event e = std::forward<Evt>(event);
         return std::visit(
-          [this, e](auto* state) {
+          [this, &e](auto* state) {
               using State = std::decay_t<decltype(*state)>;
+              // check Event is same as decayed e
               bool handled = false;
               // if current_state is a state machine, call handle on it
               if constexpr (is_hsm_trait_t<State>::value) {
-                  handled = state->handle(e);
+                  handled = state->handle(std::forward<Event>(e));
               }
               if (!handled) {
                   // Does State implement handle for Event?
                   if constexpr (has_valid_transition_v<State,
-                                                       Event,
+                                                       std::decay_t<Event>,
                                                        transitions>) {
-                      this->handle_transition<Event>(state);
+                    using transition = find_transition_t<State, std::decay_t<Event>, transitions>;
+                      this->handle_transition<transition>(state, static_cast<Event&&>(e));
                       handled = true;
                   }
               }
@@ -385,98 +418,114 @@ struct Hsm : T {
           current_state_);
     }
 
+
     template<typename Event, typename State>
-    void entry(Event e = Event()) noexcept {
-        State* state = *std::get_if<State*>(&current_state_);
-        if constexpr (is_hsm_trait_v<State>) {
-            state->template entry<Event, typename State::initial_state>(e);
-        } else {
-            if constexpr (has_entry_v<State>) {
-                if constexpr (std::is_invocable_v<decltype(&State::entry),
-                                                  State*,
-                                                  T&>) {
-                    state->entry(static_cast<T&>(*this));
-                } else {
-                    state->entry();
-                }
+    void entry(Event&& e, State* state) noexcept {
+        if constexpr (has_entry_v<State, Event>) {
+            if constexpr (std::is_invocable_v<decltype(&State::entry),
+                                              State*,
+                                              T&,
+                                              decltype(e)>) {
+                state->entry(static_cast<T&>(*this), std::forward<Event>(e));
+            } else if constexpr (std::is_invocable_v<decltype(&State::entry),
+                                              State*,
+                                              T&>) {
+                state->entry(static_cast<T&>(*this));
+            } else if constexpr (std::is_invocable_v<decltype(&State::entry),
+                                                     State*>) {
+                state->entry();
             }
         }
     }
 
     template<typename Event, typename State>
-    void exit() {
-        State* state = *std::get_if<State*>(&current_state_);
-        if constexpr (has_exit_v<State>) {
+    void exit(Event&& e, State* state) noexcept {
+        if constexpr (has_exit_v<State, Event>) {
             if constexpr (std::is_invocable_v<decltype(&State::exit),
+                                              State*,
+                                              T&,
+                                              decltype(e)>) {
+                state->exit(static_cast<T&>(*this), std::forward<Event>(e));
+            } else if constexpr (std::is_invocable_v<decltype(&State::exit),
                                               State*,
                                               T&>) {
                 state->exit(static_cast<T&>(*this));
-            } else {
+            } else if constexpr (std::is_invocable_v<decltype(&State::exit),
+                                              State*>) {
                 state->exit();
             }
         }
     }
-
     // Check Guard
-    template<typename Tn, typename State = typename Tn::from>
-    bool check_guard(State* state) {
-        if constexpr (std::is_invocable_v<typename Tn::guard, T&>) {
-            Tn& t = std::get<Tn>(transitions_);
-            return std::invoke(t.guard_, static_cast<T&>(*this));
-        } else if constexpr (std::
-                               is_invocable_v<typename Tn::guard, State*, T&>) {
-
-            return state->guard(static_cast<T&>(*this));
+    template<typename Tn, typename Event = typename Tn::event, typename State = typename Tn::from>
+    bool check_guard(Event&& e, State* state) {
+        if constexpr (has_guard_v<State, Event>) {
+            if constexpr (std::is_invocable_v<decltype(&State::guard),
+                                            State*,
+                                            T&,
+                                            decltype(e)>) {
+                return state->guard(static_cast<T&>(*this), std::forward<Event>(e));
+            } else if constexpr (std::is_invocable_v<decltype(&State::guard),
+                                            State*,
+                                            T&>) {
+                return state->guard(static_cast<T&>(*this));
+            } else if constexpr (std::is_invocable_v<decltype(&State::guard),
+                                            State*>) {
+                return state->guard();
+            }
         }
         return true;
     }
 
     // Perform action
-    template<typename Tn, typename State = typename Tn::from>
-    void perform_action(State* state) {
-        if constexpr (std::is_invocable_v<typename Tn::action, T&>) {
-            Tn& t = std::get<Tn>(transitions_);
-            std::invoke(t.action_, static_cast<T&>(*this));
-        } else if constexpr (std::is_invocable_v<typename Tn::action,
-                                                 State*,
-                                                 T&>) {
-            state->action(static_cast<T&>(*this));
+    template<typename Tn, typename Event = typename Tn::event, typename State = typename Tn::from>
+    void perform_action(Event&& e, State* state) {
+        if constexpr (has_action_v<State, Event>) {
+            if constexpr (std::is_invocable_v<decltype(&State::action),
+                                              State*,
+                                              T&,
+                                              decltype(e)>) {
+                state->action(static_cast<T&>(*this), std::forward<Event>(e));
+            } else if constexpr (std::is_invocable_v<decltype(&State::action),
+                                              State*,
+                                              T&>) {
+                state->action(static_cast<T&>(*this));
+            } else if constexpr (std::is_invocable_v<decltype(&State::action),
+                                              State*>) {
+                state->action();
+            }
         }
     }
 
-    template<typename Event, typename State>
+    template<typename transition, typename State = typename transition::from,
+        typename Event = typename transition::event>
     std::enable_if_t<!has_handle_method_v<State, Event, T>, void>
-    handle_transition(State* state) {
+    handle_transition(typename transition::from* state, Event&& e) {
         // Assume TransitionMap provides the matching transition
-        using transition =
-          typename TransitionMap<State, Event, transitions>::type;
-
-        if (!this->check_guard<transition>(state)) {
+        if (!this->check_guard<transition>(std::forward<Event>(e), state)) {
             return;
         }
 
-        this->template exit<Event, State>();
+        this->template exit<Event, State>(std::forward<Event>(e), state);
 
         // Optional Action
-        this->perform_action<transition>(state);
+        this->perform_action<transition>(std::forward<Event>(e), state);
 
         using to = typename transition::to;
 
         // switch to the new state
         current_state_ = &std::get<to>(states_);
 
-        this->template entry<Event, to>();
+        this->template entry<Event, to>(std::forward<Event>(e), *std::get_if<to*>(&current_state_));
     }
 
-    template<typename Event, typename State>
+    template<typename transition, typename State = typename transition::from,
+        typename Event = typename transition::event>
     std::enable_if_t<has_handle_method_v<State, Event, T>, void>
-    handle_transition(State* state) {
-        // Assume TransitionMap provides the matching transition
-        using transition =
-          typename TransitionMap<State, Event, transitions>::type;
+    handle_transition(State* state, Event&& e) {
 
         // A true gives permission to transition
-        if (!state->handle(static_cast<T&>(*this), Event{})) {
+        if (!state->handle(static_cast<T&>(*this), std::forward<Event>(e))) {
             return;
         }
 
@@ -485,7 +534,7 @@ struct Hsm : T {
         // switch to the new state
         current_state_ = &std::get<to>(states_);
 
-        this->template entry<Event, to>();
+        this->template entry<Event, to>(std::forward<Event>(e), *std::get_if<to*>(&current_state_));
     }
 
     template<typename State>
@@ -542,20 +591,25 @@ using wrap_transitions_t = typename wrap_transitions<Ts...>::type;
 
 // Clocked HSM - react to events after a certain time period
 // This is a wrapper around HSM that adds a tick method to the HSM
-template<typename HsmType>
-struct ClockedHsm : HsmType {
-    using type = ClockedHsm<HsmType>;
-    bool tick() { return this->handle(ClockTickEvent()); }
+template<typename T, template <typename> class Policy = make_hsm_t>
+struct ClockedHsm : Policy<T> {
+    using type = ClockedHsm<T, Policy>;
+    using HsmType = typename Policy<T>::type;
+
+    constexpr static bool is_clocked_hsm = true;
+
+    bool tick() { return this->handle(tick_event_); }
 
     template<typename Event>
     bool handle(Event e = Event()) {
         return HsmType::handle(e);
     }
 
-    bool handle(ClockTickEvent e) {
-        ++this->ticks_;
+    bool handle(ClockTickEvent& e) {
+        ++tick_event_.ticks_;
         return HsmType::handle(e);
     }
+    ClockTickEvent tick_event_{};
 };
 
 // Define the wrapper for state traits to convert them into HSMs including their
@@ -565,9 +619,7 @@ struct make_hsm<T, std::enable_if_t<is_state_trait_v<T>>> {
     // shadow the transitions with the wrapped transitions
     using transitions = wrap_transitions_t<typename T::transitions>;
 
-    using type = std::conditional_t<is_clocked_trait_v<T>,
-                                    ClockedHsm<Hsm<T, transitions>>,
-                                    Hsm<T, transitions>>;
+    using type = Hsm<T, transitions>;
 };
 
 // Orthogonal HSM
@@ -595,15 +647,6 @@ struct OrthogonalExecutionPolicy {
     std::tuple<Hsms...> hsms_;
 };
 
-// make orthogonal hsm from traits
-template<typename... Ts>
-struct make_orthogonal_hsm {
-    using type = OrthogonalExecutionPolicy<make_hsm_t<Ts>...>;
-};
-
-template<typename... Ts>
-using make_orthogonal_hsm_t = typename make_orthogonal_hsm<Ts...>::type;
-
 // A thread safe event queue. Any thread can call add_event if it has a pointer
 // to the event queue. The call to nextEvent is a blocking call
 template<typename Event, typename LockType, typename ConditionVarType>
@@ -626,12 +669,12 @@ struct EventQueueT {
         return e;
     }
 
-    void add_event(Event const& e) {
+    void add_event(Event&& e) {
         if (interrupt_) {
             return;
         }
         std::lock_guard<LockType> lock(eventQueueMutex_);
-        push_back(e);
+        push_back(std::forward<Event>(e));
         cvEventAvailable_.notify_all();
     }
 
@@ -918,9 +961,10 @@ using get_events_t =
   unique_tuple_t<typename get_events_from_hsm<HsmType>::type>;
 
 // Single threaded execution policy
-template<typename Context>
-struct SingleThreadedExecutionPolicy : make_hsm_t<Context> {
-    using HsmType = make_hsm_t<Context>;
+template<typename Context, template <typename> class Policy = make_hsm_t>
+struct SingleThreadedExecutionPolicy : Policy<Context> {
+    using type = SingleThreadedExecutionPolicy<Context, Policy>;
+    using HsmType = typename Policy<Context>::type;
     using Event = tuple_to_variant_t<get_events_t<HsmType>>;
 
     bool step() {
@@ -932,7 +976,7 @@ struct SingleThreadedExecutionPolicy : make_hsm_t<Context> {
           [this](auto&& e) -> bool { return HsmType::handle(e); }, nextEvent);
     }
 
-    void send_event(Event const& event) { eventQueue_.add_event(event); }
+    void send_event(Event&& event) { eventQueue_.add_event(std::forward<Event>(event)); }
 
   private:
     EventQueue<Event> eventQueue_;
@@ -940,9 +984,10 @@ struct SingleThreadedExecutionPolicy : make_hsm_t<Context> {
 };
 
 // Asynchronous execution policy
-template<typename Context>
-struct ThreadedExecutionPolicy : make_hsm_t<Context> {
-    using HsmType = make_hsm_t<Context>;
+template<typename Context, template <typename> class Policy = make_hsm_t>
+struct ThreadedExecutionPolicy : Policy<Context> {
+    using type = ThreadedExecutionPolicy<Context, Policy>;
+    using HsmType = typename Policy<Context>::type;
     using Event = tuple_to_variant_t<get_events_t<HsmType>>;
 
     void start() {
@@ -963,7 +1008,7 @@ struct ThreadedExecutionPolicy : make_hsm_t<Context> {
 
     virtual ~ThreadedExecutionPolicy() { stop(); }
 
-    void send_event(Event const& event) { eventQueue_.add_event(event); }
+    void send_event(Event&& event) { eventQueue_.add_event(std::forward<Event>(event)); }
 
   protected:
     std::thread smThread_;
@@ -1037,14 +1082,15 @@ using BlockingObserver = BlockingObserverT<std::mutex, std::condition_variable>;
 /// at the end of processing each event - specifically, right before the
 /// blocking wait for the next event.
 ///
-template<typename HsmType, typename Observer>
+template<typename Observer, typename Context, template <typename> class Policy = ThreadedExecutionPolicy>
 struct ThreadedExecWithObserver
-  : public ThreadedExecutionPolicy<HsmType>
+  : public Policy<Context>
   , public Observer {
-
-    using ThreadedExecutionPolicy<HsmType>::smThread_;
-    using ThreadedExecutionPolicy<HsmType>::interrupt_;
-    using ThreadedExecutionPolicy<HsmType>::process_event;
+    using type = ThreadedExecWithObserver<Observer, Context, Policy>;
+    using HsmType = typename Policy<Context>::type;
+    using HsmType::smThread_;
+    using HsmType::interrupt_;
+    using HsmType::process_event;
 
     void start() {
         smThread_ = std::thread([this] {
@@ -1069,6 +1115,8 @@ using ThreadedBlockingObserver =
 template<typename Clock = std::chrono::steady_clock,
          typename Duration = typename Clock::duration>
 struct Timer {
+    using ClockType = Clock;
+    using DurationType = Duration;
     void start() {
         start_time_ = Clock::now();
         started_ = true;
@@ -1214,14 +1262,15 @@ struct RealtimeConfigurator {
 };
 
 // Real-time execution policy - set cpu isolation in grub
-template<typename Context>
+template<typename Context, template <typename> class Policy = ThreadedExecutionPolicy>
 struct RealtimeExecutionPolicy
-  : ThreadedExecutionPolicy<Context>
+  : Policy<Context>
   , RealtimeConfigurator {
-
-    using ThreadedExecutionPolicy<Context>::smThread_;
-    using ThreadedExecutionPolicy<Context>::interrupt_;
-    using ThreadedExecutionPolicy<Context>::process_event;
+    using type = RealtimeExecutionPolicy<Context, Policy>;
+    using HsmType = typename Policy<Context>::type;
+    using HsmType::smThread_;
+    using HsmType::interrupt_;
+    using HsmType::process_event;
 
     void start() {
         smThread_ = RealtimeConfigurator::real_time_thread([this] {
@@ -1236,13 +1285,17 @@ struct RealtimeExecutionPolicy
 
 // Periodic execution policy
 template<typename Context,
+         template <typename> class Policy = ThreadedExecutionPolicy,
          typename PeriodicTimer = PeriodicSleepTimer<std::chrono::steady_clock,
                                                      std::chrono::milliseconds>>
 struct PeriodicExecutionPolicy
-  : ThreadedExecutionPolicy<Context>
+  : Policy<Context>
   , PeriodicTimer {
-    using ThreadedExecutionPolicy<Context>::interrupt_;
-    using ThreadedExecutionPolicy<Context>::send_event;
+    using type = PeriodicExecutionPolicy<Context, Policy, PeriodicTimer>;
+    using HsmType = typename Policy<Context>::type;
+    using TimerType = PeriodicTimer;
+    using HsmType::interrupt_;
+    using HsmType::send_event;
 
     void start() {
         PeriodicTimer::start();
@@ -1251,7 +1304,8 @@ struct PeriodicExecutionPolicy
         eventThread_ = std::thread([this] {
             while (!interrupt_) {
                 PeriodicTimer::wait();
-                this->send_event(ClockTickEvent());
+                ++tick_event_.ticks_;
+                this->send_event(tick_event_);
             }
         });
     }
@@ -1264,23 +1318,30 @@ struct PeriodicExecutionPolicy
     }
     virtual ~PeriodicExecutionPolicy() { stop(); }
 
+    int get_ticks() {
+        return tick_event_.ticks_;
+    }
   protected:
     std::thread eventThread_;
+    ClockTickEvent tick_event_;
 };
 
 // Periodic Real-time execution policy
 template<typename Context,
+         template <typename> class Policy = ThreadedExecutionPolicy,
          typename PeriodicTimer = PeriodicSleepTimer<std::chrono::steady_clock,
                                                      std::chrono::milliseconds>>
 struct RealtimePeriodicExecutionPolicy
   : RealtimeConfigurator
-  , ThreadedExecutionPolicy<Context>
+  , Policy<Context>
   , PeriodicTimer {
-
-    using ThreadedExecutionPolicy<Context>::smThread_;
-    using ThreadedExecutionPolicy<Context>::interrupt_;
-    using ThreadedExecutionPolicy<Context>::process_event;
-    using ThreadedExecutionPolicy<Context>::send_event;
+    using type = RealtimePeriodicExecutionPolicy<Context, Policy, PeriodicTimer>;
+    using TimerType = PeriodicTimer;
+    using HsmType = typename Policy<Context>::type;
+    using HsmType::smThread_;
+    using HsmType::interrupt_;
+    using HsmType::process_event;
+    using HsmType::send_event;
 
     void start() {
         PeriodicTimer::start();
@@ -1293,7 +1354,8 @@ struct RealtimePeriodicExecutionPolicy
         eventThread_ = RealtimeConfigurator::real_time_thread([this] {
             while (!interrupt_) {
                 PeriodicTimer::wait();
-                this->send_event(ClockTickEvent());
+                ++tick_event_.ticks_;
+                this->send_event(tick_event_);
             }
         });
     }
@@ -1306,8 +1368,12 @@ struct RealtimePeriodicExecutionPolicy
     }
     virtual ~RealtimePeriodicExecutionPolicy() { stop(); }
 
+    int get_ticks() {
+        return tick_event_.ticks_;
+    }
   protected:
     std::thread eventThread_;
+    ClockTickEvent tick_event_;
 };
 
 // Concurrent HSMs
@@ -1322,14 +1388,21 @@ struct ConcurrentExecutionPolicy {
     }
 
     template<typename Event>
-    void exit(Event e = Event()) {
+    void exit(Event&& e) {
         std::apply([e](auto&... hsm) { (hsm.exit(e), ...); }, hsms_);
     }
 
     template<typename Event>
-    bool handle(Event e = Event()) {
+    void send_event(Event&& e) {
         return std::apply(
-          [e](auto&... hsm) { return (hsm.send_event(e) || ...); }, hsms_);
+                // send event to all HSMs
+          [e](auto&... hsm) { (hsm.send_event(e), ...); }, hsms_);
+    }
+
+    // assume hsms can be `tick`ed
+
+    void tick() {
+        std::apply([](auto&... hsm) { (hsm.tick(), ...); }, hsms_);
     }
 
     std::tuple<Hsms...> hsms_;

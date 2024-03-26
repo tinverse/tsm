@@ -27,8 +27,8 @@ namespace tsm {
 /// 5. To process the event, call the step method
 /// sm.step();
 ///
-template<typename Context>
-using SingleThreadedHsm = SingleThreadedExecutionPolicy<Context>;
+template<typename Context, template<class> class Policy = SingleThreadedExecutionPolicy>
+using SingleThreadedHsm = Policy<Context>;
 
 ///
 /// An Asynchronous state machine. Event processing is done in a separate
@@ -40,30 +40,24 @@ using SingleThreadedHsm = SingleThreadedExecutionPolicy<Context>;
 /// the HsmDefinition is done processing the previous event. It also simplifies
 /// the interface in that only one call to sendEvent is required.
 ///
-template<typename Context>
-using ThreadedHsm = ThreadedExecutionPolicy<Context>;
+template<typename Context, template<class> class Policy = ThreadedExecutionPolicy>
+using ThreadedHsm = Policy<Context>;
 
 // This state machine is driven by a periodic timer.
 template<typename Context,
-         template<class, class>
-         class TimerType,
-         typename ClockType,
-         typename DurationType>
-using PeriodicHsm =
-  PeriodicExecutionPolicy<Context, TimerType<ClockType, DurationType>>;
+         template<class> class Policy = PeriodicExecutionPolicy>
+using PeriodicHsm = Policy<Context>;
+
 
 // This real-time state machine is driven by a periodic timer.
 template<typename Context,
-         template<class, class>
-         class TimerType,
-         typename ClockType,
-         typename DurationType>
-using RealtimePeriodicHsm =
-  PeriodicExecutionPolicy<Context, TimerType<ClockType, DurationType>>;
+         template<class>
+         class Policy = RealtimePeriodicExecutionPolicy>
+using RealtimePeriodicHsm = Policy<Context>;
 
 // Real-time state machine. This state machine is driven by a periodic timer.
-template<typename Context>
-using RealtimeHsm = RealtimeExecutionPolicy<Context>;
+template<typename Context, template<class> class Policy = RealtimeExecutionPolicy>
+using RealtimeHsm = Policy<Context>;
 
 // Concurrent Hsm
 template<template <typename> class Policy = ThreadedExecutionPolicy, typename... Contexts>
