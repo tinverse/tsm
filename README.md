@@ -41,7 +41,7 @@ struct SwitchContext {
 
 Clients can interact with this state machine in two ways - Synchronously and Asynchronously.
 
-##### Single Threaded Execution Policy
+##### Single Threaded Execution
 
 ```cpp
 using SwitchSM = SingleThreadedHsm<SwitchContext>;
@@ -53,7 +53,7 @@ int main() {
 }
 ```
 
-##### Asynchronous Execution Policy
+##### Asynchronous Execution
 
 ```cpp
 using SwitchSM = ThreadedHsm<SwitchContext>;
@@ -76,13 +76,13 @@ Initial states are implied by the first "from" state in the first transition. Th
 
 Every Hsm instance holds all the sub-states in a tuple. This tuple is initialized when the Hsm is instantiated. The current state is a variant holding a pointer to one of these states. Each Hsm also inherits from it's context type. So all data related to the context can be stored there and the Hsm class itself is unaware of the context's internals. When making call to the entry, exit and handle methods, the Hsm class will pass a reference to itself, but cast to the context type. This allows the Hsm to provide access the context's data. This allows the context to be a simple struct or a complex class with methods and data. If the context allocates any memory, it is the responsibility of the context to clean up all allocated memory in it's destructor. Declaring a virtual destructor guarantees that the context's destructor will be called when the Hsm is destroyed.
 
-#### PeriodicExecutionPolicy
+#### Clocked State Machines
 
 A whole class of problems can be solved in a much simpler manner with state machines that are driven by timers. Consider the problem of having to model traffic lights at a 2-way crossing. The states are G1(30s), Y1(5s), G2(60s), Y2(5s). When G1 or Y1 are on, the opposite R2 is on etc. The signal stays on for the amount of time indicated in parenthesis before moving on to the next. The added complication is that G2 has a walk signal. If the walk signal is pressed, G2 stays on for only 30s instead of 60s before transitioning to Y2. The trick is to realize that there is only one event for this state machine: The expiry of a timer at say, 1s granularity. Such problems can be modeled by using timer driven state machines. Applications include game engines where a refresh of the game state happens every so many milliseconds, robotics, embedded software and of course traffic lights :). This problem is modeled with a custom "handle" method without a state transition table and a LightState type inherited from the State struct.
 
-To model a solution, we first implement the `TrafficLight` traits. To reduce repetition in the transition table, `Transition`s are marked as `ClockedTransition`s.  This is a very important pattern that abstracts away the notion of time. Now, coupled with a timer, we are able to drive a state machine at any `Duration` (1ms, 1s, 1us) or multiples for e.g. every 42ms. This makes testing easier as we can test the clocking separately from the state machine logic.
+To model a solution, we first implement the `TrafficLight` contexts. To reduce repetition in the transition table, `Transition`s are marked as `ClockedTransition`s.  This is a very important pattern that abstracts away the notion of time. Now, coupled with a timer, we are able to drive a state machine at any `Duration` (1ms, 1s, 1us) or multiples for e.g. every 42ms. This makes testing easier as we can test the clocking separately from the state machine logic.
 
-Summary so far. `Trait`s can have `transition`s. Implicit in that statement is that `Trait`s have to define `States` and `Events`. `States` can have `entry`, `exit`, `guard` and `actions` associated with them.
+Summary so far. `Context`s can have `transition`s. Implicit in that statement is that `Context`s have to define `States` and `Events`. `States` can have `entry`, `exit`, `guard` and `actions` associated with them.
 
 Below is a good start. From the description above, the state transitions are pretty clear. We've defined the states and a boolean that keeps track of the `walk_pressed_` button.
 
@@ -146,27 +146,27 @@ A more complete state `context` implementation will look like this. Look at the 
 
 ```cpp
 namespace TrafficLightAG {
-    struct LightHsm {
+    struct LightContext {
         struct G1 {
-            void entry(LightHsm&, ClockTickEvent& t) { t.ticks_ = 0; }
-            bool guard(LightHsm&, ClockTickEvent& t) { return t.ticks_ >= 30; }
+            void entry(LightContext&, ClockTickEvent& t) { t.ticks_ = 0; }
+            bool guard(LightContext&, ClockTickEvent& t) { return t.ticks_ >= 30; }
         };
 
         struct Y1 {
-            bool guard(LightHsm&, ClockTickEvent& t) { return t.ticks_ >= 5; }
+            bool guard(LightContext&, ClockTickEvent& t) { return t.ticks_ >= 5; }
         };
 
         struct G2 {
-            void entry(LightHsm&, ClockTickEvent& t) { t.ticks_ = 0; }
-            bool guard(LightHsm& l, ClockTickEvent& t) {
+            void entry(LightContext&, ClockTickEvent& t) { t.ticks_ = 0; }
+            bool guard(LightContext& l, ClockTickEvent& t) {
                 return t.ticks_ >= 60 || (l.walk_pressed_ && t.ticks_ >= 30);
             }
         };
 
         struct Y2 {
-            void entry(LightHsm&, ClockTickEvent& t) { t.ticks_ = 0; }
-            bool guard(LightHsm&, ClockTickEvent& t) { return t.ticks_ >= 5; }
-            boid action(LightHsm& l, ClockTickEvent&) { l.walk_pressed_ = false; }
+            void entry(LightContext&, ClockTickEvent& t) { t.ticks_ = 0; }
+            bool guard(LightContext&, ClockTickEvent& t) { return t.ticks_ >= 5; }
+            boid action(LightContext& l, ClockTickEvent&) { l.walk_pressed_ = false; }
         };
         using transitions =
           std::tuple<ClockedTransition<G1, Y1>,
@@ -174,6 +174,7 @@ namespace TrafficLightAG {
             ClockedTransition<G2, Y2>,
             ClockedTransition<Y2, G1>>;
 
+        // Note: context specific data
         bool walk_pressed_{};
     };
 }
@@ -239,7 +240,7 @@ struct LightContext {
 };
 } // namespace TrafficLight
 ```
-A namespace is used as an additional encapsulation mechanism. Now that there is a "simulated" model for this traffic light, we can drive it with a timer that "ticks" the state machine at a frequency of 1Hz. To turn this trait into a periodic state machine,
+A namespace is used as an additional encapsulation mechanism. Now that there is a "simulated" model for this traffic light, we can drive it with a timer that "ticks" the state machine at a frequency of 1Hz. To turn this context into a periodic state machine,
 
 ```cpp
 #include <tsm.h>
@@ -260,7 +261,7 @@ int main() {
 
 `hsm.start()` will start a timer with a period of 1s. At the expiration of this timer, a `ClockTickEvent` will be placed in the event queue. After 30 such ticks are processed, the state machine will use the transition table information to perform the transition to `Y1`.
 
-A couple more "contract"s to note. `entry`, `exit`, `action` and `guard`s are named as such. You can optionally pass a reference to the trait type. Having these methods within a state is also optional.
+A couple more "contract"s to note. `entry`, `exit`, `action` and `guard`s are named as such. You can optionally pass a reference to the context type. Having these methods within a state is also optional.
 
 #### A Hierarchical State Machine
 
@@ -302,7 +303,7 @@ struct EmergencyOverrideContext {
                  ClockedTransition<Y2, G1>>;
 };
 ```
-We've defined the traits for emergency override above. Simply, it cycles through each state at 5s. Here is the trait with both these traits:
+We've defined the contexts for emergency override above. Simply, it cycles through each state at 5s. Here is the TrafficLightHsmContext with two sub-contexts:
 
 ```cpp
 struct TrafficLightHsmContext {
@@ -355,9 +356,12 @@ Policy classes are provided for several scenarios. Threaded (Asynchronous), Sing
 ```cpp
 template <typename T>
     using ThreadedClockedHsm = ThreadedExecutionPolicy<ClockedHsm<T>>;
-    // Both ParkAveLights and FifthAveLights can be `tick`-ed
+    // Both ParkAveLights and FifthAveLights can be `tick`-ed. ie. they own their own clocks and operate
+    // concurrently.
     using type = make_concurrent_hsm_t<ThreadedClockedHsm, ParkAveLights, FifthAveLights>;
 ```
+
+
 
 Like it? Try it.
 
