@@ -28,3 +28,8 @@ jobs:
       with:
         file: ./build/test/tsm_test_total.info  # Adjust the path as necessary
 
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build/docs
