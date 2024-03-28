@@ -1,0 +1,4 @@
+<map id="tsm::has_handle_method&lt; State, Event, Context, std::void_t&lt; decltype(std::declval&lt; State &gt;().handle(std::declval&lt; Context &amp; &gt;(), std::declval&lt; Event &gt;()))&gt; &gt;" name="tsm::has_handle_method&lt; State, Event, Context, std::void_t&lt; decltype(std::declval&lt; State &gt;().handle(std::declval&lt; Context &amp; &gt;(), std::declval&lt; Event &gt;()))&gt; &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="5,131,224,281"/>
+<area shape="rect" id="node2" title=" " alt="" coords="59,5,171,83"/>
+</map>

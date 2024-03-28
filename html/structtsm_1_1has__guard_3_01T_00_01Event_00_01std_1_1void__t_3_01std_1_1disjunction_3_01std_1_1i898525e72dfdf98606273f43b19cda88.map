@@ -1,0 +1,4 @@
+<map id="tsm::has_guard&lt; T, Event, std::void_t&lt; std::disjunction&lt; std::is_invocable&lt; decltype(&amp;T::guard), T &gt;, std::is_invocable&lt; decltype(&amp;T::guard), T &amp; &gt;, std::is_invocable&lt; decltype(&amp;T::guard), T, Event &gt; &gt; &gt; &gt;" name="tsm::has_guard&lt; T, Event, std::void_t&lt; std::disjunction&lt; std::is_invocable&lt; decltype(&amp;T::guard), T &gt;, std::is_invocable&lt; decltype(&amp;T::guard), T &amp; &gt;, std::is_invocable&lt; decltype(&amp;T::guard), T, Event &gt; &gt; &gt; &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="5,131,260,311"/>
+<area shape="rect" id="node2" title=" " alt="" coords="77,5,189,83"/>
+</map>
