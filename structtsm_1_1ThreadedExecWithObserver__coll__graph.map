@@ -1,7 +1,8 @@
 <map id="tsm::ThreadedExecWithObserver&lt; Observer, Context, Policy &gt;" name="tsm::ThreadedExecWithObserver&lt; Observer, Context, Policy &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="181,477,420,584"/>
-<area shape="rect" id="node2" href="$structtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="102,263,323,428"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,64,196,141"/>
-<area shape="rect" id="node4" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="220,5,429,200"/>
-<area shape="rect" id="node5" title=" " alt="" coords="348,307,429,384"/>
+<area shape="rect" id="node1" title=" " alt="" coords="85,853,324,960"/>
+<area shape="rect" id="node2" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="6,477,227,804"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,235,79,312"/>
+<area shape="rect" id="node4" title=" " alt="" coords="61,5,204,83"/>
+<area shape="rect" id="node5" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="154,132,375,415"/>
+<area shape="rect" id="node6" title=" " alt="" coords="252,602,333,679"/>
 </map>

@@ -1,3 +1,12 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structtsm_1_1make__hsm_3_01T_00_01std_1_1enable__if__t_3_9is__state__trait__v_3_01T_01_4_01_4_01_4.html" title=" " alt="" coords="5,5,183,61"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,642,117,669"/>
+<area shape="rect" id="node2" href="$structtsm_1_1has__action_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_01std_1_1ffb6b83645685a77bde4470c5ed59712.html" title=" " alt="" coords="165,5,420,135"/>
+<area shape="rect" id="node3" href="$structtsm_1_1has__entry_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_01std_1_1i444d310c5d355ce923c955d4f40044e2.html" title=" " alt="" coords="165,159,420,288"/>
+<area shape="rect" id="node4" href="$structtsm_1_1has__exit_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_01std_1_1isa408c5e673d64be8b9f1fb1fb5f1192a.html" title=" " alt="" coords="169,313,416,427"/>
+<area shape="rect" id="node5" href="$structtsm_1_1has__guard_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_01std_1_1iae57391e74ec358d795c16d2c0d5f63e.html" title=" " alt="" coords="165,452,420,581"/>
+<area shape="rect" id="node6" href="$structtsm_1_1has__handle__method_3_01State_00_01Event_00_01Context_00_01std_1_1void__t_3_01decltdc7911a888eadfcde923e281efba8d60.html" title=" " alt="" coords="183,605,402,705"/>
+<area shape="rect" id="node7" href="$structtsm_1_1has__transitions_3_01T_00_01std_1_1void__t_3_01typename_01T_1_1transitions_01_4_01_4.html" title=" " alt="" coords="191,730,394,786"/>
+<area shape="rect" id="node8" href="$structtsm_1_1is__clocked__hsm_3_01T_00_01std_1_1void__t_3_01decltype_07T_1_1is__clocked__hsm_08_4_01_4.html" title=" " alt="" coords="197,810,389,866"/>
+<area shape="rect" id="node9" href="$structtsm_1_1is__hsm__trait_3_01T_00_01std_1_1void__t_3_01decltype_07T_1_1is__hsm_08_4_01_4.html" title=" " alt="" coords="202,890,383,946"/>
+<area shape="rect" id="node10" href="$structtsm_1_1is__transition__match_3_01Transition_3_01From_00_01Event_00_01To_00_01Action_00_01G809c8d727840c81b09bf04464aa64297.html" title=" " alt="" coords="202,971,383,1041"/>
 </map>

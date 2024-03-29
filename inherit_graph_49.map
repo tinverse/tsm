@@ -1,3 +1,12 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structtsm_1_1make__hsm.html" title=" " alt="" coords="5,5,244,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,282,124,309"/>
+<area shape="rect" id="node2" href="$structtsm_1_1has__action.html" title=" " alt="" coords="192,5,344,47"/>
+<area shape="rect" id="node3" href="$structtsm_1_1has__entry.html" title=" " alt="" coords="192,71,344,112"/>
+<area shape="rect" id="node4" href="$structtsm_1_1has__exit.html" title=" " alt="" coords="177,136,359,177"/>
+<area shape="rect" id="node5" href="$structtsm_1_1has__guard.html" title=" " alt="" coords="192,201,344,243"/>
+<area shape="rect" id="node6" href="$structtsm_1_1has__handle__method.html" title=" " alt="" coords="175,267,361,323"/>
+<area shape="rect" id="node7" href="$structtsm_1_1has__transitions.html" title=" " alt="" coords="172,348,364,389"/>
+<area shape="rect" id="node8" href="$structtsm_1_1is__clocked__hsm.html" title=" " alt="" coords="189,413,347,455"/>
+<area shape="rect" id="node9" href="$structtsm_1_1is__hsm__trait.html" title=" " alt="" coords="177,479,359,520"/>
+<area shape="rect" id="node10" href="$structtsm_1_1is__transition__match.html" title=" " alt="" coords="192,545,344,601"/>
 </map>

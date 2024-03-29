@@ -1,0 +1,8 @@
+<map id="tsm::PeriodicSleepTimer&lt; Clock, Duration &gt;" name="tsm::PeriodicSleepTimer&lt; Clock, Duration &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="169,521,351,657"/>
+<area shape="rect" id="node4" href="$structtsm_1_1PeriodicSleepTimer.html" title=" " alt="" coords="136,749,384,900"/>
+<area shape="rect" id="node2" href="$structtsm_1_1Timer.html" title=" " alt="" coords="155,277,365,472"/>
+<area shape="rect" id="node3" href="$structtsm_1_1Timer.html" title="Helper to implement a Timed Execution Policy." alt="" coords="186,5,334,200"/>
+<area shape="rect" id="node5" href="$structtsm_1_1PeriodicExecutionPolicy.html" title=" " alt="" coords="5,964,253,1115"/>
+<area shape="rect" id="node6" href="$structtsm_1_1RealtimePeriodicExecutionPolicy.html" title=" " alt="" coords="277,949,507,1129"/>
+</map>

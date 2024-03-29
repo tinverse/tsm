@@ -80,23 +80,29 @@ $(function() {
 <code>#include &lt;type_traits&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;variant&gt;</code><br />
-<code>#include &lt;condition_variable&gt;</code><br />
-<code>#include &lt;mutex&gt;</code><br />
-<code>#include &lt;thread&gt;</code><br />
+<code>#include &quot;FreeRTOS.h&quot;</code><br />
+<code>#include &quot;semphr.h&quot;</code><br />
+<code>#include &quot;task.h&quot;</code><br />
+<code>#include &lt;sched.h&gt;</code><br />
+<code>#include &lt;sys/mman.h&gt;</code><br />
+<code>#include &lt;time.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for tsm_impl.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="tsm__impl_8h__incl.png" border="0" usemap="#ainclude_2tsm__impl_8h" alt=""/></div>
 <map name="ainclude_2tsm__impl_8h" id="ainclude_2tsm__impl_8h">
-<area shape="rect" title=" " alt="" coords="311,5,458,32"/>
+<area shape="rect" title=" " alt="" coords="462,5,609,32"/>
 <area shape="rect" title=" " alt="" coords="5,80,92,107"/>
 <area shape="rect" title=" " alt="" coords="116,80,171,107"/>
 <area shape="rect" title=" " alt="" coords="195,80,287,107"/>
 <area shape="rect" title=" " alt="" coords="311,80,371,107"/>
 <area shape="rect" title=" " alt="" coords="395,80,463,107"/>
-<area shape="rect" title=" " alt="" coords="487,80,629,107"/>
-<area shape="rect" title=" " alt="" coords="654,80,718,107"/>
-<area shape="rect" title=" " alt="" coords="742,80,806,107"/>
+<area shape="rect" title=" " alt="" coords="487,80,583,107"/>
+<area shape="rect" title=" " alt="" coords="607,80,690,107"/>
+<area shape="rect" title=" " alt="" coords="715,80,777,107"/>
+<area shape="rect" title=" " alt="" coords="802,80,874,107"/>
+<area shape="rect" title=" " alt="" coords="899,80,1001,107"/>
+<area shape="rect" title=" " alt="" coords="1026,80,1090,107"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -204,7 +210,13 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1EventQueueT.html">tsm::EventQueueT&lt; Event, LockType, ConditionVarType &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1AccurateClock.html">tsm::AccurateClock</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsm_1_1FreeRTOSMutex.html">tsm::FreeRTOSMutex</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsm_1_1FreeRTOSConditionVariable.html">tsm::FreeRTOSConditionVariable</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1FreeRTOSClock.html">tsm::FreeRTOSClock</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsm_1_1ThreadedExecutionPolicy.html">tsm::ThreadedExecutionPolicy&lt; HsmType, Events &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1aggregate__events_3_01std_1_1tuple_3_01Transitions_8_8_8_01_4_01_4.html">tsm::aggregate_events&lt; std::tuple&lt; Transitions... &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,8 +230,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1SingleThreadedExecutionPolicy.html">tsm::SingleThreadedExecutionPolicy&lt; Context, Policy &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1ThreadedExecutionPolicy.html">tsm::ThreadedExecutionPolicy&lt; Context, Policy &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1BlockingObserverT.html">tsm::BlockingObserverT&lt; LockType, ConditionVarType &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1CallbackObserver.html">tsm::CallbackObserver</a></td></tr>
@@ -230,6 +240,20 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper to implement a Timed Execution Policy.  <a href="structtsm_1_1Timer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1IntervalTimer.html">tsm::IntervalTimer&lt; Clock, Duration &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1PeriodicSleepTimer.html">tsm::PeriodicSleepTimer&lt; Clock, Duration &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1RealtimeConfigurator.html">tsm::RealtimeConfigurator</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1RealtimeExecutionPolicy.html">tsm::RealtimeExecutionPolicy&lt; Context, Policy &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1PeriodicExecutionPolicy.html">tsm::PeriodicExecutionPolicy&lt; Context, Policy, PeriodicTimer &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1RealtimePeriodicExecutionPolicy.html">tsm::RealtimePeriodicExecutionPolicy&lt; Context, Policy, PeriodicTimer &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1ConcurrentExecutionPolicy.html">tsm::ConcurrentExecutionPolicy&lt; Hsms &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1make__concurrent__hsm.html">tsm::make_concurrent_hsm&lt; Policy, Ts &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -272,17 +296,20 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a16dcf7ec500aba9fe89b326eb7d76907"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
 <tr class="memitem:a16dcf7ec500aba9fe89b326eb7d76907"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a16dcf7ec500aba9fe89b326eb7d76907">tsm::wrap_transitions_t</a> = typename wrap_transitions&lt; Ts... &gt;::type</td></tr>
 <tr class="separator:a16dcf7ec500aba9fe89b326eb7d76907"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbb7ff0c76f1ecff1f6f0dcb1a88c8ed"><td class="memTemplParams" colspan="2">template&lt;typename Event &gt; </td></tr>
-<tr class="memitem:acbb7ff0c76f1ecff1f6f0dcb1a88c8ed"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#acbb7ff0c76f1ecff1f6f0dcb1a88c8ed">tsm::EventQueue</a> = EventQueueT&lt; Event, std::mutex, std::condition_variable_any &gt;</td></tr>
-<tr class="separator:acbb7ff0c76f1ecff1f6f0dcb1a88c8ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae061737459e1babba7ed4d46af5db4fb"><td class="memTemplParams" colspan="2">template&lt;typename Event &gt; </td></tr>
+<tr class="memitem:ae061737459e1babba7ed4d46af5db4fb"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#ae061737459e1babba7ed4d46af5db4fb">tsm::EventQueue</a> = EventQueueT&lt; Event, FreeRTOSMutex, FreeRTOSConditionVariable &gt;</td></tr>
+<tr class="separator:ae061737459e1babba7ed4d46af5db4fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8df6d41d0c4fd4b2737f867dfdd86c7"><td class="memTemplParams" colspan="2">template&lt;typename HsmType &gt; </td></tr>
 <tr class="memitem:ae8df6d41d0c4fd4b2737f867dfdd86c7"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#ae8df6d41d0c4fd4b2737f867dfdd86c7">tsm::get_events_t</a> = unique_tuple_t&lt; typename get_events_from_hsm&lt; HsmType &gt;::type &gt;</td></tr>
 <tr class="separator:ae8df6d41d0c4fd4b2737f867dfdd86c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89c0bc670ae510bca28456cc9ec48cac"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a89c0bc670ae510bca28456cc9ec48cac">tsm::BlockingObserver</a> = BlockingObserverT&lt; std::mutex, std::condition_variable &gt;</td></tr>
-<tr class="separator:a89c0bc670ae510bca28456cc9ec48cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32380b5e2d5e0c8d78be74f25f45967a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a32380b5e2d5e0c8d78be74f25f45967a">tsm::BlockingObserver</a> = BlockingObserverT&lt; FreeRTOSMutex, FreeRTOSConditionVariable &gt;</td></tr>
+<tr class="separator:a32380b5e2d5e0c8d78be74f25f45967a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4971fd6953097c74ae25a0dd9915d9d1"><td class="memTemplParams" colspan="2">template&lt;typename Context &gt; </td></tr>
 <tr class="memitem:a4971fd6953097c74ae25a0dd9915d9d1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a4971fd6953097c74ae25a0dd9915d9d1">tsm::ThreadedBlockingObserver</a> = ThreadedExecWithObserver&lt; Context, BlockingObserver &gt;</td></tr>
 <tr class="separator:a4971fd6953097c74ae25a0dd9915d9d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcd40cd8fc816388794a1fdeaaf118aa"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; class Policy = ThreadedExecutionPolicy, typename... Ts&gt; </td></tr>
+<tr class="memitem:afcd40cd8fc816388794a1fdeaaf118aa"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#afcd40cd8fc816388794a1fdeaaf118aa">tsm::make_concurrent_hsm_t</a> = typename make_concurrent_hsm&lt; Policy, Ts... &gt;::type</td></tr>
+<tr class="separator:afcd40cd8fc816388794a1fdeaaf118aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -316,6 +343,8 @@ Variables</h2></td></tr>
 <tr class="memitem:aac67dd83d41733e4543a161a5bc742f8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aac67dd83d41733e4543a161a5bc742f8"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#aac67dd83d41733e4543a161a5bc742f8">tsm::is_clocked_hsm_v</a> = is_clocked_hsm&lt;T&gt;::value</td></tr>
 <tr class="separator:aac67dd83d41733e4543a161a5bc742f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa210b64526cf14f2c88b3c8edbb5b9a0"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetsm.html#aa210b64526cf14f2c88b3c8edbb5b9a0">tsm::MaxEvents</a> = 10</td></tr>
+<tr class="separator:aa210b64526cf14f2c88b3c8edbb5b9a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
