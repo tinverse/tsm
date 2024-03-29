@@ -2,39 +2,22 @@ For a primer on UML state machines, look [here][1].
 
 #### Using tsm
 
-Create the state machine by inheriting from Hsm using CRTP.
-   ```
-   struct GarageDoorHsm : public Hsm<GarageDoorHsm>
-   {
-      GarageDoorHsm()
-      {
-          setStartState(&doorClosed);
+Create the state machine by first creating a context. The context is a structure that holds the states, events, actions and guards of the state machine. The context is a template parameter to the `Hsm` class. The `Hsm` class is a Mixin class that adds state machine like functionality to the context. In essence, it takes a context and converts it into a state machine.
 
-          // TransitionTable
-          add(doorClosed, click_event, doorOpening);
-          add(doorOpening, topSensor_event, doorOpen);
-          ...
-      }
-
-      // States
-      State doorOpen, doorOpening;
-      ...
-      // Events
-      Event click_event;
-      ...
-   };
    ```
 
-Wrap the state machine around an execution policy. Currently, there are two options.
+   ```
+
+Wrap the state machine around an execution policy. Currently, there are several options.
 
 a. A state machine that executes in the context of the parent thread. This means that the client sending events to the state machine drives the event processing as well. Typically, this will be the 'main' thread of your application driving event processing. Note that several other threads can hold references to the state machine instance and queue up events (see 'd' below).
-```
-      SingleThreadedHsm<GarageDoorHsm> sm;
+```cpp
+      SingleThreadedHsm<SwitchContext> sm;
 ```
 
 b. A state machine that processes incomming events in its own thread. i.e. Events will be immediately consumed as long as the state machine is not busy. Clients 'fire and forget' an event and desire no control over event processing.
 ```
-      AsyncExecutionPolicy<GarageDoorHsm> sm;
+      ThreadedExecutionPolicy<GarageDoorHsm> sm;
 ```
 
 c. Send events to the state machine by using sendEvent method provided by the policy.
@@ -42,68 +25,34 @@ c. Send events to the state machine by using sendEvent method provided by the po
     sm.sendEvent(sm.doorOpen);
 ```
 
-d. If the state machine is running in parent thread context, invoke the `step` method to process the first event in the event queue. As opposed to the `SingleThreadedExecutionPolicy`, the `AsyncExecutionPolicy` will immediately process an event on completion of prior event processing.
-
-For a complete example see  [GarageDoorHsm.h][2] and [GarageDoorHsm.cpp][3]. Also look at [CdPlayerHsm.h][4] [CdPlayerHsm.cpp][5]
-
-```
-    sm.step();
-```
+d. If the state machine is running in parent thread context, invoke the `step` method to process the first event in the event queue. As opposed to the `SingleThreadedExecutionPolicy`, the `ThreadedExecutionPolicy` will immediately process an event on completion of prior event processing.
 
 [1]: https://en.wikipedia.org/wiki/UML_state_machine
-[2]: https://github.com/tinverse/tsm/blob/main/test/GarageDoorSM.h
-[3]: https://github.com/tinverse/tsm/blob/main/test/GarageDoorSM.cpp
-[4]: https://github.com/tinverse/tsm/blob/main/test/CdPlayerHsm.h
-[5]: https://github.com/tinverse/tsm/blob/main/test/CdPlayerHsm.cpp
 
 ### Architecture
 
 #### Policy based design
 Classes have been partitioned across policies so they can be mixed and matched for code reuse (in an ideal world)! The current architecture supports state machines with the following characterestics.
 ```
-a. Hierarchical -
+a. Hierarchical
 b. Asynchronous
 c. Parallel/Orthogonal
-d. History Preserving
 ```
 
-Other Policy classes *can* be implemented for distributed event processing. The existing mechanism can also be extended to incorporate custom behavior such as writing state transitions to disk. For e.g. see `struct AsyncExecWithObserver` in `AsyncExecutionPolicy.h`
+Other Policy classes *can* be implemented for distributed event processing. The existing mechanism can also be extended to incorporate custom behavior such as writing state transitions to disk. For e.g. see `struct ThreadedExecWithObserver` in `ThreadedExecutionPolicy.h`
 
-Clients need to include tsm.h file and link against the libtsm library.
-
-The design uses CRTP to force Actions and Guards to be callbacks that are part of your Hsm class. See the implementation of
-
-```
-    template <typename HsmDef>
-    struct Hsm : public IHsm, public State {
-    ...
-  };
-
-```
-The `HsmDef` structure tells `Hsm` about its States, Events, Actions and Guard functions. In return the `Hsm` struct creates a `StateTransitionTable`. In the `HsmDef`'s constructor, the user gets to connect child Hsms with parents by calling something like `Playing.setParent(this)` as in the CdPlayerHsm.h[1] example. State transitions should be specified in the constructor with the `add` method provided by the `Hsm`.
+Clients need to include tsm.h file.
 
 #### Hsm
-Place holder for your own application specific sate machine definition. For e.g. you might create your own Hsm called `CdPlayerHsm`. This Hsm should inherit from `Hsm` using CRTP.
+Place holder for your own application specific sate machine definition.
 
-```
-    struct CdPlayerHsm : public Hsm<CdPlayerHsm> {
-    ...
-  };
-
-```
-
-#### Hierarchical StateMachine Interface
-The `IHsm` interface forces all Hsms to implement functionality that is common to all Hsms. Methods `startSM` and `stopSM` are self explanatory. The `dispatch` method, when overridden makes decisions on which State gets to process an Event. This is different for `Hsm` and `OrthogonalHsm`. `Hsm` forwards the event to be processed to the innermost Hsm/State. In one of the policy classes, `execute` is then invoked on that (innermost) Hsm. See `AsyncExecutionPolicy::processEvent`. Policy classes will invoke the `dispatch` method of an Hsm and call `execute` on the state that is returned by the dispatch mechanism. Note that we are dispatching states in Hsms so that an event can be "dispatched" to the appropriate state.
+#### Hierarchical StateMachine
+The `make_hsm_t` meta-function is used to recursively examine a state transition table and convert all sub-contexts into state machines. Every state machine is a `Hsm` class that is a mixin of the context.
 
 #### Policy Classes
-Policy classes like `AsyncExecutionPolicy` and `SingleThreadedExecutionPolicy` are mixins that operate on `StateType`s i.e. any type with `onEntry` and `onExit` methods that can be overridden. Clients will typically interact with a Policy class at the bottom of the inheritance hierarcy. By convention, these Policy classes also provide a `sendEvent` method as a public interface to the state machine. The `SingleThreadedExecutionPolicy` class also provides a `step` method for clients to initiate event processing.
+Policy classes like `ThreadedExecutionPolicy` and `SingleThreadedExecutionPolicy` are mixins that operate on wrapped `Hsm`s. Clients will typically interact with a Policy class at the bottom of the inheritance hierarcy. By convention, these Policy classes also provide a `send_event` method as a public interface to the state machine. The `SingleThreadedExecutionPolicy` class also provides a `step` method for clients to initiate event processing. If the state machine is a `ClockedHsm`, a `tick` method is provided which will provide a reference to a `ClockTickEvent`.
 
-The `AsyncExecutionPolicy` processes events in its own thread. The processing of events is single threaded within all Hsms. So when a Hsm is started using a call to `startSM`, the `StateMachine` will block on the call to `nextEvent` in the `execute` method. The main advantage is that the only external interface to the Hsm can be the EventQueue. Any "client" can asynchronously send an event to the state machine long as they have a reference to it. As soon as the Hsm is done with its processing, it will pick up the first event in the queue and process it. This can be seen in the test/*.cpp files.
-
-#### Disadvantages
-* `tsm::State` - The State type implements the IState interface which has three virtual methods. Most often there are useless calls to the `execute`, `onEntry` and `onExit` methods of `tsm::State`. Support for barebones enum State or a c-style State type with just a unique id - without any of the bells and whistles associated with `IState` should make it more compact and efficient.
-* Use of virtual methods - The implementation closely resembles the State pattern. The states are created at run-time and not compile time like boost::hsm. However, it is easier to wrap around your head. In my experience with Medical/Embedded devices, a lot of the 'in house' state machines are closer to `tsm` in terms of design and implementation.
-* Fsm or Hsm? - Not every state machine is or needs to be Hierarchical. That distinction is fuzzified here and is clubbed together for brevity. `tsm` has gone back and forth on this separation a couple of times. Future use of this library might dictate how this is handled in the implementation.
+The `ThreadedExecutionPolicy` processes events in its own thread. The processing of events is single threaded within all Hsms. So when a Hsm is started using a call to `start()`, the `StateMachine` will block waiting for `next_event` to return an event. The main advantage is that the only external interface to the Hsm can be the set of Events. Any "client" can asynchronously send an event to the state machine long as they have a reference to it. As soon as the Hsm is done with its processing, it will pick up the next event in the queue and process it. This can be seen in the test/*.cpp files.
 
 #### Advantages
 * Integration - A lot of effort went into integration using CMake. This should make it easier for modern C++ development.
@@ -111,63 +60,126 @@ The `AsyncExecutionPolicy` processes events in its own thread. The processing of
 * Architecture - Hopefully, the ability to add your own policy classes makes it adaptable to your applications.
 
 #### Putting it all together
-Create your own state machine definition that derives from `Hsm`. The Hsm hierarchy, its states (and sub-Hsms if any), events, actions and guards are all specified and defined in the definition. The relationships between Hsms(`child.setParent(this)`) and the state transition table(`add(fromState, onEvent, toState, action, guard)`) are also specified here. All code related to your Hsm lives here.
+Create your own context definitions. The context hierarchy, its states (and sub-contexts if any), events, actions guards and transitions are all specified and defined in the definition. The relationships between Hsms.
+
 Then choose a policy class for your state machine. Complete your state machine type by wrapping the policy class around it. The unit test provided below is illustrative.
 
 ```cpp
-/// A "Blocking" Observer with Async Execution Policy
-template<typename StateType>
-using AsyncBlockingObserver =
-  tsm::AsyncExecWithObserver<StateType, BlockingObserver>;
+namespace TrafficLight {
 
-///
-/// GarageDoorHsm is the state machine definition. It has knowledge of the Hsm
-/// hierarchy, its states, events and sub-Hsms if any. The relationships between
-/// Hsms (parentHsm_) is also setup here. Mix the Async observer and the
-/// GarageDoor Hsm to get an asynchronous garage door state machine
-/// that notifies a listener at the end of processing each event.
-///
-using GarageDoorHsmSeparateThread = AsyncBlockingObserver<GarageDoorHsm>;
+struct LightContext {
+    struct G1 {
+        bool handle(LightContext&, ClockTickEvent& t) {
+            if (t.ticks_ >= 30) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
+    };
 
-TEST_CASE("TestGarageDoorSM - testGarageDoorSeparateThreadPolicy")
-{
-    auto sm = std::make_shared<GarageDoorHsmSeparateThread>();
+    struct Y1 {
+        bool handle(LightContext&, ClockTickEvent& t) {
+            if (t.ticks_ >= 5) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
+        void entry(LightContext& t) { t.walk_pressed_ = false; }
+    };
 
-    sm->startSM();
+    struct G2 {
+        bool handle(LightContext& l, ClockTickEvent& t) {
+            if (t.ticks_ >= 60 || (l.walk_pressed_ && t.ticks_ >= 30)) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
+    };
 
-    sm->wait();
-    REQUIRE(sm->getCurrentState() == &sm->doorClosed);
+    struct Y2 {
+        bool handle(LightContext&, ClockTickEvent& t) {
+            if (t.ticks_ >= 5) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
+    };
 
-    sm->sendEvent(sm->click_event);
-    sm->wait();
-    REQUIRE(sm->getCurrentState() == &sm->doorOpening);
+    bool walk_pressed_{};
 
-    sm->sendEvent(sm->topSensor_event);
-    sm->wait();
-    REQUIRE(sm->getCurrentState() == &sm->doorOpen);
+    using transitions = std::tuple<ClockedTransition<G1, Y1>,
+                                   ClockedTransition<Y1, G2>,
+                                   ClockedTransition<G2, Y2>,
+                                   ClockedTransition<Y2, G1>>;
+};
 
-    sm->stopSM();
+// Emergency override trait. G1 and G2 will transition every five ticks. If
+// walk_pressed_ is true, the light will transition to Y2 after 30 ticks. This
+// will be part of a hierarchical state machine
+struct EmergencyOverrideContext {
+    struct BaseHandle {
+        bool handle(EmergencyOverrideContext&, ClockTickEvent& t) {
+            if (t.ticks_ >= 5) {
+                // exit action
+                t.ticks_ = 0;
+                return true;
+            }
+            return false;
+        }
+    };
+    struct G1 : BaseHandle {};
+
+    struct Y1 : BaseHandle {};
+    struct G2 : BaseHandle {};
+    struct Y2 : BaseHandle {};
+
+    bool walk_pressed_{};
+    using transitions = std::tuple<ClockedTransition<G1, Y1>,
+                                   ClockedTransition<Y1, G2>,
+                                   ClockedTransition<G2, Y2>,
+                                   ClockedTransition<Y2, G1>>;
+};
+
+// Parent HSM - TrafficLight
+struct TrafficLightHsmContext {
+    // Events
+    struct EmergencySwitchOn {};
+    struct EmergencySwitchOff {};
+
+    using transitions = std::tuple<
+      Transition<LightContext, EmergencySwitchOn, EmergencyOverrideContext>,
+      Transition<EmergencyOverrideContext, EmergencySwitchOff, LightContext>>;
+};
+
 }
 
-TEST_CASE("TestGarageDoorSM - testGarageDoorSingleThreadPolicy")
-{
-    auto sm = std::make_shared<SingleThreadedHsm<GarageDoorHsm>>();
+// Test StateMachine ThreadedExecutionPolicy
+TEST_CASE("Test ThreadedExecutionPolicy") {
+    // apply policy
+    using TrafficLightHsm =
+      ThreadedExecutionPolicy<TrafficLight::TrafficLightHsmContext>;
+    using LightHsm = make_hsm_t<TrafficLight::LightContext>;
+    using EmergencyOverrideHsm =
+      make_hsm_t<TrafficLight::EmergencyOverrideContext>;
 
-    sm->sendEvent(sm->click_event);
-    sm->sendEvent(sm->topSensor_event);
-
-    sm->startSM();
-    REQUIRE(sm->getCurrentState() == &sm->doorClosed);
-
-    sm->step();
-    REQUIRE(sm->getCurrentState() == &sm->doorOpening);
-
-    sm->step();
-    REQUIRE(sm->getCurrentState() == &sm->doorOpen);
-
-    sm->stopSM();
+    TrafficLightHsm hsm;
+    hsm.start();
+    hsm.send_event(TrafficLight::TrafficLightHsmContext::EmergencySwitchOn());
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    REQUIRE(std::holds_alternative<EmergencyOverrideHsm*>(hsm.current_state_));
+    auto current_hsm = std::get<EmergencyOverrideHsm*>(hsm.current_state_);
+    REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::G1*>(
+      current_hsm->current_state_));
 }
 ```
+Here, the `TrafficLightHsm` is a hierarchical state machine. The `LightHsm` and `EmergencyOverrideHsm` are the leaf state machines. The `TrafficLightHsm` is a parent state machine that can switch between the `LightHsm` and `EmergencyOverrideHsm` state machines. The `EmergencyOverrideHsm` is a state machine that can override the `LightHsm` state machine. The `EmergencyOverrideHsm` is a "leaf" state machine that can switch between the `G1`, `Y1`, `G2` and `Y2` states. `LightHsm` is another "leaf" state machine that can switch between the same `G1`, `Y1`, `G2` and `Y2` states. If the main `LightHsm` needs to switch over to emergency mode, an `EmergencySwitchOn` event is sent to the `TrafficLightHsm`. The `TrafficLightHsm` will then switch over to the `EmergencyOverrideHsm` state machine.
 
-#### Testing
-For testing the `AsyncExecutionPolicy`, the `AsyncExecWithObserver` class is used with a special `Observer` class that blocks the parent thread until the `AsyncExecutionPolicy` finishes event processing. The state machine thread then calls a `notify` method that releases the mutex blocking the parent thread.
+The ThreadedExecutionPolicy is used to process events in a separate thread. If the ticks map to seconds, a PeriodicExecutionPolicy can be used to generate ticks every second. See `tsm.h` for an example.
