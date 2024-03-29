@@ -27,3 +27,6 @@ TEMPLATE_RELATIONS     = YES
 DOT_GRAPH_MAX_NODES    = 50
 MAX_DOT_GRAPH_DEPTH    = 2
 DOT_TRANSPARENT        = YES
+PREDEFINED             = __linux__=1 \
+                       __FREE_RTOS__=1
+
