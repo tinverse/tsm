@@ -69,126 +69,172 @@ $(function() {
 <div class="textblock"><p><a class="anchor" id="md_Documentation"></a> For a primer on UML state machines, look <a href="https://en.wikipedia.org/wiki/UML_state_machine">here</a>.</p>
 <h4><a class="anchor" id="autotoc_md0"></a>
 Using tsm</h4>
-<p>Create the state machine by inheriting from Hsm using CRTP. </p><div class="fragment"><div class="line">struct GarageDoorHsm : public Hsm&lt;GarageDoorHsm&gt;</div>
-<div class="line">{</div>
-<div class="line">   GarageDoorHsm()</div>
-<div class="line">   {</div>
-<div class="line">       setStartState(&amp;doorClosed);</div>
-<div class="line"> </div>
-<div class="line">       // TransitionTable</div>
-<div class="line">       add(doorClosed, click_event, doorOpening);</div>
-<div class="line">       add(doorOpening, topSensor_event, doorOpen);</div>
-<div class="line">       ...</div>
-<div class="line">   }</div>
-<div class="line"> </div>
-<div class="line">   // States</div>
-<div class="line">   State doorOpen, doorOpening;</div>
-<div class="line">   ...</div>
-<div class="line">   // Events</div>
-<div class="line">   Event click_event;</div>
-<div class="line">   ...</div>
-<div class="line">};</div>
-</div><!-- fragment --><p>Wrap the state machine around an execution policy. Currently, there are two options.</p>
-<p>a. A state machine that executes in the context of the parent thread. This means that the client sending events to the state machine drives the event processing as well. Typically, this will be the 'main' thread of your application driving event processing. Note that several other threads can hold references to the state machine instance and queue up events (see 'd' below). </p><div class="fragment"><div class="line">SingleThreadedHsm&lt;GarageDoorHsm&gt; sm;</div>
-</div><!-- fragment --><p>b. A state machine that processes incomming events in its own thread. i.e. Events will be immediately consumed as long as the state machine is not busy. Clients 'fire and forget' an event and desire no control over event processing. </p><div class="fragment"><div class="line">AsyncExecutionPolicy&lt;GarageDoorHsm&gt; sm;</div>
+<p>Create the state machine by first creating a context. The context is a structure that holds the states, events, actions and guards of the state machine. The context is a template parameter to the <code>Hsm</code> class. The <code>Hsm</code> class is a Mixin class that adds state machine like functionality to the context. In essence, it takes a context and converts it into a state machine.</p>
+<div class="fragment"></div><!-- fragment --><p>Wrap the state machine around an execution policy. Currently, there are several options.</p>
+<p>a. A state machine that executes in the context of the parent thread. This means that the client sending events to the state machine drives the event processing as well. Typically, this will be the 'main' thread of your application driving event processing. Note that several other threads can hold references to the state machine instance and queue up events (see 'd' below). </p><div class="fragment"><div class="line">SingleThreadedHsm&lt;SwitchContext&gt; sm;</div>
+</div><!-- fragment --><p>b. A state machine that processes incomming events in its own thread. i.e. Events will be immediately consumed as long as the state machine is not busy. Clients 'fire and forget' an event and desire no control over event processing. </p><div class="fragment"><div class="line">ThreadedExecutionPolicy&lt;GarageDoorHsm&gt; sm;</div>
 </div><!-- fragment --><p>c. Send events to the state machine by using sendEvent method provided by the policy. </p><div class="fragment"><div class="line">sm.sendEvent(sm.doorOpen);</div>
-</div><!-- fragment --><p>d. If the state machine is running in parent thread context, invoke the <code>step</code> method to process the first event in the event queue. As opposed to the <code>SingleThreadedExecutionPolicy</code>, the <code>AsyncExecutionPolicy</code> will immediately process an event on completion of prior event processing.</p>
-<p>For a complete example see <a href="https://github.com/tinverse/tsm/blob/main/test/GarageDoorSM.h">GarageDoorHsm.h</a> and <a href="https://github.com/tinverse/tsm/blob/main/test/GarageDoorSM.cpp">GarageDoorHsm.cpp</a>. Also look at <a href="https://github.com/tinverse/tsm/blob/main/test/CdPlayerHsm.h">CdPlayerHsm.h</a> <a href="https://github.com/tinverse/tsm/blob/main/test/CdPlayerHsm.cpp">CdPlayerHsm.cpp</a></p>
-<div class="fragment"><div class="line">sm.step();</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md1"></a>
+</div><!-- fragment --><p>d. If the state machine is running in parent thread context, invoke the <code>step</code> method to process the first event in the event queue. As opposed to the <code>SingleThreadedExecutionPolicy</code>, the <code>ThreadedExecutionPolicy</code> will immediately process an event on completion of prior event processing.</p>
+<h3><a class="anchor" id="autotoc_md1"></a>
 Architecture</h3>
 <h4><a class="anchor" id="autotoc_md2"></a>
 Policy based design</h4>
-<p>Classes have been partitioned across policies so they can be mixed and matched for code reuse (in an ideal world)! The current architecture supports state machines with the following characterestics. </p><div class="fragment"><div class="line">a. Hierarchical -</div>
+<p>Classes have been partitioned across policies so they can be mixed and matched for code reuse (in an ideal world)! The current architecture supports state machines with the following characterestics. </p><div class="fragment"><div class="line">a. Hierarchical</div>
 <div class="line">b. Asynchronous</div>
 <div class="line">c. Parallel/Orthogonal</div>
-<div class="line">d. History Preserving</div>
-</div><!-- fragment --><p>Other Policy classes <em>can</em> be implemented for distributed event processing. The existing mechanism can also be extended to incorporate custom behavior such as writing state transitions to disk. For e.g. see <code>struct AsyncExecWithObserver</code> in <code>AsyncExecutionPolicy.h</code></p>
-<p>Clients need to include <a class="el" href="tsm_8h.html">tsm.h</a> file and link against the libtsm library.</p>
-<p>The design uses CRTP to force Actions and Guards to be callbacks that are part of your Hsm class. See the implementation of</p>
-<div class="fragment"><div class="line">  template &lt;typename HsmDef&gt;</div>
-<div class="line">  struct Hsm : public IHsm, public State {</div>
-<div class="line">  ...</div>
-<div class="line">};</div>
-</div><!-- fragment --><p> The <code>HsmDef</code> structure tells <code>Hsm</code> about its States, Events, Actions and Guard functions. In return the <code>Hsm</code> struct creates a <code>StateTransitionTable</code>. In the <code>HsmDef</code>'s constructor, the user gets to connect child Hsms with parents by calling something like <code>Playing.setParent(this)</code> as in the CdPlayerHsm.h<a href="https://en.wikipedia.org/wiki/UML_state_machine">1</a> example. State transitions should be specified in the constructor with the <code>add</code> method provided by the <code>Hsm</code>.</p>
+</div><!-- fragment --><p>Other Policy classes <em>can</em> be implemented for distributed event processing. The existing mechanism can also be extended to incorporate custom behavior such as writing state transitions to disk. For e.g. see <code>struct ThreadedExecWithObserver</code> in <code>ThreadedExecutionPolicy.h</code></p>
+<p>Clients need to include <a class="el" href="tsm_8h.html">tsm.h</a> file.</p>
 <h4><a class="anchor" id="autotoc_md3"></a>
 Hsm</h4>
-<p>Place holder for your own application specific sate machine definition. For e.g. you might create your own Hsm called <code>CdPlayerHsm</code>. This Hsm should inherit from <code>Hsm</code> using CRTP.</p>
-<div class="fragment"><div class="line">  struct CdPlayerHsm : public Hsm&lt;CdPlayerHsm&gt; {</div>
-<div class="line">  ...</div>
-<div class="line">};</div>
-</div><!-- fragment --><h4><a class="anchor" id="autotoc_md4"></a>
-Hierarchical StateMachine Interface</h4>
-<p>The <code>IHsm</code> interface forces all Hsms to implement functionality that is common to all Hsms. Methods <code>startSM</code> and <code>stopSM</code> are self explanatory. The <code>dispatch</code> method, when overridden makes decisions on which State gets to process an Event. This is different for <code>Hsm</code> and <code>OrthogonalHsm</code>. <code>Hsm</code> forwards the event to be processed to the innermost Hsm/State. In one of the policy classes, <code>execute</code> is then invoked on that (innermost) Hsm. See <code>AsyncExecutionPolicy::processEvent</code>. Policy classes will invoke the <code>dispatch</code> method of an Hsm and call <code>execute</code> on the state that is returned by the dispatch mechanism. Note that we are dispatching states in Hsms so that an event can be "dispatched" to the appropriate state.</p>
+<p>Place holder for your own application specific sate machine definition.</p>
+<h4><a class="anchor" id="autotoc_md4"></a>
+Hierarchical StateMachine</h4>
+<p>The <code>make_hsm_t</code> meta-function is used to recursively examine a state transition table and convert all sub-contexts into state machines. Every state machine is a <code>Hsm</code> class that is a mixin of the context.</p>
 <h4><a class="anchor" id="autotoc_md5"></a>
 Policy Classes</h4>
-<p>Policy classes like <code>AsyncExecutionPolicy</code> and <code>SingleThreadedExecutionPolicy</code> are mixins that operate on <code>StateType</code>s i.e. any type with <code>onEntry</code> and <code>onExit</code> methods that can be overridden. Clients will typically interact with a Policy class at the bottom of the inheritance hierarcy. By convention, these Policy classes also provide a <code>sendEvent</code> method as a public interface to the state machine. The <code>SingleThreadedExecutionPolicy</code> class also provides a <code>step</code> method for clients to initiate event processing.</p>
-<p>The <code>AsyncExecutionPolicy</code> processes events in its own thread. The processing of events is single threaded within all Hsms. So when a Hsm is started using a call to <code>startSM</code>, the <code>StateMachine</code> will block on the call to <code>nextEvent</code> in the <code>execute</code> method. The main advantage is that the only external interface to the Hsm can be the EventQueue. Any "client" can asynchronously send an event to the state machine long as they have a reference to it. As soon as the Hsm is done with its processing, it will pick up the first event in the queue and process it. This can be seen in the test/*.cpp files.</p>
+<p>Policy classes like <code>ThreadedExecutionPolicy</code> and <code>SingleThreadedExecutionPolicy</code> are mixins that operate on wrapped <code>Hsm</code>s. Clients will typically interact with a Policy class at the bottom of the inheritance hierarcy. By convention, these Policy classes also provide a <code>send_event</code> method as a public interface to the state machine. The <code>SingleThreadedExecutionPolicy</code> class also provides a <code>step</code> method for clients to initiate event processing. If the state machine is a <code>ClockedHsm</code>, a <code>tick</code> method is provided which will provide a reference to a <code>ClockTickEvent</code>.</p>
+<p>The <code>ThreadedExecutionPolicy</code> processes events in its own thread. The processing of events is single threaded within all Hsms. So when a Hsm is started using a call to <code>start()</code>, the <code>StateMachine</code> will block waiting for <code>next_event</code> to return an event. The main advantage is that the only external interface to the Hsm can be the set of Events. Any "client" can asynchronously send an event to the state machine long as they have a reference to it. As soon as the Hsm is done with its processing, it will pick up the next event in the queue and process it. This can be seen in the test/*.cpp files.</p>
 <h4><a class="anchor" id="autotoc_md6"></a>
-Disadvantages</h4>
-<ul>
-<li><code>tsm::State</code> - The State type implements the IState interface which has three virtual methods. Most often there are useless calls to the <code>execute</code>, <code>onEntry</code> and <code>onExit</code> methods of <code>tsm::State</code>. Support for barebones enum State or a c-style State type with just a unique id - without any of the bells and whistles associated with <code>IState</code> should make it more compact and efficient.</li>
-<li>Use of virtual methods - The implementation closely resembles the State pattern. The states are created at run-time and not compile time like boost::hsm. However, it is easier to wrap around your head. In my experience with Medical/Embedded devices, a lot of the 'in house' state machines are closer to <code>tsm</code> in terms of design and implementation.</li>
-<li>Fsm or Hsm? - Not every state machine is or needs to be Hierarchical. That distinction is fuzzified here and is clubbed together for brevity. <code>tsm</code> has gone back and forth on this separation a couple of times. Future use of this library might dictate how this is handled in the implementation.</li>
-</ul>
-<h4><a class="anchor" id="autotoc_md7"></a>
 Advantages</h4>
 <ul>
 <li>Integration - A lot of effort went into integration using CMake. This should make it easier for modern C++ development.</li>
 <li>Unit Tests - Althought the framework could use a lot more unit tests, most of the code (98%) has been tested for 'happy path' cases.</li>
 <li>Architecture - Hopefully, the ability to add your own policy classes makes it adaptable to your applications.</li>
 </ul>
-<h4><a class="anchor" id="autotoc_md8"></a>
+<h4><a class="anchor" id="autotoc_md7"></a>
 Putting it all together</h4>
-<p>Create your own state machine definition that derives from <code>Hsm</code>. The Hsm hierarchy, its states (and sub-Hsms if any), events, actions and guards are all specified and defined in the definition. The relationships between Hsms(<code>child.setParent(this)</code>) and the state transition table(<code>add(fromState, onEvent, toState, action, guard)</code>) are also specified here. All code related to your Hsm lives here. Then choose a policy class for your state machine. Complete your state machine type by wrapping the policy class around it. The unit test provided below is illustrative.</p>
-<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> StateType&gt;</div>
-<div class="line"><span class="keyword">using</span> AsyncBlockingObserver =</div>
-<div class="line">  tsm::AsyncExecWithObserver&lt;StateType, BlockingObserver&gt;;</div>
+<p>Create your own context definitions. The context hierarchy, its states (and sub-contexts if any), events, actions guards and transitions are all specified and defined in the definition. The relationships between Hsms.</p>
+<p>Then choose a policy class for your state machine. Complete your state machine type by wrapping the policy class around it. The unit test provided below is illustrative.</p>
+<div class="fragment"><div class="line"><span class="keyword">namespace </span><a class="code" href="namespaceTrafficLight.html">TrafficLight</a> {</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">using</span> GarageDoorHsmSeparateThread = AsyncBlockingObserver&lt;GarageDoorHsm&gt;;</div>
+<div class="line"><span class="keyword">struct </span>LightContext {</div>
+<div class="line">    <span class="keyword">struct </span>G1 {</div>
+<div class="line">        <span class="keywordtype">bool</span> <a class="code" href="structTrafficLight_1_1LightContext_1_1G1.html#a1cb237091f4121cf402fb179f161fb23">handle</a>(LightContext&amp;, ClockTickEvent&amp; t) {</div>
+<div class="line">            <span class="keywordflow">if</span> (t.ticks_ &gt;= 30) {</div>
+<div class="line">                <span class="comment">// exit action</span></div>
+<div class="line">                t.ticks_ = 0;</div>
+<div class="line">                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line">    };</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="EventQueue_8cpp.html#a13900eef37f08d4083cf2df1f5989d48">TEST_CASE</a>(<span class="stringliteral">&quot;TestGarageDoorSM - testGarageDoorSeparateThreadPolicy&quot;</span>)</div>
-<div class="line">{</div>
-<div class="line">    <span class="keyword">auto</span> sm = std::make_shared&lt;GarageDoorHsmSeparateThread&gt;();</div>
+<div class="line">    <span class="keyword">struct </span>Y1 {</div>
+<div class="line">        <span class="keywordtype">bool</span> <a class="code" href="structTrafficLight_1_1LightContext_1_1Y1.html#a293df941e6213d008f72f59c3df52056">handle</a>(LightContext&amp;, ClockTickEvent&amp; t) {</div>
+<div class="line">            <span class="keywordflow">if</span> (t.ticks_ &gt;= 5) {</div>
+<div class="line">                <span class="comment">// exit action</span></div>
+<div class="line">                t.ticks_ = 0;</div>
+<div class="line">                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordtype">void</span> <a class="code" href="structTrafficLight_1_1LightContext_1_1Y1.html#a707bc5023bb562ace6b2b5ee2482e4e9">entry</a>(LightContext&amp; t) { t.walk_pressed_ = <span class="keyword">false</span>; }</div>
+<div class="line">    };</div>
 <div class="line"> </div>
-<div class="line">    sm-&gt;startSM();</div>
+<div class="line">    <span class="keyword">struct </span>G2 {</div>
+<div class="line">        <span class="keywordtype">bool</span> <a class="code" href="structTrafficLight_1_1LightContext_1_1G2.html#ab4fb489f33482e78885bd43264000664">handle</a>(LightContext&amp; l, ClockTickEvent&amp; t) {</div>
+<div class="line">            <span class="keywordflow">if</span> (t.ticks_ &gt;= 60 || (l.walk_pressed_ &amp;&amp; t.ticks_ &gt;= 30)) {</div>
+<div class="line">                <span class="comment">// exit action</span></div>
+<div class="line">                t.ticks_ = 0;</div>
+<div class="line">                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line">    };</div>
 <div class="line"> </div>
-<div class="line">    sm-&gt;wait();</div>
-<div class="line">    REQUIRE(sm-&gt;getCurrentState() == &amp;sm-&gt;doorClosed);</div>
+<div class="line">    <span class="keyword">struct </span>Y2 {</div>
+<div class="line">        <span class="keywordtype">bool</span> <a class="code" href="structTrafficLight_1_1LightContext_1_1Y2.html#ae11f6993465ae53cd2169a50de252f83">handle</a>(LightContext&amp;, ClockTickEvent&amp; t) {</div>
+<div class="line">            <span class="keywordflow">if</span> (t.ticks_ &gt;= 5) {</div>
+<div class="line">                <span class="comment">// exit action</span></div>
+<div class="line">                t.ticks_ = 0;</div>
+<div class="line">                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line">    };</div>
 <div class="line"> </div>
-<div class="line">    sm-&gt;sendEvent(sm-&gt;click_event);</div>
-<div class="line">    sm-&gt;wait();</div>
-<div class="line">    REQUIRE(sm-&gt;getCurrentState() == &amp;sm-&gt;doorOpening);</div>
+<div class="line">    <span class="keywordtype">bool</span> <a class="code" href="structTrafficLight_1_1LightContext.html#a1165c01617a3d0919b97b485625e66d0">walk_pressed_</a>{};</div>
 <div class="line"> </div>
-<div class="line">    sm-&gt;sendEvent(sm-&gt;topSensor_event);</div>
-<div class="line">    sm-&gt;wait();</div>
-<div class="line">    REQUIRE(sm-&gt;getCurrentState() == &amp;sm-&gt;doorOpen);</div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structTrafficLight_1_1LightContext.html#ac2ac4fd503f9e4821f9200e3f3c47019">transitions</a> = std::tuple&lt;ClockedTransition&lt;G1, Y1&gt;,</div>
+<div class="line">                                   ClockedTransition&lt;Y1, G2&gt;,</div>
+<div class="line">                                   ClockedTransition&lt;G2, Y2&gt;,</div>
+<div class="line">                                   ClockedTransition&lt;Y2, G1&gt;&gt;;</div>
+<div class="line">};</div>
 <div class="line"> </div>
-<div class="line">    sm-&gt;stopSM();</div>
+<div class="line"><span class="comment">// Emergency override trait. G1 and G2 will transition every five ticks. If</span></div>
+<div class="line"><span class="comment">// walk_pressed_ is true, the light will transition to Y2 after 30 ticks. This</span></div>
+<div class="line"><span class="comment">// will be part of a hierarchical state machine</span></div>
+<div class="line"><span class="keyword">struct </span>EmergencyOverrideContext {</div>
+<div class="line">    <span class="keyword">struct </span>BaseHandle {</div>
+<div class="line">        <span class="keywordtype">bool</span> <a class="code" href="structTrafficLight_1_1EmergencyOverrideContext_1_1BaseHandle.html#a55ec758378c2f3d8322f0bd6017d1dd5">handle</a>(EmergencyOverrideContext&amp;, ClockTickEvent&amp; t) {</div>
+<div class="line">            <span class="keywordflow">if</span> (t.ticks_ &gt;= 5) {</div>
+<div class="line">                <span class="comment">// exit action</span></div>
+<div class="line">                t.ticks_ = 0;</div>
+<div class="line">                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line">        }</div>
+<div class="line">    };</div>
+<div class="line">    <span class="keyword">struct </span>G1 : BaseHandle {};</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">struct </span>Y1 : BaseHandle {};</div>
+<div class="line">    <span class="keyword">struct </span>G2 : BaseHandle {};</div>
+<div class="line">    <span class="keyword">struct </span>Y2 : BaseHandle {};</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">bool</span> <a class="code" href="structTrafficLight_1_1EmergencyOverrideContext.html#a916b619d6b9fad46bc927fc6726ec7c9">walk_pressed_</a>{};</div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structTrafficLight_1_1EmergencyOverrideContext.html#a05bb97cd1e86356d9c6899df4ad260d3">transitions</a> = std::tuple&lt;ClockedTransition&lt;G1, Y1&gt;,</div>
+<div class="line">                                   ClockedTransition&lt;Y1, G2&gt;,</div>
+<div class="line">                                   ClockedTransition&lt;G2, Y2&gt;,</div>
+<div class="line">                                   ClockedTransition&lt;Y2, G1&gt;&gt;;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Parent HSM - TrafficLight</span></div>
+<div class="line"><span class="keyword">struct </span>TrafficLightHsmContext {</div>
+<div class="line">    <span class="comment">// Events</span></div>
+<div class="line">    <span class="keyword">struct </span>EmergencySwitchOn {};</div>
+<div class="line">    <span class="keyword">struct </span>EmergencySwitchOff {};</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">using</span> <a class="code" href="structTrafficLight_1_1TrafficLightHsmContext.html#a1034ab20986cea6160ea822b72ee5557">transitions</a> = std::tuple&lt;</div>
+<div class="line">      Transition&lt;LightContext, EmergencySwitchOn, EmergencyOverrideContext&gt;,</div>
+<div class="line">      Transition&lt;EmergencyOverrideContext, EmergencySwitchOff, LightContext&gt;&gt;;</div>
+<div class="line">};</div>
+<div class="line"> </div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><a class="code" href="EventQueue_8cpp.html#a13900eef37f08d4083cf2df1f5989d48">TEST_CASE</a>(<span class="stringliteral">&quot;TestGarageDoorSM - testGarageDoorSingleThreadPolicy&quot;</span>)</div>
-<div class="line">{</div>
-<div class="line">    <span class="keyword">auto</span> sm = std::make_shared&lt;SingleThreadedHsm&lt;GarageDoorHsm&gt;&gt;();</div>
+<div class="line"><span class="comment">// Test StateMachine ThreadedExecutionPolicy</span></div>
+<div class="line"><a class="code" href="EventQueue_8cpp.html#a13900eef37f08d4083cf2df1f5989d48">TEST_CASE</a>(<span class="stringliteral">&quot;Test ThreadedExecutionPolicy&quot;</span>) {</div>
+<div class="line">    <span class="comment">// apply policy</span></div>
+<div class="line">    <span class="keyword">using</span> TrafficLightHsm =</div>
+<div class="line">      ThreadedExecutionPolicy&lt;TrafficLight::TrafficLightHsmContext&gt;;</div>
+<div class="line">    <span class="keyword">using</span> LightHsm = make_hsm_t&lt;TrafficLight::LightContext&gt;;</div>
+<div class="line">    <span class="keyword">using</span> EmergencyOverrideHsm =</div>
+<div class="line">      make_hsm_t&lt;TrafficLight::EmergencyOverrideContext&gt;;</div>
 <div class="line"> </div>
-<div class="line">    sm-&gt;sendEvent(sm-&gt;click_event);</div>
-<div class="line">    sm-&gt;sendEvent(sm-&gt;topSensor_event);</div>
-<div class="line"> </div>
-<div class="line">    sm-&gt;startSM();</div>
-<div class="line">    REQUIRE(sm-&gt;getCurrentState() == &amp;sm-&gt;doorClosed);</div>
-<div class="line"> </div>
-<div class="line">    sm-&gt;step();</div>
-<div class="line">    REQUIRE(sm-&gt;getCurrentState() == &amp;sm-&gt;doorOpening);</div>
-<div class="line"> </div>
-<div class="line">    sm-&gt;step();</div>
-<div class="line">    REQUIRE(sm-&gt;getCurrentState() == &amp;sm-&gt;doorOpen);</div>
-<div class="line"> </div>
-<div class="line">    sm-&gt;stopSM();</div>
+<div class="line">    TrafficLightHsm hsm;</div>
+<div class="line">    hsm.start();</div>
+<div class="line">    hsm.send_event(<a class="code" href="structTrafficLight_1_1TrafficLightHsmContext_1_1EmergencySwitchOn.html">TrafficLight::TrafficLightHsmContext::EmergencySwitchOn</a>());</div>
+<div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds(5));</div>
+<div class="line">    REQUIRE(std::holds_alternative&lt;EmergencyOverrideHsm*&gt;(hsm.current_state_));</div>
+<div class="line">    <span class="keyword">auto</span> current_hsm = std::get&lt;EmergencyOverrideHsm*&gt;(hsm.current_state_);</div>
+<div class="line">    REQUIRE(std::holds_alternative&lt;TrafficLight::EmergencyOverrideContext::G1*&gt;(</div>
+<div class="line">      current_hsm-&gt;current_state_));</div>
 <div class="line">}</div>
 <div class="ttc" id="aEventQueue_8cpp_html_a13900eef37f08d4083cf2df1f5989d48"><div class="ttname"><a href="EventQueue_8cpp.html#a13900eef37f08d4083cf2df1f5989d48">TEST_CASE</a></div><div class="ttdeci">TEST_CASE(&quot;TestEventQueue - testSingleEvent&quot;)</div><div class="ttdef"><b>Definition:</b> EventQueue.cpp:10</div></div>
-</div><!-- fragment --><h4><a class="anchor" id="autotoc_md9"></a>
-Testing</h4>
-<p>For testing the <code>AsyncExecutionPolicy</code>, the <code>AsyncExecWithObserver</code> class is used with a special <code>Observer</code> class that blocks the parent thread until the <code>AsyncExecutionPolicy</code> finishes event processing. The state machine thread then calls a <code>notify</code> method that releases the mutex blocking the parent thread. </p>
+<div class="ttc" id="anamespaceTrafficLight_html"><div class="ttname"><a href="namespaceTrafficLight.html">TrafficLight</a></div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:33</div></div>
+<div class="ttc" id="astructTrafficLight_1_1EmergencyOverrideContext_1_1BaseHandle_html_a55ec758378c2f3d8322f0bd6017d1dd5"><div class="ttname"><a href="structTrafficLight_1_1EmergencyOverrideContext_1_1BaseHandle.html#a55ec758378c2f3d8322f0bd6017d1dd5">TrafficLight::EmergencyOverrideContext::BaseHandle::handle</a></div><div class="ttdeci">bool handle(EmergencyOverrideContext &amp;, ClockTickEvent &amp;t)</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:94</div></div>
+<div class="ttc" id="astructTrafficLight_1_1EmergencyOverrideContext_html_a05bb97cd1e86356d9c6899df4ad260d3"><div class="ttname"><a href="structTrafficLight_1_1EmergencyOverrideContext.html#a05bb97cd1e86356d9c6899df4ad260d3">TrafficLight::EmergencyOverrideContext::transitions</a></div><div class="ttdeci">std::tuple&lt; ClockedTransition&lt; G1, Y1 &gt;, ClockedTransition&lt; Y1, G2 &gt;, ClockedTransition&lt; G2, Y2 &gt;, ClockedTransition&lt; Y2, G1 &gt; &gt; transitions</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:113</div></div>
+<div class="ttc" id="astructTrafficLight_1_1EmergencyOverrideContext_html_a916b619d6b9fad46bc927fc6726ec7c9"><div class="ttname"><a href="structTrafficLight_1_1EmergencyOverrideContext.html#a916b619d6b9fad46bc927fc6726ec7c9">TrafficLight::EmergencyOverrideContext::walk_pressed_</a></div><div class="ttdeci">bool walk_pressed_</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:109</div></div>
+<div class="ttc" id="astructTrafficLight_1_1LightContext_1_1G1_html_a1cb237091f4121cf402fb179f161fb23"><div class="ttname"><a href="structTrafficLight_1_1LightContext_1_1G1.html#a1cb237091f4121cf402fb179f161fb23">TrafficLight::LightContext::G1::handle</a></div><div class="ttdeci">bool handle(LightContext &amp;, ClockTickEvent &amp;t)</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:37</div></div>
+<div class="ttc" id="astructTrafficLight_1_1LightContext_1_1G2_html_ab4fb489f33482e78885bd43264000664"><div class="ttname"><a href="structTrafficLight_1_1LightContext_1_1G2.html#ab4fb489f33482e78885bd43264000664">TrafficLight::LightContext::G2::handle</a></div><div class="ttdeci">bool handle(LightContext &amp;l, ClockTickEvent &amp;t)</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:60</div></div>
+<div class="ttc" id="astructTrafficLight_1_1LightContext_1_1Y1_html_a293df941e6213d008f72f59c3df52056"><div class="ttname"><a href="structTrafficLight_1_1LightContext_1_1Y1.html#a293df941e6213d008f72f59c3df52056">TrafficLight::LightContext::Y1::handle</a></div><div class="ttdeci">bool handle(LightContext &amp;, ClockTickEvent &amp;t)</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:48</div></div>
+<div class="ttc" id="astructTrafficLight_1_1LightContext_1_1Y1_html_a707bc5023bb562ace6b2b5ee2482e4e9"><div class="ttname"><a href="structTrafficLight_1_1LightContext_1_1Y1.html#a707bc5023bb562ace6b2b5ee2482e4e9">TrafficLight::LightContext::Y1::entry</a></div><div class="ttdeci">void entry(LightContext &amp;t)</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:56</div></div>
+<div class="ttc" id="astructTrafficLight_1_1LightContext_1_1Y2_html_ae11f6993465ae53cd2169a50de252f83"><div class="ttname"><a href="structTrafficLight_1_1LightContext_1_1Y2.html#ae11f6993465ae53cd2169a50de252f83">TrafficLight::LightContext::Y2::handle</a></div><div class="ttdeci">bool handle(LightContext &amp;, ClockTickEvent &amp;t)</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:71</div></div>
+<div class="ttc" id="astructTrafficLight_1_1LightContext_html_a1165c01617a3d0919b97b485625e66d0"><div class="ttname"><a href="structTrafficLight_1_1LightContext.html#a1165c01617a3d0919b97b485625e66d0">TrafficLight::LightContext::walk_pressed_</a></div><div class="ttdeci">bool walk_pressed_</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:81</div></div>
+<div class="ttc" id="astructTrafficLight_1_1LightContext_html_ac2ac4fd503f9e4821f9200e3f3c47019"><div class="ttname"><a href="structTrafficLight_1_1LightContext.html#ac2ac4fd503f9e4821f9200e3f3c47019">TrafficLight::LightContext::transitions</a></div><div class="ttdeci">std::tuple&lt; ClockedTransition&lt; G1, Y1 &gt;, ClockedTransition&lt; Y1, G2 &gt;, ClockedTransition&lt; G2, Y2 &gt;, ClockedTransition&lt; Y2, G1 &gt; &gt; transitions</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:86</div></div>
+<div class="ttc" id="astructTrafficLight_1_1TrafficLightHsmContext_1_1EmergencySwitchOn_html"><div class="ttname"><a href="structTrafficLight_1_1TrafficLightHsmContext_1_1EmergencySwitchOn.html">TrafficLight::TrafficLightHsmContext::EmergencySwitchOn</a></div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:119</div></div>
+<div class="ttc" id="astructTrafficLight_1_1TrafficLightHsmContext_html_a1034ab20986cea6160ea822b72ee5557"><div class="ttname"><a href="structTrafficLight_1_1TrafficLightHsmContext.html#a1034ab20986cea6160ea822b72ee5557">TrafficLight::TrafficLightHsmContext::transitions</a></div><div class="ttdeci">std::tuple&lt; Transition&lt; LightContext, EmergencySwitchOn, EmergencyOverrideContext &gt;, Transition&lt; EmergencyOverrideContext, EmergencySwitchOff, LightContext &gt; &gt; transitions</div><div class="ttdef"><b>Definition:</b> test_hsm.cpp:124</div></div>
+</div><!-- fragment --><p> Here, the <code>TrafficLightHsm</code> is a hierarchical state machine. The <code>LightHsm</code> and <code>EmergencyOverrideHsm</code> are the leaf state machines. The <code>TrafficLightHsm</code> is a parent state machine that can switch between the <code>LightHsm</code> and <code>EmergencyOverrideHsm</code> state machines. The <code>EmergencyOverrideHsm</code> is a state machine that can override the <code>LightHsm</code> state machine. The <code>EmergencyOverrideHsm</code> is a "leaf" state machine that can switch between the <code>G1</code>, <code>Y1</code>, <code>G2</code> and <code>Y2</code> states. <code>LightHsm</code> is another "leaf" state machine that can switch between the same <code>G1</code>, <code>Y1</code>, <code>G2</code> and <code>Y2</code> states. If the main <code>LightHsm</code> needs to switch over to emergency mode, an <code>EmergencySwitchOn</code> event is sent to the <code>TrafficLightHsm</code>. The <code>TrafficLightHsm</code> will then switch over to the <code>EmergencyOverrideHsm</code> state machine.</p>
+<p>The ThreadedExecutionPolicy is used to process events in a separate thread. If the ticks map to seconds, a PeriodicExecutionPolicy can be used to generate ticks every second. See <code><a class="el" href="tsm_8h.html">tsm.h</a></code> for an example. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->

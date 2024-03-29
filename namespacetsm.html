@@ -483,6 +483,7 @@ template&lt;typename Context , template&lt; class &gt; class Policy = PeriodicEx
         </tr>
       </table>
 </div><div class="memdoc">
+<p>A Periodic state machine. This state machine is driven by a periodic timer. E.g. template&lt;typename Context&gt; using MyPeriodic1HzPolicy = PeriodicExecutionPolicy&lt;Context, <a class="el" href="structtsm_1_1ThreadedExecutionPolicy.html">ThreadedExecutionPolicy</a>, PeriodicTimer&lt;std::chrono::steady_clock, std::chrono::seconds&gt;&gt;; using MyPeriodic1HzHsm = MyPeriodic1HzPolicy&lt;MyContext&gt;; MyPeriodic1HzHsm sm; sm.start(); This will start the state machine and send ClockTick events to the state context every 1 second. To stop the state machine, call sm.stop(); </p>
 
 </div>
 </div>
@@ -515,6 +516,7 @@ template&lt;typename Context , template&lt; class &gt; class Policy = RealtimePe
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Real-time state machine. This state machine is driven by a periodic timer. E.g. template&lt;typename Context&gt; using MyRealtimePeriodic1KhzPolicy = RealtimePeriodicExecutionPolicy&lt;Context, RealtimeExecutionPolicy, PeriodicTimer&lt;std::chrono::steady_clock, std::chrono::milliseconds&gt;&gt;; using MyRealtimePeriodic1KhzHsm = MyRealtimePeriodic1KhzPolicy&lt;MyContext&gt;; MyRealtimePeriodic1KhzHsm sm; sm.start(); </p>
 
 </div>
 </div>
@@ -532,11 +534,12 @@ template&lt;typename Context , template&lt; class &gt; class Policy = SingleThre
       </table>
 </div><div class="memdoc">
 <p>A "simple" state machine. It executes in the context of the parent thread. The user is expected to instantiate this with their state machine context. Use it like this:</p><ol type="1">
-<li>The first step is to create your own Trait type. struct MyTraits { // States (structs) struct State1 {}; struct State2 {}; // Events (structs) struct Event1 {}; // e.g. transition where using transitions = std::tuple&lt;Transition&lt;State1, Event1, State2&gt;&gt;; };</li>
-<li>To create any statemachine, wrap an execution policy around the trait type. Here we use the <a class="el" href="structtsm_1_1SingleThreadedExecutionPolicy.html">SingleThreadedExecutionPolicy</a>.</li>
-<li>Now that you have your own SingleThreadedHsm, instantiate an object of your state machine type. SingleThreadedHsm&lt;MyTraits&gt; sm;</li>
-<li>Send events to it using the sendEvent method. sm.send_event(MyTraits::Event1{});</li>
-<li>To process the event, call the step method sm.step(); </li>
+<li>The first step is to create your own Context type. struct MyContext { // States (structs) struct State1 {}; struct State2 {}; // Events (structs) struct Event1 {}; // e.g. transition where using transitions = std::tuple&lt;Transition&lt;State1, Event1, State2&gt;&gt;; };</li>
+<li>To create any statemachine, wrap an execution policy around the context type. Here we use the <a class="el" href="structtsm_1_1SingleThreadedExecutionPolicy.html">SingleThreadedExecutionPolicy</a>.</li>
+<li>Now that you have your own SingleThreadedHsm, instantiate an object of your state machine type. SingleThreadedHsm&lt;MyContext&gt; sm;</li>
+<li>Send events to it using the sendEvent method. sm.send_event(MyContext::Event1{});</li>
+<li>To process the event, call the step method sm.step();</li>
+<li>To immediately process the event, call the handle() method sm.handle(MyContext::Event1{}); </li>
 </ol>
 
 </div>
