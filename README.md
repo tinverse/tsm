@@ -361,7 +361,21 @@ template <typename T>
     using type = make_concurrent_hsm_t<ThreadedClockedHsm, ParkAveLights, FifthAveLights>;
 ```
 
+Here is an excerpt from `tsm.h` for a more complicated policy class:
+```cpp
+/// Real-time state machine. This state machine is driven by a periodic timer.
+/// E.g.
 
+template<typename Context>
+using MyRealtimePeriodic1KhzPolicy =
+   RealtimePeriodicExecutionPolicy<Context,
+    RealtimeExecutionPolicy,
+    PeriodicTimer<std::chrono::steady_clock, std::chrono::milliseconds>>;
+using MyRealtimePeriodic1KhzHsm = MyRealtimePeriodic1KhzPolicy<MyEtherCATContext>;
+MyRealtimePeriodic1KhzHsm sm;
+```
+Here is it's inheritance graph:
+![Alt text](https://tinverse.github.io/tsm/structtsm_1_1RealtimePeriodicExecutionPolicy__inherit__graph.png "Real-time Hsm Inheritance Diagram")
 
 Like it? Try it.
 
