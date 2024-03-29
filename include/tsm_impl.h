@@ -1,5 +1,4 @@
 #pragma once
-// Lightly tested implementation of a typed HSM in C++20
 #include <functional>
 #include <tuple>
 #include <type_traits>
