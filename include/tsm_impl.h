@@ -622,6 +622,151 @@ struct ClockedHsm : Policy<T> {
     ClockTickEvent tick_event_{};
 };
 
+namespace BT {
+// A behavior tree implementation
+enum class Status { SUCCESS, FAILURE, RUNNING };
+
+// Composite node
+template<typename... Children>
+struct Composite {
+    using children = std::tuple<Children...>;
+};
+
+// Sequence node
+// Execute children in order until one fails or all succeed
+template<typename... Children>
+struct Sequence : Composite<Children...> {
+    template<typename Event>
+    Status handle(Event e = Event()) {
+        for (auto& child : children_) {
+            if (child.handle(e) == Status::FAILURE) {
+                return Status::FAILURE;
+            }
+        }
+        return Status::SUCCESS;
+    }
+
+    std::tuple<Children...> children_;
+};
+
+// Selector node
+// Execute children in order until one succeeds or all fail
+// Return success if one child succeeds
+template<typename... Children>
+struct Selector : Composite<Children...> {
+    template<typename Event>
+    Status handle(Event e = Event()) {
+        for (auto& child : children_) {
+            if (child.handle(e) == Status::SUCCESS) {
+                return Status::SUCCESS;
+            }
+        }
+        return Status::FAILURE;
+    }
+
+    std::tuple<Children...> children_;
+};
+
+// Decorator nodes
+// Decorators modify the behavior of their child nodes
+// E.g. Inverter, Succeeder, Failer, Repeater, UntilFail, UntilSuccess
+
+// Inverter
+// Inverts the result of the child node
+template<typename Child>
+struct Inverter : Child {
+    template<typename Event>
+    Status handle(Event e = Event()) {
+        return Child::handle(e) == Status::SUCCESS ? Status::FAILURE
+                                                   : Status::SUCCESS;
+    }
+};
+
+// Succeeder
+// Always returns success
+// Useful for creating a sequence that always returns success
+// E.g. Sequence<..., Succeeder, ...>
+// This will return success if all children succeed
+template<typename Child>
+struct Succeeder : Child {
+    template<typename Event>
+    Status handle(Event e = Event()) {
+        Child::handle(e);
+        return Status::SUCCESS;
+    }
+};
+
+// Failer
+// Always returns failure
+// Useful for creating a selector that always returns failure
+// E.g. Selector<..., Failer, ...>
+// This will return failure if all children fail
+template<typename Child>
+struct Failer : Child {
+    template<typename Event>
+    Status handle(Event e = Event()) {
+        Child::handle(e);
+        return Status::FAILURE;
+    }
+};
+
+// Repeater
+// Repeats the child node a fixed number of times
+// E.g. Repeater<3, ...>
+// This will repeat the child node 3 times
+template<typename Child, size_t N>
+struct Repeater : Child {
+    template<typename Event>
+    Status handle(Event e = Event()) {
+        for (size_t i = 0; i < N; ++i) {
+            if (Child::handle(e) == Status::FAILURE) {
+                return Status::FAILURE;
+            }
+        }
+        return Status::SUCCESS;
+    }
+};
+
+// UntilFail
+// Repeats the child node until it fails
+template<typename Child>
+struct UntilFail : Child {
+    template<typename Event>
+    Status handle(Event e = Event()) {
+        while (Child::handle(e) == Status::SUCCESS)
+            ;
+        return Status::SUCCESS;
+    }
+};
+
+// UntilSuccess
+// Repeats the child node until it succeeds
+template<typename Child>
+struct UntilSuccess : Child {
+    template<typename Event>
+    Status handle(Event e = Event()) {
+        while (Child::handle(e) == Status::FAILURE)
+            ;
+        return Status::SUCCESS;
+    }
+};
+
+// Leaf nodes
+// Leaf nodes are the actual workhorses of the behavior tree
+// They perform the actual work and return a status
+// E.g. Action, Condition
+// Action - Perform an action and return a status
+// Condition - Check a condition and return a status
+// E.g. Action<MoveForward>, Condition<IsEnemyNearby>
+// These can be used in a sequence or selector
+// E.g. Sequence<Action<MoveForward>, Condition<IsEnemyNearby>>
+// This will move forward and then check if an enemy is nearby
+// If the enemy is nearby, the sequence will return failure
+// If the enemy is not nearby, the sequence will return success
+// If the move forward action fails, the sequence will return failure
+
+} // namespace BT
+
 // Define the wrapper for state traits to convert them into HSMs including their
 // transitions
 template<typename T>
@@ -1438,4 +1583,4 @@ using make_concurrent_hsm_t = typename make_concurrent_hsm<Policy, Ts...>::type;
 
 #endif // __linux__
 
-} // namespace hsm
+} // namespace tsm
