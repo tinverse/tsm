@@ -16,6 +16,7 @@
 #endif // __FREE_RTOS__
 
 #ifdef __linux__
+#include <cstdio> // perror
 #include <sched.h>
 #include <sys/mman.h>
 #include <time.h>
