@@ -129,7 +129,7 @@ struct Transition : BaseTransition<From, Event, To> {
 };
 
 struct ClockTickEvent {
-    int ticks_;
+    int ticks_{0};
 };
 
 template<typename From,
