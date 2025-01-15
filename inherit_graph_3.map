@@ -1,3 +1,25 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structSwitchHsmContext_1_1On.html" title=" " alt="" coords="5,5,177,32"/>
+<area shape="rect" id="Node000000" title=" " alt="" coords="285,13,366,38"/>
+<area shape="rect" id="Node000001" href="$structtsm_1_1ThreadedExecWithObserver.html" title=" " alt="" coords="504,5,739,45"/>
+<area shape="poly" id="edge5_Node000000_Node000001" title=" " alt="" coords="380,23,504,23,504,28,380,28"/>
+<area shape="rect" id="Node000006" href="$structtsm_1_1RealtimeConfigurator.html" title=" " alt="" coords="228,139,423,165"/>
+<area shape="rect" id="Node000007" href="$structtsm_1_1RealtimeExecutionPolicy.html" title=" " alt="" coords="513,69,729,109"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="399,134,526,107,527,112,400,139"/>
+<area shape="rect" id="Node000005" href="$structtsm_1_1RealtimePeriodicExecutionPolicy.html" title=" " alt="" coords="507,134,736,189"/>
+<area shape="poly" id="edge7_Node000006_Node000005" title=" " alt="" coords="436,153,506,155,506,160,436,158"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="233,81,418,106"/>
+<area shape="poly" id="edge11_Node000002_Node000001" title=" " alt="" coords="394,75,533,43,534,48,396,80"/>
+<area shape="poly" id="edge9_Node000002_Node000007" title=" " alt="" coords="432,89,513,88,513,93,432,95"/>
+<area shape="poly" id="edge10_Node000002_Node000005" title=" " alt="" coords="395,107,507,132,506,138,394,112"/>
+<area shape="rect" id="Node000003" href="$structtsm_1_1PeriodicExecutionPolicy.html" title=" " alt="" coords="497,213,745,253"/>
+<area shape="poly" id="edge8_Node000002_Node000003" title=" " alt="" coords="421,108,451,125,468,143,476,162,483,181,499,198,522,211,519,216,496,202,479,184,471,164,463,146,448,129,419,113"/>
+<area shape="rect" id="Node000008" href="$structtsm_1_1Timer.html" title="Helper to implement a Timed Execution Policy." alt="" coords="5,280,153,320"/>
+<area shape="rect" id="Node000009" href="$structtsm_1_1PeriodicSleepTimer.html" title=" " alt="" coords="201,273,449,327"/>
+<area shape="poly" id="edge12_Node000008_Node000009" title=" " alt="" coords="167,297,201,297,201,303,167,303"/>
+<area shape="rect" id="Node000010" href="$structtsm_1_1IntervalTimer.html" title=" " alt="" coords="249,352,401,392"/>
+<area shape="poly" id="edge13_Node000008_Node000010" title=" " alt="" coords="152,322,202,337,250,351,248,356,201,343,151,327"/>
+<area shape="rect" id="Node000004" href="$structtsm_1_1PeriodicSleepTimer.html" title=" " alt="" coords="235,208,416,248"/>
+<area shape="poly" id="edge14_Node000008_Node000004" title=" " alt="" coords="153,273,201,259,247,246,249,251,202,264,155,278"/>
+<area shape="poly" id="edge16_Node000004_Node000005" title=" " alt="" coords="427,202,506,185,507,190,428,208"/>
+<area shape="poly" id="edge15_Node000004_Node000003" title=" " alt="" coords="430,227,497,228,497,234,430,233"/>
 </map>

@@ -1,6 +1,12 @@
 <map id="tsm::BaseTransition&lt; From, Event, To &gt;" name="tsm::BaseTransition&lt; From, Event, To &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="25,5,177,97"/>
-<area shape="rect" id="node2" href="$structtsm_1_1Transition.html" title=" " alt="" coords="21,345,192,481"/>
-<area shape="rect" id="node4" href="$structtsm_1_1Transition.html" title=" " alt="" coords="123,147,319,253"/>
-<area shape="rect" id="node3" href="$structtsm_1_1ClockedTransition.html" title=" " alt="" coords="5,531,208,623"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="133,5,277,85"/>
+<area shape="rect" id="Node000002" href="$structtsm_1_1Transition.html" title=" " alt="" coords="5,355,168,484"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="149,97,122,128,101,164,86,212,79,262,78,311,81,354,75,355,73,311,74,261,81,210,96,162,118,125,145,93"/>
+<area shape="rect" id="Node000003" href="$structtsm_1_1Transition.html" title=" " alt="" coords="111,163,299,263"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="208,99,208,163,203,163,203,99"/>
+<area shape="rect" id="Node000005" href="$structtsm_1_1BaseTransition.html" title=" " alt="" coords="323,173,530,253"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="270,92,376,170,373,175,267,96"/>
+<area shape="poly" id="edge4_Node000003_Node000002" title=" " alt="" coords="125,274,116,288,101,321,93,355,88,354,96,319,111,285,121,271"/>
+<area shape="rect" id="Node000004" href="$structtsm_1_1ClockedTransition.html" title=" " alt="" coords="205,379,400,459"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="278,272,286,285,296,308,302,333,307,379,301,379,297,334,291,310,282,288,274,275"/>
 </map>

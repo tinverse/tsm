@@ -1,7 +1,11 @@
 <map id="TrafficLight::EmergencyOverrideContext::BaseHandle" name="TrafficLight::EmergencyOverrideContext::BaseHandle">
-<area shape="rect" id="node1" title=" " alt="" coords="387,5,617,97"/>
-<area shape="rect" id="node2" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1G1.html" title=" " alt="" coords="5,145,236,237"/>
-<area shape="rect" id="node3" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1G2.html" title=" " alt="" coords="260,145,491,237"/>
-<area shape="rect" id="node4" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1Y1.html" title=" " alt="" coords="515,145,745,237"/>
-<area shape="rect" id="node5" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1Y2.html" title=" " alt="" coords="769,145,1000,237"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="375,5,597,85"/>
+<area shape="rect" id="Node000002" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1G1.html" title=" " alt="" coords="5,133,228,213"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="362,91,229,137,227,132,361,86"/>
+<area shape="rect" id="Node000003" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1G2.html" title=" " alt="" coords="252,133,475,213"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="440,97,403,135,400,131,436,94"/>
+<area shape="rect" id="Node000004" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1Y1.html" title=" " alt="" coords="499,133,721,213"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="536,94,573,131,570,135,532,97"/>
+<area shape="rect" id="Node000005" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1Y2.html" title=" " alt="" coords="745,133,968,213"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="611,86,746,132,744,137,610,91"/>
 </map>

@@ -1,5 +1,5 @@
 <map id="tsm::IntervalTimer&lt; Clock, Duration &gt;" name="tsm::IntervalTimer&lt; Clock, Duration &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="24,551,176,643"/>
-<area shape="rect" id="node2" href="$structtsm_1_1Timer.html" title=" " alt="" coords="5,292,195,501"/>
-<area shape="rect" id="node3" href="$structtsm_1_1Timer.html" title="Helper to implement a Timed Execution Policy." alt="" coords="26,5,174,200"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,273,149,353"/>
+<area shape="rect" id="Node000002" href="$structtsm_1_1Timer.html" title="Helper to implement a Timed Execution Policy." alt="" coords="7,5,147,225"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="80,239,80,273,75,273,75,239"/>
 </map>

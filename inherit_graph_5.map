@@ -1,3 +1,21 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structTrafficLight_1_1EmergencyOverrideContext.html" title=" " alt="" coords="5,5,236,47"/>
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,637,117,662"/>
+<area shape="rect" id="Node000001" href="$structtsm_1_1has__action_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_01std_1_1ffb6b83645685a77bde4470c5ed59712.html" title=" " alt="" coords="165,5,420,133"/>
+<area shape="poly" id="edge26_Node000000_Node000001" title=" " alt="" coords="63,622,74,520,95,378,125,240,143,184,163,144,173,132,177,135,168,147,148,186,130,241,101,379,80,520,68,623"/>
+<area shape="rect" id="Node000002" href="$structtsm_1_1has__entry_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_01std_1_1i444d310c5d355ce923c955d4f40044e2.html" title=" " alt="" coords="165,157,420,285"/>
+<area shape="poly" id="edge27_Node000000_Node000002" title=" " alt="" coords="61,623,68,560,84,475,97,428,114,382,136,337,163,296,173,284,177,287,167,299,141,339,119,384,102,430,89,476,73,561,67,624"/>
+<area shape="rect" id="Node000003" href="$structtsm_1_1has__exit_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_01std_1_1isa408c5e673d64be8b9f1fb1fb5f1192a.html" title=" " alt="" coords="169,310,416,423"/>
+<area shape="poly" id="edge28_Node000000_Node000003" title=" " alt="" coords="67,622,80,583,100,533,128,481,163,434,177,422,180,426,167,438,132,484,105,535,85,584,72,624"/>
+<area shape="rect" id="Node000004" href="$structtsm_1_1has__guard_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_01std_1_1iae57391e74ec358d795c16d2c0d5f63e.html" title=" " alt="" coords="165,448,420,576"/>
+<area shape="poly" id="edge29_Node000000_Node000004" title=" " alt="" coords="94,627,183,574,186,578,97,632"/>
+<area shape="rect" id="Node000005" href="$structtsm_1_1has__handle__method_3_01State_00_01Event_00_01Context_00_01std_1_1void__t_3_01decltdc7911a888eadfcde923e281efba8d60.html" title=" " alt="" coords="183,600,402,699"/>
+<area shape="poly" id="edge30_Node000000_Node000005" title=" " alt="" coords="131,647,183,647,183,652,131,652"/>
+<area shape="rect" id="Node000006" href="$structtsm_1_1has__transitions_3_01T_00_01std_1_1void__t_3_01typename_01T_1_1transitions_01_4_01_4.html" title=" " alt="" coords="191,723,394,778"/>
+<area shape="poly" id="edge31_Node000000_Node000006" title=" " alt="" coords="94,667,166,708,198,721,196,726,164,713,91,672"/>
+<area shape="rect" id="Node000007" href="$structtsm_1_1is__clocked__hsm_3_01T_00_01std_1_1void__t_3_01decltype_07T_1_1is__clocked__hsm_08_4_01_4.html" title=" " alt="" coords="197,802,389,857"/>
+<area shape="poly" id="edge32_Node000000_Node000007" title=" " alt="" coords="77,673,112,731,137,761,167,787,198,804,195,809,164,792,134,765,108,734,72,676"/>
+<area shape="rect" id="Node000008" href="$structtsm_1_1is__hsm__trait_3_01T_00_01std_1_1void__t_3_01decltype_07T_1_1is__hsm_08_4_01_4.html" title=" " alt="" coords="202,881,383,935"/>
+<area shape="poly" id="edge33_Node000000_Node000008" title=" " alt="" coords="70,675,82,717,101,769,129,821,147,845,167,866,203,888,200,892,164,870,142,848,124,824,96,771,77,719,65,677"/>
+<area shape="rect" id="Node000009" href="$structtsm_1_1is__transition__match_3_01Transition_3_01From_00_01Event_00_01To_00_01Action_00_01G809c8d727840c81b09bf04464aa64297.html" title=" " alt="" coords="202,960,383,1029"/>
+<area shape="poly" id="edge34_Node000000_Node000009" title=" " alt="" coords="67,675,74,731,91,803,104,841,121,878,142,913,167,945,184,959,203,970,201,974,181,963,163,949,137,916,116,881,99,843,86,804,69,731,62,676"/>
 </map>

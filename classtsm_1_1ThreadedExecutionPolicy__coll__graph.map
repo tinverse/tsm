@@ -1,8 +1,18 @@
 <map id="tsm::ThreadedExecutionPolicy&lt; HsmType, Events &gt;" name="tsm::ThreadedExecutionPolicy&lt; HsmType, Events &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="140,579,361,861"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,365,88,443"/>
-<area shape="rect" id="node3" title=" " alt="" coords="113,365,255,443"/>
-<area shape="rect" id="node4" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="280,292,541,516"/>
-<area shape="rect" id="node5" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="429,5,651,215"/>
-<area shape="rect" id="node6" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="566,307,775,501"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="129,725,343,1065"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,100,80,165"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="42,179,40,270,45,392,60,528,74,596,93,662,110,704,131,745,127,747,105,706,88,664,69,597,55,528,39,392,35,270,37,179"/>
+<area shape="rect" id="Node000004" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="129,323,343,663"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="64,177,102,259,136,321,132,324,98,261,59,179"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="113,100,247,165"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="163,179,139,246,120,323,105,418,98,494,102,568,120,662,141,724,136,726,115,663,96,569,92,493,100,418,115,322,134,245,158,178"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="190,179,212,322,207,323,184,180"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="239,663,239,709,233,709,233,663"/>
+<area shape="poly" id="edge6_Node000004_Node000004" title=" " alt="" coords="345,457,362,471,369,493,367,507,359,519,355,516,362,505,364,493,358,474,342,462"/>
+<area shape="rect" id="Node000005" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="276,5,529,260"/>
+<area shape="poly" id="edge9_Node000001_Node000005" title=" " alt="" coords="490,259,499,283,525,389,532,434,534,477,530,519,520,562,504,610,481,664,457,707,427,746,393,782,357,814,354,810,389,779,423,743,452,704,476,661,499,608,515,561,524,518,528,477,527,435,520,390,493,285,485,261"/>
+<area shape="poly" id="edge7_Node000004_Node000005" title=" " alt="" coords="278,247,256,285,247,308,242,306,251,283,274,245"/>
+<area shape="rect" id="Node000007" href="$structtsm_1_1EventQueueT.html" title=" " alt="" coords="555,20,757,245"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="682,245,692,341,691,449,685,505,673,561,655,614,630,664,605,700,575,732,542,760,507,786,432,828,360,859,358,854,430,823,504,781,539,756,572,728,601,696,626,661,650,612,668,559,680,505,686,449,686,341,676,246"/>
+<area shape="poly" id="edge8_Node000004_Node000007" title=" " alt="" coords="558,248,543,262,451,340,358,410,355,406,447,336,540,258,555,244"/>
 </map>

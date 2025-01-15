@@ -1,10 +1,9 @@
 <map id="tsm::PeriodicExecutionPolicy&lt; Context, Policy, PeriodicTimer &gt;" name="tsm::PeriodicExecutionPolicy&lt; Context, Policy, PeriodicTimer &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="170,927,418,1077"/>
-<area shape="rect" id="node2" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="55,551,277,877"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,257,79,334"/>
-<area shape="rect" id="node4" title=" " alt="" coords="61,5,204,83"/>
-<area shape="rect" id="node5" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="154,132,375,459"/>
-<area shape="rect" id="node6" href="$structtsm_1_1PeriodicSleepTimer.html" title=" " alt="" coords="350,639,598,789"/>
-<area shape="rect" id="node7" href="$structtsm_1_1Timer.html" title="Helper to implement a Timed Execution Policy." alt="" coords="400,198,548,393"/>
-<area shape="rect" id="node8" href="$structtsm_1_1PeriodicSleepTimer.html" title=" " alt="" coords="573,227,754,363"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="74,461,314,621"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,303,183,383"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="122,394,156,460,151,462,118,397"/>
+<area shape="rect" id="Node000003" href="$structtsm_1_1PeriodicSleepTimer.html" title=" " alt="" coords="207,273,381,413"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="255,427,237,462,232,460,250,424"/>
+<area shape="rect" id="Node000004" href="$structtsm_1_1Timer.html" title="Helper to implement a Timed Execution Policy." alt="" coords="224,5,364,225"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="297,239,297,273,291,273,291,239"/>
 </map>

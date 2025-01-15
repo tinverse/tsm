@@ -1,10 +1,7 @@
 <map id="tsm::ThreadedExecutionPolicy&lt; HsmType, Events &gt;" name="tsm::ThreadedExecutionPolicy&lt; HsmType, Events &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="400,132,621,459"/>
-<area shape="rect" id="node4" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="400,521,621,848"/>
-<area shape="rect" id="node2" title=" " alt="" coords="401,5,484,83"/>
-<area shape="rect" id="node3" title=" " alt="" coords="509,5,651,83"/>
-<area shape="rect" id="node5" href="$structtsm_1_1PeriodicExecutionPolicy.html" title=" " alt="" coords="5,912,253,1063"/>
-<area shape="rect" id="node6" href="$structtsm_1_1RealtimeExecutionPolicy.html" title=" " alt="" coords="277,934,496,1041"/>
-<area shape="rect" id="node7" href="$structtsm_1_1RealtimePeriodicExecutionPolicy.html" title=" " alt="" coords="520,897,749,1077"/>
-<area shape="rect" id="node8" href="$structtsm_1_1ThreadedExecWithObserver.html" title=" " alt="" coords="774,934,1013,1041"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,119,219,519"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="11,5,85,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="61,83,69,117,64,119,56,84"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="110,5,245,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="169,84,161,119,156,117,164,83"/>
 </map>

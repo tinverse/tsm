@@ -1,11 +1,11 @@
 <map id="tsm::RealtimePeriodicExecutionPolicy&lt; Context, Policy, PeriodicTimer &gt;" name="tsm::RealtimePeriodicExecutionPolicy&lt; Context, Policy, PeriodicTimer &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="223,927,452,1107"/>
-<area shape="rect" id="node2" href="$structtsm_1_1RealtimeConfigurator.html" title=" " alt="" coords="5,639,203,789"/>
-<area shape="rect" id="node3" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="227,551,448,877"/>
-<area shape="rect" id="node4" title=" " alt="" coords="190,257,263,334"/>
-<area shape="rect" id="node5" title=" " alt="" coords="246,5,389,83"/>
-<area shape="rect" id="node6" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="339,132,560,459"/>
-<area shape="rect" id="node7" href="$structtsm_1_1PeriodicSleepTimer.html" title=" " alt="" coords="535,639,783,789"/>
-<area shape="rect" id="node8" href="$structtsm_1_1Timer.html" title="Helper to implement a Timed Execution Policy." alt="" coords="585,198,733,393"/>
-<area shape="rect" id="node9" href="$structtsm_1_1PeriodicSleepTimer.html" title=" " alt="" coords="757,227,939,363"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="197,487,419,676"/>
+<area shape="rect" id="Node000002" href="$structtsm_1_1RealtimeConfigurator.html" title=" " alt="" coords="5,273,195,439"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="187,447,222,484,219,488,184,451"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="219,316,397,396"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="311,410,311,487,305,487,305,410"/>
+<area shape="rect" id="Node000004" href="$structtsm_1_1PeriodicSleepTimer.html" title=" " alt="" coords="421,286,595,426"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="438,439,394,488,390,484,435,435"/>
+<area shape="rect" id="Node000005" href="$structtsm_1_1Timer.html" title="Helper to implement a Timed Execution Policy." alt="" coords="438,5,578,225"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="511,239,511,286,505,286,505,239"/>
 </map>

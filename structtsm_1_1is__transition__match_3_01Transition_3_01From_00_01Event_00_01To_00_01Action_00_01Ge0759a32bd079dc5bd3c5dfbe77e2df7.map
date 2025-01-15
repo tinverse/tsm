@@ -1,4 +1,5 @@
 <map id="tsm::is_transition_match&lt; Transition&lt; From, Event, To, Action, Guard &gt;, From, Event &gt;" name="tsm::is_transition_match&lt; Transition&lt; From, Event, To, Action, Guard &gt;, From, Event &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="5,131,187,252"/>
-<area shape="rect" id="node2" title=" " alt="" coords="40,5,152,83"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,119,179,228"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="40,5,144,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,84,95,118,89,118,89,84"/>
 </map>

@@ -1,8 +1,7 @@
 <map id="tsm::RealtimeExecutionPolicy&lt; Context, Policy &gt;" name="tsm::RealtimeExecutionPolicy&lt; Context, Policy &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="123,897,342,1004"/>
-<area shape="rect" id="node2" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="6,521,227,848"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,257,79,334"/>
-<area shape="rect" id="node4" title=" " alt="" coords="61,5,204,83"/>
-<area shape="rect" id="node5" href="$classtsm_1_1ThreadedExecutionPolicy.html" title=" " alt="" coords="154,132,375,459"/>
-<area shape="rect" id="node6" href="$structtsm_1_1RealtimeConfigurator.html" title=" " alt="" coords="251,609,449,760"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="93,219,303,319"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,48,183,128"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="126,139,172,217,167,220,121,141"/>
+<area shape="rect" id="Node000003" href="$structtsm_1_1RealtimeConfigurator.html" title=" " alt="" coords="207,5,397,171"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="250,184,229,220,224,217,245,182"/>
 </map>

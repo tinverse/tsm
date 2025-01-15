@@ -1,5 +1,7 @@
 <map id="tsm::RealtimeConfigurator" name="tsm::RealtimeConfigurator">
-<area shape="rect" id="node1" title=" " alt="" coords="140,5,337,156"/>
-<area shape="rect" id="node2" href="$structtsm_1_1RealtimeExecutionPolicy.html" title=" " alt="" coords="5,241,224,347"/>
-<area shape="rect" id="node3" href="$structtsm_1_1RealtimePeriodicExecutionPolicy.html" title=" " alt="" coords="248,204,477,384"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="136,5,325,171"/>
+<area shape="rect" id="Node000002" href="$structtsm_1_1RealtimeExecutionPolicy.html" title=" " alt="" coords="5,263,216,363"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="183,184,140,264,135,261,178,182"/>
+<area shape="rect" id="Node000003" href="$structtsm_1_1RealtimePeriodicExecutionPolicy.html" title=" " alt="" coords="240,219,461,408"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="284,182,303,217,298,220,279,184"/>
 </map>
