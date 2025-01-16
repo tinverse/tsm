@@ -4,6 +4,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 using namespace tsm;
+using namespace tsm::detail;
+
 // Example usage
 // A Switch HSM
 struct SwitchHsmContext {
@@ -303,7 +305,7 @@ TEST_CASE("Test SingleThreadedExecutionPolicy") {
     auto current_hsm = std::get<EmergencyOverrideHsm*>(hsm.current_state_);
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::G1*>(
       current_hsm->current_state_));
-    ClockTickEvent tick;
+    ClockTickEvent tick{};
     for (int i = 0; i < 5; i++) {
         hsm.send_event(tick);
     }
@@ -363,7 +365,7 @@ TEST_CASE("Test RealtimeExecutionPolicy") {
     auto current_hsm = std::get<EmergencyOverrideHsm*>(hsm.current_state_);
     REQUIRE(std::holds_alternative<TrafficLight::EmergencyOverrideContext::G1*>(
       current_hsm->current_state_));
-    ClockTickEvent tick;
+    ClockTickEvent tick{};
     for (int i = 0; i < 5; i++) {
         hsm.send_event(tick);
     }
