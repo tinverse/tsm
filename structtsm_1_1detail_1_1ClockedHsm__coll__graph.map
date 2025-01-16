@@ -1,0 +1,7 @@
+<map id="tsm::detail::ClockedHsm&lt; T, Policy &gt;" name="tsm::detail::ClockedHsm&lt; T, Policy &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="83,133,256,253"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,144,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,81,135,132,131,135,99,84"/>
+<area shape="rect" id="Node000003" href="$structtsm_1_1detail_1_1ClockTickEvent.html" title=" " alt="" coords="168,5,360,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="247,72,216,121,212,118,242,70"/>
+</map>

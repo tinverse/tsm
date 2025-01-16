@@ -1,21 +1,21 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
 <area shape="rect" id="Node000000" title=" " alt="" coords="5,277,124,302"/>
-<area shape="rect" id="Node000001" href="$structtsm_1_1has__action.html" title=" " alt="" coords="192,5,344,45"/>
-<area shape="poly" id="edge17_Node000000_Node000001" title=" " alt="" coords="68,262,80,217,99,162,129,105,148,79,170,55,190,42,193,46,174,59,152,82,134,108,104,164,85,219,74,263"/>
-<area shape="rect" id="Node000002" href="$structtsm_1_1has__entry.html" title=" " alt="" coords="192,69,344,109"/>
-<area shape="poly" id="edge18_Node000000_Node000002" title=" " alt="" coords="73,263,109,192,136,153,170,119,190,107,193,111,174,123,141,156,113,195,78,265"/>
-<area shape="rect" id="Node000003" href="$structtsm_1_1has__exit.html" title=" " alt="" coords="177,133,359,173"/>
-<area shape="poly" id="edge19_Node000000_Node000003" title=" " alt="" coords="82,264,120,223,171,183,194,171,196,176,173,188,124,227,86,268"/>
-<area shape="rect" id="Node000004" href="$structtsm_1_1has__guard.html" title=" " alt="" coords="192,197,344,237"/>
-<area shape="poly" id="edge20_Node000000_Node000004" title=" " alt="" coords="111,269,171,247,205,235,207,240,173,252,113,274"/>
-<area shape="rect" id="Node000005" href="$structtsm_1_1has__handle__method.html" title=" " alt="" coords="175,262,361,317"/>
-<area shape="poly" id="edge21_Node000000_Node000005" title=" " alt="" coords="138,287,174,287,174,292,138,292"/>
-<area shape="rect" id="Node000006" href="$structtsm_1_1has__transitions.html" title=" " alt="" coords="172,341,364,381"/>
-<area shape="poly" id="edge22_Node000000_Node000006" title=" " alt="" coords="114,304,173,325,210,339,208,344,171,331,113,309"/>
-<area shape="rect" id="Node000007" href="$structtsm_1_1is__clocked__hsm.html" title=" " alt="" coords="189,405,347,445"/>
-<area shape="poly" id="edge23_Node000000_Node000007" title=" " alt="" coords="86,311,124,352,173,391,196,403,194,408,171,396,120,355,82,314"/>
-<area shape="rect" id="Node000008" href="$structtsm_1_1is__hsm__trait.html" title=" " alt="" coords="177,469,359,509"/>
-<area shape="poly" id="edge24_Node000000_Node000008" title=" " alt="" coords="78,314,113,384,141,422,174,455,193,467,190,472,170,459,136,426,109,387,73,316"/>
-<area shape="rect" id="Node000009" href="$structtsm_1_1is__transition__match.html" title=" " alt="" coords="192,534,344,589"/>
-<area shape="poly" id="edge25_Node000000_Node000009" title=" " alt="" coords="74,315,86,359,106,413,135,470,153,496,174,519,194,534,190,538,170,523,149,499,130,472,101,415,81,360,69,316"/>
+<area shape="rect" id="Node000001" href="$structtsm_1_1detail_1_1has__action.html" title=" " alt="" coords="196,5,375,45"/>
+<area shape="poly" id="edge17_Node000000_Node000001" title=" " alt="" coords="68,262,79,218,98,162,128,105,148,78,170,55,194,40,197,45,174,59,152,82,133,107,103,164,84,219,73,264"/>
+<area shape="rect" id="Node000002" href="$structtsm_1_1detail_1_1has__entry.html" title=" " alt="" coords="196,69,375,109"/>
+<area shape="poly" id="edge18_Node000000_Node000002" title=" " alt="" coords="73,263,87,230,108,191,136,152,170,119,194,106,197,110,174,123,140,156,113,194,92,233,78,265"/>
+<area shape="rect" id="Node000003" href="$structtsm_1_1detail_1_1has__exit.html" title=" " alt="" coords="196,133,375,173"/>
+<area shape="poly" id="edge19_Node000000_Node000003" title=" " alt="" coords="82,264,120,223,144,201,171,183,196,171,198,176,173,188,147,206,124,226,86,268"/>
+<area shape="rect" id="Node000004" href="$structtsm_1_1detail_1_1has__guard.html" title=" " alt="" coords="196,197,375,237"/>
+<area shape="poly" id="edge20_Node000000_Node000004" title=" " alt="" coords="109,269,171,247,209,235,211,240,173,252,111,274"/>
+<area shape="rect" id="Node000005" href="$structtsm_1_1detail_1_1has__handle__method.html" title=" " alt="" coords="197,262,374,317"/>
+<area shape="poly" id="edge21_Node000000_Node000005" title=" " alt="" coords="138,287,196,287,196,292,138,292"/>
+<area shape="rect" id="Node000006" href="$structtsm_1_1detail_1_1has__transitions.html" title=" " alt="" coords="186,341,385,381"/>
+<area shape="poly" id="edge22_Node000000_Node000006" title=" " alt="" coords="113,304,173,325,215,339,213,344,171,331,111,309"/>
+<area shape="rect" id="Node000007" href="$structtsm_1_1detail_1_1is__clocked__hsm.html" title=" " alt="" coords="201,405,370,445"/>
+<area shape="poly" id="edge23_Node000000_Node000007" title=" " alt="" coords="86,311,124,352,147,373,173,391,201,404,199,409,171,396,144,377,120,356,82,315"/>
+<area shape="rect" id="Node000008" href="$structtsm_1_1detail_1_1is__hsm__trait.html" title=" " alt="" coords="172,469,399,509"/>
+<area shape="poly" id="edge24_Node000000_Node000008" title=" " alt="" coords="78,314,92,346,113,384,140,423,174,455,193,467,191,472,170,459,136,426,108,387,87,348,73,316"/>
+<area shape="rect" id="Node000009" href="$structtsm_1_1detail_1_1is__transition__match.html" title=" " alt="" coords="189,534,382,589"/>
+<area shape="poly" id="edge25_Node000000_Node000009" title=" " alt="" coords="74,315,85,359,105,414,134,471,152,496,174,519,191,532,187,536,170,523,148,500,129,473,100,416,80,361,68,317"/>
 </map>

@@ -1,0 +1,9 @@
+<map id="tsm::detail::Transition&lt; From, Event, To, Action, Guard &gt;" name="tsm::detail::Transition&lt; From, Event, To, Action, Guard &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="124,135,307,249"/>
+<area shape="rect" id="Node000003" href="$structtsm_1_1detail_1_1ClockedTransition.html" title=" " alt="" coords="5,366,212,446"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="183,263,131,367,126,365,179,260"/>
+<area shape="rect" id="Node000004" href="$structtsm_1_1detail_1_1Transition.html" title=" " alt="" coords="236,341,411,471"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="252,260,293,340,289,342,248,263"/>
+<area shape="rect" id="Node000002" href="$structtsm_1_1detail_1_1BaseTransition.html" title=" " alt="" coords="122,5,309,85"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="218,99,218,134,213,134,213,99"/>
+</map>

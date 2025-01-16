@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unlock_0',['unlock',['../classtsm_1_1FreeRTOSMutex.html#a3533bfb379671e2c97fa5edb5094e18e',1,'tsm::FreeRTOSMutex']]]
+  ['unlock_0',['unlock',['../classtsm_1_1detail_1_1FreeRTOSMutex.html#aac15bc95b08fcef07998af3cc5748581',1,'tsm::detail::FreeRTOSMutex']]]
 ];

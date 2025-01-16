@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['make_5fconcurrent_5fhsm_5ft_0',['make_concurrent_hsm_t',['../namespacetsm.html#afcd40cd8fc816388794a1fdeaaf118aa',1,'tsm']]],
-  ['make_5fhsm_5ft_1',['make_hsm_t',['../namespacetsm.html#a7fb7eb809cc5caae16d28770cd8c46aa',1,'tsm']]]
+  ['make_5fconcurrent_5fhsm_5ft_0',['make_concurrent_hsm_t',['../namespacetsm_1_1detail.html#ad3070f6a2647e95ddf4148fef7e2a247',1,'tsm::detail']]],
+  ['make_5fhsm_5ft_1',['make_hsm_t',['../namespacetsm_1_1detail.html#a3cca64f7ed36665dce526969a1d79e75',1,'tsm::detail']]]
 ];

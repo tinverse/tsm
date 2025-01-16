@@ -1,11 +1,33 @@
 <map id="test/test_hsm.cpp" name="test/test_hsm.cpp">
-<area shape="rect" id="Node000001" title=" " alt="" coords="146,5,285,31"/>
-<area shape="rect" id="Node000002" href="$tsm_8h.html" title=" " alt="" coords="23,79,82,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="190,33,93,75,91,71,188,28"/>
-<area shape="rect" id="Node000016" title=" " alt="" coords="106,79,325,104"/>
-<area shape="poly" id="edge3_Node000001_Node000016" title=" " alt="" coords="218,31,218,65,213,65,213,31"/>
-<area shape="rect" id="Node000017" title=" " alt="" coords="349,79,429,104"/>
-<area shape="poly" id="edge4_Node000001_Node000017" title=" " alt="" coords="244,28,349,71,347,76,242,33"/>
-<area shape="rect" id="Node000003" href="$tsm__impl_8h.html" title=" " alt="" coords="5,152,100,177"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="55,104,55,138,50,138,50,104"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="685,5,823,31"/>
+<area shape="rect" id="Node000002" href="$tsm_8h.html" title=" " alt="" coords="562,79,621,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="729,33,632,75,629,71,727,28"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="645,79,863,104"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="757,31,757,65,751,65,751,31"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="887,79,967,104"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="783,28,887,71,885,76,781,33"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,152,92,177"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="562,98,374,118,106,154,105,149,373,113,561,93"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="116,152,171,177"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="562,98,404,117,297,133,185,155,184,149,296,128,404,112,561,93"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="195,152,287,177"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="562,101,301,154,300,149,561,96"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="311,152,371,177"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="562,104,385,154,383,148,561,98"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="395,152,463,177"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="566,106,469,149,467,144,564,102"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="487,152,583,177"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="584,106,555,143,551,140,580,103"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="607,152,690,177"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="603,103,633,139,629,143,599,106"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="715,152,777,177"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="617,102,709,144,707,149,615,106"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="802,152,863,177"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="622,99,790,148,788,153,620,104"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="887,152,959,177"/>
+<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="622,99,633,101,752,126,874,149,873,154,751,131,632,107,620,104"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="984,152,1087,177"/>
+<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="622,99,633,101,726,118,799,128,970,149,970,155,799,133,725,123,632,107,620,104"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="1111,152,1175,177"/>
+<area shape="poly" id="edge13_Node000002_Node000014" title=" " alt="" coords="622,99,633,101,761,120,863,126,967,132,1098,150,1098,155,966,137,863,131,761,125,632,107,620,104"/>
 </map>

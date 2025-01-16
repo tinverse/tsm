@@ -1,7 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" title=" " alt="" coords="5,45,111,70"/>
-<area shape="rect" id="Node000001" href="$structtsm_1_1ClockedHsm.html" title=" " alt="" coords="187,5,349,45"/>
-<area shape="poly" id="edge3_Node000000_Node000001" title=" " alt="" coords="124,45,186,35,187,40,125,50"/>
-<area shape="rect" id="Node000002" href="$structtsm_1_1SingleThreadedExecutionPolicy.html" title=" " alt="" coords="159,69,377,109"/>
-<area shape="poly" id="edge4_Node000000_Node000002" title=" " alt="" coords="125,65,159,70,158,75,124,70"/>
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,49,111,74"/>
+<area shape="rect" id="Node000001" href="$structtsm_1_1detail_1_1ClockedHsm.html" title=" " alt="" coords="169,5,350,45"/>
+<area shape="poly" id="edge3_Node000000_Node000001" title=" " alt="" coords="124,47,168,39,169,44,125,52"/>
+<area shape="rect" id="Node000002" href="$structtsm_1_1detail_1_1SingleThreadedExecutionPolicy.html" title=" " alt="" coords="159,70,360,125"/>
+<area shape="poly" id="edge4_Node000000_Node000002" title=" " alt="" coords="125,71,159,77,158,82,124,76"/>
 </map>

@@ -1,5 +1,0 @@
-<map id="tsm::has_exit&lt; T, Event, std::void_t&lt; std::disjunction&lt; std::is_invocable&lt; decltype(&amp;T::exit), T &gt;, std::is_invocable&lt; decltype(&amp;T::exit), T, T &amp; &gt;, std::is_invocable&lt; decltype(&amp;T::exit), T, Event &gt; &gt; &gt; &gt;" name="tsm::has_exit&lt; T, Event, std::void_t&lt; std::disjunction&lt; std::is_invocable&lt; decltype(&amp;T::exit), T &gt;, std::is_invocable&lt; decltype(&amp;T::exit), T, T &amp; &gt;, std::is_invocable&lt; decltype(&amp;T::exit), T, Event &gt; &gt; &gt; &gt;">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,119,244,272"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="73,5,177,71"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="127,84,127,118,122,118,122,84"/>
-</map>

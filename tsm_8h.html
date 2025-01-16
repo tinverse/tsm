@@ -74,44 +74,55 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">tsm.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="tsm__impl_8h_source.html">tsm_impl.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;variant&gt;</code><br />
+<code>#include &quot;FreeRTOS.h&quot;</code><br />
+<code>#include &quot;semphr.h&quot;</code><br />
+<code>#include &quot;task.h&quot;</code><br />
+<code>#include &lt;cstdio&gt;</code><br />
+<code>#include &lt;sched.h&gt;</code><br />
+<code>#include &lt;sys/mman.h&gt;</code><br />
+<code>#include &lt;time.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for tsm.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="tsm_8h__incl.png" border="0" usemap="#ainclude_2tsm_8h" alt=""/></div>
 <map name="ainclude_2tsm_8h" id="ainclude_2tsm_8h">
 <area shape="rect" title=" " alt="" coords="536,5,647,31"/>
-<area shape="rect" href="tsm__impl_8h.html" title=" " alt="" coords="544,79,639,104"/>
-<area shape="poly" title=" " alt="" coords="594,31,594,65,589,65,589,31"/>
-<area shape="rect" title=" " alt="" coords="5,152,92,177"/>
-<area shape="poly" title=" " alt="" coords="544,100,356,120,106,154,105,149,356,115,543,94"/>
-<area shape="rect" title=" " alt="" coords="116,152,171,177"/>
-<area shape="poly" title=" " alt="" coords="544,100,388,119,288,135,184,155,183,149,287,130,387,114,543,95"/>
-<area shape="rect" title=" " alt="" coords="195,152,287,177"/>
-<area shape="poly" title=" " alt="" coords="544,105,301,154,300,149,543,100"/>
-<area shape="rect" title=" " alt="" coords="311,152,371,177"/>
-<area shape="poly" title=" " alt="" coords="552,107,385,154,383,149,550,101"/>
-<area shape="rect" title=" " alt="" coords="395,152,463,177"/>
-<area shape="poly" title=" " alt="" coords="566,106,469,149,467,144,564,102"/>
-<area shape="rect" title=" " alt="" coords="487,152,583,177"/>
-<area shape="poly" title=" " alt="" coords="584,106,555,143,551,140,580,103"/>
-<area shape="rect" title=" " alt="" coords="607,152,690,177"/>
-<area shape="poly" title=" " alt="" coords="603,103,633,139,629,143,599,106"/>
-<area shape="rect" title=" " alt="" coords="715,152,777,177"/>
-<area shape="poly" title=" " alt="" coords="617,102,709,144,707,149,615,106"/>
-<area shape="rect" title=" " alt="" coords="802,152,863,177"/>
-<area shape="poly" title=" " alt="" coords="631,101,789,148,788,153,629,107"/>
-<area shape="rect" title=" " alt="" coords="887,152,959,177"/>
-<area shape="poly" title=" " alt="" coords="640,100,874,149,873,154,639,105"/>
-<area shape="rect" title=" " alt="" coords="984,152,1087,177"/>
-<area shape="poly" title=" " alt="" coords="639,97,971,149,970,155,638,102"/>
-<area shape="rect" title=" " alt="" coords="1111,152,1175,177"/>
-<area shape="poly" title=" " alt="" coords="639,93,836,112,965,128,1098,149,1098,155,964,133,835,117,639,99"/>
+<area shape="rect" title=" " alt="" coords="5,79,92,104"/>
+<area shape="poly" title=" " alt="" coords="536,27,349,47,106,81,105,76,349,42,536,22"/>
+<area shape="rect" title=" " alt="" coords="116,79,171,104"/>
+<area shape="poly" title=" " alt="" coords="536,27,381,47,184,81,183,76,381,42,536,22"/>
+<area shape="rect" title=" " alt="" coords="195,79,287,104"/>
+<area shape="poly" title=" " alt="" coords="536,33,301,81,300,75,535,28"/>
+<area shape="rect" title=" " alt="" coords="311,79,371,104"/>
+<area shape="poly" title=" " alt="" coords="552,33,385,80,383,75,550,28"/>
+<area shape="rect" title=" " alt="" coords="395,79,463,104"/>
+<area shape="poly" title=" " alt="" coords="566,33,469,75,467,71,564,28"/>
+<area shape="rect" title=" " alt="" coords="487,79,583,104"/>
+<area shape="poly" title=" " alt="" coords="584,33,555,69,551,66,580,29"/>
+<area shape="rect" title=" " alt="" coords="607,79,690,104"/>
+<area shape="poly" title=" " alt="" coords="603,29,633,66,629,70,599,33"/>
+<area shape="rect" title=" " alt="" coords="715,79,777,104"/>
+<area shape="poly" title=" " alt="" coords="617,28,709,70,707,75,615,33"/>
+<area shape="rect" title=" " alt="" coords="802,79,863,104"/>
+<area shape="poly" title=" " alt="" coords="631,28,789,74,788,80,629,33"/>
+<area shape="rect" title=" " alt="" coords="887,79,959,104"/>
+<area shape="poly" title=" " alt="" coords="647,28,874,76,873,81,646,33"/>
+<area shape="rect" title=" " alt="" coords="984,79,1087,104"/>
+<area shape="poly" title=" " alt="" coords="647,25,971,76,970,81,646,30"/>
+<area shape="rect" title=" " alt="" coords="1111,79,1175,104"/>
+<area shape="poly" title=" " alt="" coords="647,21,843,39,968,55,1098,76,1097,81,968,61,842,45,647,26"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -127,31 +138,253 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="tsm_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__type__impl_3_01Wrapper_00_01std_1_1tuple_3_01Ts_8_8_8_01_4_01_4.html">tsm::detail::wrap_type_impl&lt; Wrapper, std::tuple&lt; Ts... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1append__unique__impl_3_01T_00_01std_1_1tuple_3_4_01_4.html">tsm::detail::append_unique_impl&lt; T, std::tuple&lt;&gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1append__unique__impl_3_01T_00_01std_1_1tuple_3_01Ts_8_8_8_01_4_01_4.html">tsm::detail::append_unique_impl&lt; T, std::tuple&lt; Ts... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1unique__tuple__impl_3_01std_1_1tuple_3_4_00_01std_1_1tuple_3_01Us_8_8_8_01_4_01_4.html">tsm::detail::unique_tuple_impl&lt; std::tuple&lt;&gt;, std::tuple&lt; Us... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1unique__tuple__impl_3_01std_1_1tuple_3_01T_00_01Ts_8_8_8_01_4_00_01std_1_1tuple_3_01Us_8_8_8_01_4_01_4.html">tsm::detail::unique_tuple_impl&lt; std::tuple&lt; T, Ts... &gt;, std::tuple&lt; Us... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1unique__tuple.html">tsm::detail::unique_tuple&lt; Ts, Us &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1tuple__to__variant__impl_3_01std_1_1tuple_3_01Ts_8_8_8_01_4_01_4.html">tsm::detail::tuple_to_variant_impl&lt; std::tuple&lt; Ts... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1Event.html">tsm::detail::Event</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrapped__event.html">tsm::detail::wrapped_event&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1BaseTransition.html">tsm::detail::BaseTransition&lt; From, Event, To &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1Transition.html">tsm::detail::Transition&lt; From, Event, To, Action, Guard &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1ClockTickEvent.html">tsm::detail::ClockTickEvent</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1ClockedTransition.html">tsm::detail::ClockedTransition&lt; From, To, Guard, Action &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1get__states__impl_3_01Tuple_01_4.html">tsm::detail::get_states_impl&lt; Tuple &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1get__states__impl_3_01Tuple_00_01First_00_01Rest_8_8_8_01_4.html">tsm::detail::get_states_impl&lt; Tuple, First, Rest... &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1get__states_3_01std_1_1tuple_3_01Ts_8_8_8_01_4_01_4.html">tsm::detail::get_states&lt; std::tuple&lt; Ts... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1is__transition__match.html">tsm::detail::is_transition_match&lt; Transition, From, Event &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1is__transition__match_3_01Transition_3_01From_00_01Event_00_01To_00_01Act2ff4aa8e8640094e6289ef04a6fa673c.html">tsm::detail::is_transition_match&lt; Transition&lt; From, Event, To, Action, Guard &gt;, From, Event &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1transition__map__helper_3_01From_00_01Event_00_01std_1_1tuple_3_01Transit6fdc295dd6923618f01bbda0881b69be.html">tsm::detail::transition_map_helper&lt; From, Event, std::tuple&lt; Transitions... &gt;, Index, std::enable_if_t&lt;(Index&lt; sizeof...(Transitions))&gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1transition__map__helper_3_01From_00_01Event_00_01std_1_1tuple_3_01Transit63e3dfe39dc2b141d1633ebe9f2d403b.html">tsm::detail::transition_map_helper&lt; From, Event, std::tuple&lt; Transitions... &gt;, Index, std::enable_if_t&lt;!(Index&lt; sizeof...(Transitions))&gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1TransitionMap.html">tsm::detail::TransitionMap&lt; From, Event, Transitions &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__exit.html">tsm::detail::has_exit&lt; T, Event, typename &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__exit_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_0029d23e5e8ae1bedf08120807e3790d2.html">tsm::detail::has_exit&lt; T, Event, std::void_t&lt; std::disjunction&lt; std::is_invocable&lt; decltype(&amp;T::exit), T &gt;, std::is_invocable&lt; decltype(&amp;T::exit), T, T &amp; &gt;, std::is_invocable&lt; decltype(&amp;T::exit), T, Event &gt; &gt; &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__entry.html">tsm::detail::has_entry&lt; T, Event, typename &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__entry_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_cc78f4bb3e1d35aaa7338fc522ab8867.html">tsm::detail::has_entry&lt; T, Event, std::void_t&lt; std::disjunction&lt; std::is_invocable&lt; decltype(&amp;T::entry), T &gt;, std::is_invocable&lt; decltype(&amp;T::entry), T &amp; &gt;, std::is_invocable&lt; decltype(&amp;T::entry), T, Event &gt; &gt; &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__guard.html">tsm::detail::has_guard&lt; T, Event, typename &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__guard_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_3_a9fecc5c0ad71d2890c8dca976731158.html">tsm::detail::has_guard&lt; T, Event, std::void_t&lt; std::disjunction&lt; std::is_invocable&lt; decltype(&amp;T::guard), T &gt;, std::is_invocable&lt; decltype(&amp;T::guard), T &amp; &gt;, std::is_invocable&lt; decltype(&amp;T::guard), T, Event &gt; &gt; &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__action.html">tsm::detail::has_action&lt; T, Event, typename &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__action_3_01T_00_01Event_00_01std_1_1void__t_3_01std_1_1disjunction_35a48d4d4891f023c69989747172b94e4.html">tsm::detail::has_action&lt; T, Event, std::void_t&lt; std::disjunction&lt; std::is_invocable&lt; decltype(&amp;T::action), T &gt;, std::is_invocable&lt; decltype(&amp;T::action), T &amp; &gt;, std::is_invocable&lt; decltype(&amp;T::action), T, Event &gt; &gt; &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__transitions.html">tsm::detail::has_transitions&lt; typename, typename &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__transitions_3_01T_00_01std_1_1void__t_3_01typename_01T_1_1transitions_01_4_01_4.html">tsm::detail::has_transitions&lt; T, std::void_t&lt; typename T::transitions &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__handle__method.html">tsm::detail::has_handle_method&lt; State, Event, Context, typename &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1has__handle__method_3_01State_00_01Event_00_01Context_00_01std_1_1void__t147efe891efbf9fd6621540de92d7500.html">tsm::detail::has_handle_method&lt; State, Event, Context, std::void_t&lt; decltype(std::declval&lt; State &gt;().handle(std::declval&lt; Context &amp; &gt;(), std::declval&lt; Event &gt;()))&gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1is__hsm__trait.html">tsm::detail::is_hsm_trait&lt; typename, typename &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1is__hsm__trait_3_01T_00_01std_1_1void__t_3_01decltype_07T_1_1is__hsm_08_4_01_4.html">tsm::detail::is_hsm_trait&lt; T, std::void_t&lt; decltype(T::is_hsm)&gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1is__clocked__hsm.html">tsm::detail::is_clocked_hsm&lt; T, typename &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1is__clocked__hsm_3_01T_00_01std_1_1void__t_3_01decltype_07T_1_1is__clocked__hsm_08_4_01_4.html">tsm::detail::is_clocked_hsm&lt; T, std::void_t&lt; decltype(T::is_clocked_hsm)&gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1Hsm.html">tsm::detail::Hsm&lt; T, transitions &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1make__hsm_3_01T_00_01std_1_1enable__if__t_3_9is__state__trait__v_3_01T_01_4_01_4_01_4.html">tsm::detail::make_hsm&lt; T, std::enable_if_t&lt;!is_state_trait_v&lt; T &gt; &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__transition.html">tsm::detail::wrap_transition&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__transitions_3_01std_1_1tuple_3_01Ts_8_8_8_01_4_01_4.html">tsm::detail::wrap_transitions&lt; std::tuple&lt; Ts... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1ClockedHsm.html">tsm::detail::ClockedHsm&lt; T, Policy &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1make__hsm_3_01T_00_01std_1_1enable__if__t_3_01is__state__trait__v_3_01T_01_4_01_4_01_4.html">tsm::detail::make_hsm&lt; T, std::enable_if_t&lt; is_state_trait_v&lt; T &gt; &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1OrthogonalExecutionPolicy.html">tsm::detail::OrthogonalExecutionPolicy&lt; Hsms &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1EventQueueT.html">tsm::detail::EventQueueT&lt; Event, LockType, ConditionVarType &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsm_1_1detail_1_1FreeRTOSMutex.html">tsm::detail::FreeRTOSMutex</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsm_1_1detail_1_1FreeRTOSConditionVariable.html">tsm::detail::FreeRTOSConditionVariable</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1FreeRTOSClock.html">tsm::detail::FreeRTOSClock</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtsm_1_1detail_1_1ThreadedExecutionPolicy.html">tsm::detail::ThreadedExecutionPolicy&lt; HsmType, Events &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1aggregate__events_3_01std_1_1tuple_3_01Transitions_8_8_8_01_4_01_4.html">tsm::detail::aggregate_events&lt; std::tuple&lt; Transitions... &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1aggregate__events_3_01std_1_1tuple_3_4_01_4.html">tsm::detail::aggregate_events&lt; std::tuple&lt;&gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1get__events__from__transition.html">tsm::detail::get_events_from_transition&lt; Transition &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1get__events__from__hsm_3_01HsmType_00_01std_1_1enable__if__t_3_01has__tra0ce697acaaa1fcfe3af6e57baddfa976.html">tsm::detail::get_events_from_hsm&lt; HsmType, std::enable_if_t&lt; has_transitions_v&lt; HsmType &gt; &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1get__events__from__hsm_3_01HsmType_00_01std_1_1enable__if__t_3_9has__tranaa0e708ca81ecf05ac7bf03d53858089.html">tsm::detail::get_events_from_hsm&lt; HsmType, std::enable_if_t&lt;!has_transitions_v&lt; HsmType &gt; &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1SingleThreadedExecutionPolicy.html">tsm::detail::SingleThreadedExecutionPolicy&lt; Context, Policy &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1BlockingObserverT.html">tsm::detail::BlockingObserverT&lt; LockType, ConditionVarType &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1CallbackObserver.html">tsm::detail::CallbackObserver</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1ThreadedExecWithObserver.html">tsm::detail::ThreadedExecWithObserver&lt; Observer, Context, Policy &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1Timer.html">tsm::detail::Timer&lt; Clock, Duration &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper to implement a Timed Execution Policy.  <a href="structtsm_1_1detail_1_1Timer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1IntervalTimer.html">tsm::detail::IntervalTimer&lt; Clock, Duration &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1PeriodicSleepTimer.html">tsm::detail::PeriodicSleepTimer&lt; Clock, Duration &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1RealtimeConfigurator.html">tsm::detail::RealtimeConfigurator</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1RealtimeExecutionPolicy.html">tsm::detail::RealtimeExecutionPolicy&lt; Context, Policy &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1PeriodicExecutionPolicy.html">tsm::detail::PeriodicExecutionPolicy&lt; Context, Policy, PeriodicTimer &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1RealtimePeriodicExecutionPolicy.html">tsm::detail::RealtimePeriodicExecutionPolicy&lt; Context, Policy, PeriodicTimer &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1ConcurrentExecutionPolicy.html">tsm::detail::ConcurrentExecutionPolicy&lt; Hsms &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1make__concurrent__hsm.html">tsm::detail::make_concurrent_hsm&lt; Policy, Ts &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacetsm" id="r_namespacetsm"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetsm.html">tsm</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacetsm_1_1detail" id="r_namespacetsm_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html">tsm::detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a22688294f1128942d146fc9967d46d78" id="r_a22688294f1128942d146fc9967d46d78"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = SingleThreadedExecutionPolicy&gt; </td></tr>
+<tr class="memitem:a107fafa84951221cd6ebf3d15d4ce53d" id="r_a107fafa84951221cd6ebf3d15d4ce53d"><td class="memTemplParams" colspan="2">template&lt;template&lt; class &gt; class Wrapper, typename Tuple &gt; </td></tr>
+<tr class="memitem:a107fafa84951221cd6ebf3d15d4ce53d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a107fafa84951221cd6ebf3d15d4ce53d">tsm::detail::wrap_type</a> = typename <a class="el" href="structtsm_1_1detail_1_1wrap__type__impl.html">wrap_type_impl</a>&lt; Wrapper, Tuple &gt;::type</td></tr>
+<tr class="separator:a107fafa84951221cd6ebf3d15d4ce53d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8fdf17ba22a5dd744a7cc0e287e1e0b" id="r_af8fdf17ba22a5dd744a7cc0e287e1e0b"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Tuple &gt; </td></tr>
+<tr class="memitem:af8fdf17ba22a5dd744a7cc0e287e1e0b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#af8fdf17ba22a5dd744a7cc0e287e1e0b">tsm::detail::append_unique</a> = typename <a class="el" href="structtsm_1_1detail_1_1append__unique__impl.html">append_unique_impl</a>&lt; T, Tuple &gt;::type</td></tr>
+<tr class="separator:af8fdf17ba22a5dd744a7cc0e287e1e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada0e341fb20a7eb584297cbabefd894d" id="r_ada0e341fb20a7eb584297cbabefd894d"><td class="memTemplParams" colspan="2">template&lt;typename Ts &gt; </td></tr>
+<tr class="memitem:ada0e341fb20a7eb584297cbabefd894d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#ada0e341fb20a7eb584297cbabefd894d">tsm::detail::unique_tuple_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1unique__tuple.html">unique_tuple</a>&lt; Ts &gt;::type</td></tr>
+<tr class="separator:ada0e341fb20a7eb584297cbabefd894d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb6a1ff979fbfae22b57cc24c21889fc" id="r_adb6a1ff979fbfae22b57cc24c21889fc"><td class="memTemplParams" colspan="2">template&lt;typename Tuple &gt; </td></tr>
+<tr class="memitem:adb6a1ff979fbfae22b57cc24c21889fc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#adb6a1ff979fbfae22b57cc24c21889fc">tsm::detail::tuple_to_variant_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1tuple__to__variant__impl.html">tuple_to_variant_impl</a>&lt; Tuple &gt;::type</td></tr>
+<tr class="separator:adb6a1ff979fbfae22b57cc24c21889fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0906dbe611a752e7cba963d1b8e9799e" id="r_a0906dbe611a752e7cba963d1b8e9799e"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
+<tr class="memitem:a0906dbe611a752e7cba963d1b8e9799e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a0906dbe611a752e7cba963d1b8e9799e">tsm::detail::get_states_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1get__states.html">get_states</a>&lt; Ts... &gt;::type</td></tr>
+<tr class="separator:a0906dbe611a752e7cba963d1b8e9799e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae826690afa538c2244fb18df11576d9a" id="r_ae826690afa538c2244fb18df11576d9a"><td class="memTemplParams" colspan="2">template&lt;typename From , typename <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a> , typename Transitions &gt; </td></tr>
+<tr class="memitem:ae826690afa538c2244fb18df11576d9a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#ae826690afa538c2244fb18df11576d9a">tsm::detail::find_transition_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1TransitionMap.html">TransitionMap</a>&lt; From, <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a>, Transitions &gt;::type</td></tr>
+<tr class="separator:ae826690afa538c2244fb18df11576d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7049a31f8c8e8c12171a5ba7a6c4559" id="r_ae7049a31f8c8e8c12171a5ba7a6c4559"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ae7049a31f8c8e8c12171a5ba7a6c4559"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#ae7049a31f8c8e8c12171a5ba7a6c4559">tsm::detail::has_transitions_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1has__transitions.html">has_transitions</a>&lt; T &gt;::type</td></tr>
+<tr class="separator:ae7049a31f8c8e8c12171a5ba7a6c4559"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64a32604ebdf9b262d1d39467d2e414c" id="r_a64a32604ebdf9b262d1d39467d2e414c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a64a32604ebdf9b262d1d39467d2e414c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a64a32604ebdf9b262d1d39467d2e414c">tsm::detail::is_hsm_trait_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1is__hsm__trait.html">is_hsm_trait</a>&lt; T &gt;::type</td></tr>
+<tr class="separator:a64a32604ebdf9b262d1d39467d2e414c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cca64f7ed36665dce526969a1d79e75" id="r_a3cca64f7ed36665dce526969a1d79e75"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3cca64f7ed36665dce526969a1d79e75"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a3cca64f7ed36665dce526969a1d79e75">tsm::detail::make_hsm_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1make__hsm.html">make_hsm</a>&lt; T &gt;::type</td></tr>
+<tr class="separator:a3cca64f7ed36665dce526969a1d79e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8e4e3b6c52ba3495e562020561364a9" id="r_aa8e4e3b6c52ba3495e562020561364a9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa8e4e3b6c52ba3495e562020561364a9"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#aa8e4e3b6c52ba3495e562020561364a9">tsm::detail::wrap_transition_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html">wrap_transition</a>&lt; T &gt;::type</td></tr>
+<tr class="separator:aa8e4e3b6c52ba3495e562020561364a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68bb3bf9633f7c281be1bb37fe540212" id="r_a68bb3bf9633f7c281be1bb37fe540212"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
+<tr class="memitem:a68bb3bf9633f7c281be1bb37fe540212"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a68bb3bf9633f7c281be1bb37fe540212">tsm::detail::wrap_transitions_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1wrap__transitions.html">wrap_transitions</a>&lt; Ts... &gt;::type</td></tr>
+<tr class="separator:a68bb3bf9633f7c281be1bb37fe540212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27ed061cedd8a82513f921851d5dddbd" id="r_a27ed061cedd8a82513f921851d5dddbd"><td class="memTemplParams" colspan="2">template&lt;typename <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a> &gt; </td></tr>
+<tr class="memitem:a27ed061cedd8a82513f921851d5dddbd"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a27ed061cedd8a82513f921851d5dddbd">tsm::detail::EventQueue</a> = <a class="el" href="structtsm_1_1detail_1_1EventQueueT.html">EventQueueT</a>&lt; <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a>, <a class="el" href="classtsm_1_1detail_1_1FreeRTOSMutex.html">FreeRTOSMutex</a>, <a class="el" href="classtsm_1_1detail_1_1FreeRTOSConditionVariable.html">FreeRTOSConditionVariable</a> &gt;</td></tr>
+<tr class="separator:a27ed061cedd8a82513f921851d5dddbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e9fbb4f47c1e74640f96dc0f85ca1c6" id="r_a0e9fbb4f47c1e74640f96dc0f85ca1c6"><td class="memTemplParams" colspan="2">template&lt;typename HsmType &gt; </td></tr>
+<tr class="memitem:a0e9fbb4f47c1e74640f96dc0f85ca1c6"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a0e9fbb4f47c1e74640f96dc0f85ca1c6">tsm::detail::get_events_t</a> = <a class="el" href="namespacetsm_1_1detail.html#ada0e341fb20a7eb584297cbabefd894d">unique_tuple_t</a>&lt; typename <a class="el" href="structtsm_1_1detail_1_1get__events__from__hsm.html">get_events_from_hsm</a>&lt; HsmType &gt;::type &gt;</td></tr>
+<tr class="separator:a0e9fbb4f47c1e74640f96dc0f85ca1c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a240a2e2c35e486b80b73c376d96cf671" id="r_a240a2e2c35e486b80b73c376d96cf671"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a240a2e2c35e486b80b73c376d96cf671">tsm::detail::BlockingObserver</a> = <a class="el" href="structtsm_1_1detail_1_1BlockingObserverT.html">BlockingObserverT</a>&lt; <a class="el" href="classtsm_1_1detail_1_1FreeRTOSMutex.html">FreeRTOSMutex</a>, <a class="el" href="classtsm_1_1detail_1_1FreeRTOSConditionVariable.html">FreeRTOSConditionVariable</a> &gt;</td></tr>
+<tr class="separator:a240a2e2c35e486b80b73c376d96cf671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dd27970aef5aeece8c50f994173ecb9" id="r_a8dd27970aef5aeece8c50f994173ecb9"><td class="memTemplParams" colspan="2">template&lt;typename Context &gt; </td></tr>
+<tr class="memitem:a8dd27970aef5aeece8c50f994173ecb9"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a8dd27970aef5aeece8c50f994173ecb9">tsm::detail::ThreadedBlockingObserver</a> = <a class="el" href="structtsm_1_1detail_1_1ThreadedExecWithObserver.html">ThreadedExecWithObserver</a>&lt; Context, <a class="el" href="namespacetsm_1_1detail.html#a240a2e2c35e486b80b73c376d96cf671">BlockingObserver</a> &gt;</td></tr>
+<tr class="separator:a8dd27970aef5aeece8c50f994173ecb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3070f6a2647e95ddf4148fef7e2a247" id="r_ad3070f6a2647e95ddf4148fef7e2a247"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; class Policy = ThreadedExecutionPolicy, typename... Ts&gt; </td></tr>
+<tr class="memitem:ad3070f6a2647e95ddf4148fef7e2a247"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#ad3070f6a2647e95ddf4148fef7e2a247">tsm::detail::make_concurrent_hsm_t</a> = typename <a class="el" href="structtsm_1_1detail_1_1make__concurrent__hsm.html">make_concurrent_hsm</a>&lt; Policy, Ts... &gt;::type</td></tr>
+<tr class="separator:ad3070f6a2647e95ddf4148fef7e2a247"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22688294f1128942d146fc9967d46d78" id="r_a22688294f1128942d146fc9967d46d78"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = detail::SingleThreadedExecutionPolicy&gt; </td></tr>
 <tr class="memitem:a22688294f1128942d146fc9967d46d78"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a22688294f1128942d146fc9967d46d78">tsm::SingleThreadedHsm</a> = Policy&lt; Context &gt;</td></tr>
 <tr class="separator:a22688294f1128942d146fc9967d46d78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a344fc123d66c680b93ae53436351b14f" id="r_a344fc123d66c680b93ae53436351b14f"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = ThreadedExecutionPolicy&gt; </td></tr>
+<tr class="memitem:a344fc123d66c680b93ae53436351b14f" id="r_a344fc123d66c680b93ae53436351b14f"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = detail::ThreadedExecutionPolicy&gt; </td></tr>
 <tr class="memitem:a344fc123d66c680b93ae53436351b14f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a344fc123d66c680b93ae53436351b14f">tsm::ThreadedHsm</a> = Policy&lt; Context &gt;</td></tr>
 <tr class="separator:a344fc123d66c680b93ae53436351b14f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf1fea8fd5c107d6970812c2caaa38e7" id="r_acf1fea8fd5c107d6970812c2caaa38e7"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = PeriodicExecutionPolicy&gt; </td></tr>
+<tr class="memitem:acf1fea8fd5c107d6970812c2caaa38e7" id="r_acf1fea8fd5c107d6970812c2caaa38e7"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = detail::PeriodicExecutionPolicy&gt; </td></tr>
 <tr class="memitem:acf1fea8fd5c107d6970812c2caaa38e7"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#acf1fea8fd5c107d6970812c2caaa38e7">tsm::PeriodicHsm</a> = Policy&lt; Context &gt;</td></tr>
 <tr class="separator:acf1fea8fd5c107d6970812c2caaa38e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6fcccaa274fc93154514cb016237d75" id="r_aa6fcccaa274fc93154514cb016237d75"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = RealtimePeriodicExecutionPolicy&gt; </td></tr>
+<tr class="memitem:aa6fcccaa274fc93154514cb016237d75" id="r_aa6fcccaa274fc93154514cb016237d75"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = detail::RealtimePeriodicExecutionPolicy&gt; </td></tr>
 <tr class="memitem:aa6fcccaa274fc93154514cb016237d75"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#aa6fcccaa274fc93154514cb016237d75">tsm::RealtimePeriodicHsm</a> = Policy&lt; Context &gt;</td></tr>
 <tr class="separator:aa6fcccaa274fc93154514cb016237d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa477ff77d1642ce5cbe773f8edf4e972" id="r_aa477ff77d1642ce5cbe773f8edf4e972"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = RealtimeExecutionPolicy&gt; </td></tr>
+<tr class="memitem:aa477ff77d1642ce5cbe773f8edf4e972" id="r_aa477ff77d1642ce5cbe773f8edf4e972"><td class="memTemplParams" colspan="2">template&lt;typename Context , template&lt; class &gt; class Policy = detail::RealtimeExecutionPolicy&gt; </td></tr>
 <tr class="memitem:aa477ff77d1642ce5cbe773f8edf4e972"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#aa477ff77d1642ce5cbe773f8edf4e972">tsm::RealtimeHsm</a> = Policy&lt; Context &gt;</td></tr>
 <tr class="separator:aa477ff77d1642ce5cbe773f8edf4e972"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7fe0be0cb75c59983ed037a1e4ff596" id="r_ae7fe0be0cb75c59983ed037a1e4ff596"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; class Policy = ThreadedExecutionPolicy, typename... Contexts&gt; </td></tr>
-<tr class="memitem:ae7fe0be0cb75c59983ed037a1e4ff596"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#ae7fe0be0cb75c59983ed037a1e4ff596">tsm::ConcurrentHsm</a> = <a class="el" href="namespacetsm.html#afcd40cd8fc816388794a1fdeaaf118aa">make_concurrent_hsm_t</a>&lt; Policy, Contexts... &gt;</td></tr>
-<tr class="separator:ae7fe0be0cb75c59983ed037a1e4ff596"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22076f5c434b33cc0c5442484f4a2aca" id="r_a22076f5c434b33cc0c5442484f4a2aca"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; class Policy = detail::ThreadedExecutionPolicy, typename... Contexts&gt; </td></tr>
+<tr class="memitem:a22076f5c434b33cc0c5442484f4a2aca"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm.html#a22076f5c434b33cc0c5442484f4a2aca">tsm::ConcurrentHsm</a> = <a class="el" href="namespacetsm_1_1detail.html#ad3070f6a2647e95ddf4148fef7e2a247">detail::make_concurrent_hsm_t</a>&lt; Policy, Contexts... &gt;</td></tr>
+<tr class="separator:a22076f5c434b33cc0c5442484f4a2aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a957a97f26731cb0e0da26ab55360a899" id="r_a957a97f26731cb0e0da26ab55360a899"><td class="memTemplParams" colspan="2">template&lt;typename State , typename <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a> , typename Transitions &gt; </td></tr>
+<tr class="memitem:a957a97f26731cb0e0da26ab55360a899"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a957a97f26731cb0e0da26ab55360a899">tsm::detail::has_valid_transition_v</a></td></tr>
+<tr class="separator:a957a97f26731cb0e0da26ab55360a899"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a106aa562d104b1db84fc0012fbd91449" id="r_a106aa562d104b1db84fc0012fbd91449"><td class="memTemplParams" colspan="2">template&lt;typename T , typename <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a> &gt; </td></tr>
+<tr class="memitem:a106aa562d104b1db84fc0012fbd91449"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a106aa562d104b1db84fc0012fbd91449">tsm::detail::has_exit_v</a> = <a class="el" href="structtsm_1_1detail_1_1has__exit.html">has_exit</a>&lt;T, <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a>&gt;::value</td></tr>
+<tr class="separator:a106aa562d104b1db84fc0012fbd91449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08379fe253b2ac257194b263c92ff603" id="r_a08379fe253b2ac257194b263c92ff603"><td class="memTemplParams" colspan="2">template&lt;typename T , typename <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a> &gt; </td></tr>
+<tr class="memitem:a08379fe253b2ac257194b263c92ff603"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a08379fe253b2ac257194b263c92ff603">tsm::detail::has_entry_v</a> = <a class="el" href="structtsm_1_1detail_1_1has__entry.html">has_entry</a>&lt;T, <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a>&gt;::value</td></tr>
+<tr class="separator:a08379fe253b2ac257194b263c92ff603"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08f62af06cdcf99721929ad0e924a2a4" id="r_a08f62af06cdcf99721929ad0e924a2a4"><td class="memTemplParams" colspan="2">template&lt;typename T , typename <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a> &gt; </td></tr>
+<tr class="memitem:a08f62af06cdcf99721929ad0e924a2a4"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a08f62af06cdcf99721929ad0e924a2a4">tsm::detail::has_guard_v</a> = <a class="el" href="structtsm_1_1detail_1_1has__guard.html">has_guard</a>&lt;T, <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a>&gt;::value</td></tr>
+<tr class="separator:a08f62af06cdcf99721929ad0e924a2a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e1f1a91a4ca35e71fea948992549d0d" id="r_a3e1f1a91a4ca35e71fea948992549d0d"><td class="memTemplParams" colspan="2">template&lt;typename T , typename <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a> &gt; </td></tr>
+<tr class="memitem:a3e1f1a91a4ca35e71fea948992549d0d"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a3e1f1a91a4ca35e71fea948992549d0d">tsm::detail::has_action_v</a> = <a class="el" href="structtsm_1_1detail_1_1has__action.html">has_action</a>&lt;T, <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a>&gt;::value</td></tr>
+<tr class="separator:a3e1f1a91a4ca35e71fea948992549d0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cc9287fe6b7b70af20d6c02ba2b1693" id="r_a3cc9287fe6b7b70af20d6c02ba2b1693"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3cc9287fe6b7b70af20d6c02ba2b1693"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a3cc9287fe6b7b70af20d6c02ba2b1693">tsm::detail::has_transitions_v</a> = <a class="el" href="structtsm_1_1detail_1_1has__transitions.html">has_transitions</a>&lt;T&gt;::value</td></tr>
+<tr class="separator:a3cc9287fe6b7b70af20d6c02ba2b1693"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8ffc88462b3b388a0663ed1f7d1193e" id="r_aa8ffc88462b3b388a0663ed1f7d1193e"><td class="memTemplParams" colspan="2">template&lt;typename State , typename <a class="el" href="structtsm_1_1detail_1_1Event.html">Event</a> , typename Context &gt; </td></tr>
+<tr class="memitem:aa8ffc88462b3b388a0663ed1f7d1193e"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#aa8ffc88462b3b388a0663ed1f7d1193e">tsm::detail::has_handle_method_v</a></td></tr>
+<tr class="separator:aa8ffc88462b3b388a0663ed1f7d1193e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f21378141c5e05ab36ba6d250afedaf" id="r_a0f21378141c5e05ab36ba6d250afedaf"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a0f21378141c5e05ab36ba6d250afedaf"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a0f21378141c5e05ab36ba6d250afedaf">tsm::detail::is_hsm_trait_v</a> = <a class="el" href="structtsm_1_1detail_1_1is__hsm__trait.html">is_hsm_trait</a>&lt;T&gt;::value</td></tr>
+<tr class="separator:a0f21378141c5e05ab36ba6d250afedaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3ae5b8b287e7a316f7168241104ecd" id="r_a1a3ae5b8b287e7a316f7168241104ecd"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a1a3ae5b8b287e7a316f7168241104ecd"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a1a3ae5b8b287e7a316f7168241104ecd">tsm::detail::is_state_trait_v</a></td></tr>
+<tr class="separator:a1a3ae5b8b287e7a316f7168241104ecd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a0390a2874ca090a6c108e786024cf1" id="r_a0a0390a2874ca090a6c108e786024cf1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a0a0390a2874ca090a6c108e786024cf1"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a0a0390a2874ca090a6c108e786024cf1">tsm::detail::is_clocked_hsm_v</a> = <a class="el" href="structtsm_1_1detail_1_1is__clocked__hsm.html">is_clocked_hsm</a>&lt;T&gt;::value</td></tr>
+<tr class="separator:a0a0390a2874ca090a6c108e786024cf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79e7d844ac0ede1ea2d91418a65c934c" id="r_a79e7d844ac0ede1ea2d91418a65c934c"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetsm_1_1detail.html#a79e7d844ac0ede1ea2d91418a65c934c">tsm::detail::MaxEvents</a> = 10</td></tr>
+<tr class="separator:a79e7d844ac0ede1ea2d91418a65c934c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
