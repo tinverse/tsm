@@ -30,6 +30,54 @@ TEST_CASE("SwitchHsm") {
     REQUIRE(std::holds_alternative<SwitchHsmContext::On*>(hsm.current_state_));
 }
 
+struct SwitchHsmContextWithActions {
+    struct Off {};
+    struct On {};
+    struct Toggle {};
+
+    // optional guard or action
+    bool canTurnOn() {
+        // Decide if we can turn on...
+        return true;
+    }
+    void onTurnOn() { on_count_++; }
+
+    // Static wrappers that forward to the instance
+    static bool canTurnOnGuard(SwitchHsmContextWithActions& ctx) {
+        return ctx.canTurnOn();
+    }
+    static void onTurnOnAction(SwitchHsmContextWithActions& ctx) {
+        ctx.onTurnOn();
+    }
+
+    int on_count() const { return on_count_; }
+
+    using transitions =
+      std::tuple<Transition<Off,
+                            Toggle,
+                            On,
+                            &SwitchHsmContextWithActions::onTurnOn,
+                            &SwitchHsmContextWithActions::canTurnOn>,
+                 Transition<On, Toggle, Off>>;
+
+  private:
+    int on_count_{};
+};
+
+using SwitchHsmWithActions = make_hsm_t<SwitchHsmContextWithActions>;
+
+TEST_CASE("SwitchHsmWithActions") {
+    using SwitchHsm = make_hsm_t<SwitchHsmContextWithActions>;
+    SwitchHsm hsm;
+    REQUIRE(std::holds_alternative<SwitchHsmContextWithActions::Off*>(
+      hsm.current_state_));
+    hsm.handle(SwitchHsmContextWithActions::Toggle());
+    REQUIRE(hsm.on_count() == 1);
+    REQUIRE(std::holds_alternative<SwitchHsmContextWithActions::On*>(
+      hsm.current_state_));
+    hsm.handle(SwitchHsmContextWithActions::Toggle());
+}
+
 // Traffic Light HSM
 
 namespace TrafficLight {
@@ -438,7 +486,6 @@ struct LightContext {
         bool guard(LightContext&, ClockTickEvent& t) { return t.ticks_ >= 5; }
         void action(LightContext& l, ClockTickEvent&) {
             l.walk_pressed_ = false;
-            std::cout << "Y2\n";
         }
     };
     using transitions = std::tuple<ClockedTransition<G1, Y1>,

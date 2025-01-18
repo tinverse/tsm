@@ -122,13 +122,15 @@ struct BaseTransition {
 template<typename From,
          typename Event,
          typename To,
-         typename Action = void (*)(),
-         typename Guard = bool (*)()>
+         auto Action = []() {},
+         auto Guard = []() { return true; }>
 struct Transition : BaseTransition<From, Event, To> {
-    using action = Action;
-    using guard = Guard;
-    Action action_{}; // for lambdas
-    Guard guard_{};
+    Transition() = default;
+    ~Transition() = default;
+    using action_t = decltype(Action);
+    using guard_t = decltype(Guard);
+    static constexpr action_t action = Action;
+    static constexpr guard_t guard = Guard;
 };
 
 struct ClockTickEvent {
@@ -137,8 +139,8 @@ struct ClockTickEvent {
 
 template<typename From,
          typename To,
-         typename Guard = bool (*)(void),
-         typename Action = void (*)(void)>
+         auto Action = []() {},
+         auto Guard = []() { return true; }>
 struct ClockedTransition
   : Transition<From, ClockTickEvent, To, Action, Guard> {};
 
@@ -194,8 +196,8 @@ struct is_transition_match : std::false_type {};
 template<typename From,
          typename Event,
          typename To,
-         typename Action,
-         typename Guard>
+         auto Action,
+         auto Guard>
 struct is_transition_match<Transition<From, Event, To, Action, Guard>,
                            From,
                            Event> : std::true_type {};
@@ -479,6 +481,9 @@ struct Hsm : T {
                                                      State*>) {
                 return state->guard();
             }
+        } else if constexpr (std::is_member_function_pointer_v<decltype(Tn::guard)>) {
+            auto& ctx = static_cast<T&>(*this);
+            return std::invoke(Tn::guard, ctx);
         }
         return true;
     }
@@ -502,6 +507,10 @@ struct Hsm : T {
                                                      State*>) {
                 state->action();
             }
+        }
+        else if constexpr (std::is_member_function_pointer_v<decltype(Tn::action)>) {
+            auto& ctx = static_cast<T&>(*this);
+            std::invoke(Tn::action, ctx);
         }
     }
 
@@ -576,15 +585,13 @@ struct wrap_transition {
     using from = typename T::from;
     using event = typename T::event;
     using to = typename T::to;
-    using action = typename T::action;
-    using guard = typename T::guard;
 
     using wrap_from =
       std::conditional_t<is_state_trait_v<from>, make_hsm_t<from>, from>;
     using wrap_to =
       std::conditional_t<is_state_trait_v<to>, make_hsm_t<to>, to>;
 
-    using type = Transition<wrap_from, event, wrap_to, action, guard>;
+    using type = Transition<wrap_from, event, wrap_to, T::action, T::guard>;
 };
 
 template<typename T>
