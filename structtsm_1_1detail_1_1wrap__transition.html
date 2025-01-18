@@ -98,34 +98,14 @@ Public Types</h2></td></tr>
 <tr class="separator:a551a38017ab37336c52c234b7c5be044"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b4f5e12031c0c6c4b05c5905f3fb339" id="r_a1b4f5e12031c0c6c4b05c5905f3fb339"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a1b4f5e12031c0c6c4b05c5905f3fb339">to</a> = typename T::to</td></tr>
 <tr class="separator:a1b4f5e12031c0c6c4b05c5905f3fb339"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6e4c4744b03b39efb77b338d442b092" id="r_aa6e4c4744b03b39efb77b338d442b092"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#aa6e4c4744b03b39efb77b338d442b092">action</a> = typename T::action</td></tr>
-<tr class="separator:aa6e4c4744b03b39efb77b338d442b092"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4459c4a4463489075ebe318a80c94fb" id="r_ad4459c4a4463489075ebe318a80c94fb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#ad4459c4a4463489075ebe318a80c94fb">guard</a> = typename T::guard</td></tr>
-<tr class="separator:ad4459c4a4463489075ebe318a80c94fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ce6219b8488e4f8fa068dd7b5fb9a81" id="r_a1ce6219b8488e4f8fa068dd7b5fb9a81"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a1ce6219b8488e4f8fa068dd7b5fb9a81">wrap_from</a> = std::conditional_t&lt; <a class="el" href="namespacetsm_1_1detail.html#a1a3ae5b8b287e7a316f7168241104ecd">is_state_trait_v</a>&lt; <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a4cd6c3b2ee58a1d1af02b3bd4028cfc8">from</a> &gt;, <a class="el" href="namespacetsm_1_1detail.html#a3cca64f7ed36665dce526969a1d79e75">make_hsm_t</a>&lt; <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a4cd6c3b2ee58a1d1af02b3bd4028cfc8">from</a> &gt;, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a4cd6c3b2ee58a1d1af02b3bd4028cfc8">from</a> &gt;</td></tr>
 <tr class="separator:a1ce6219b8488e4f8fa068dd7b5fb9a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a240309d6a1b687bb84110d8498c1747f" id="r_a240309d6a1b687bb84110d8498c1747f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a240309d6a1b687bb84110d8498c1747f">wrap_to</a> = std::conditional_t&lt; <a class="el" href="namespacetsm_1_1detail.html#a1a3ae5b8b287e7a316f7168241104ecd">is_state_trait_v</a>&lt; <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a1b4f5e12031c0c6c4b05c5905f3fb339">to</a> &gt;, <a class="el" href="namespacetsm_1_1detail.html#a3cca64f7ed36665dce526969a1d79e75">make_hsm_t</a>&lt; <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a1b4f5e12031c0c6c4b05c5905f3fb339">to</a> &gt;, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a1b4f5e12031c0c6c4b05c5905f3fb339">to</a> &gt;</td></tr>
 <tr class="separator:a240309d6a1b687bb84110d8498c1747f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbbe3ea1f0b2abfbd373ee784e298f89" id="r_acbbe3ea1f0b2abfbd373ee784e298f89"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#acbbe3ea1f0b2abfbd373ee784e298f89">type</a> = <a class="el" href="structtsm_1_1detail_1_1Transition.html">Transition</a>&lt; <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a1ce6219b8488e4f8fa068dd7b5fb9a81">wrap_from</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a551a38017ab37336c52c234b7c5be044">event</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a240309d6a1b687bb84110d8498c1747f">wrap_to</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#aa6e4c4744b03b39efb77b338d442b092">action</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#ad4459c4a4463489075ebe318a80c94fb">guard</a> &gt;</td></tr>
-<tr class="separator:acbbe3ea1f0b2abfbd373ee784e298f89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39ed288781aab2aeec5e9aefd931cc6c" id="r_a39ed288781aab2aeec5e9aefd931cc6c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a39ed288781aab2aeec5e9aefd931cc6c">type</a> = <a class="el" href="structtsm_1_1detail_1_1Transition.html">Transition</a>&lt; <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a1ce6219b8488e4f8fa068dd7b5fb9a81">wrap_from</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a551a38017ab37336c52c234b7c5be044">event</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a240309d6a1b687bb84110d8498c1747f">wrap_to</a>, T::action, T::guard &gt;</td></tr>
+<tr class="separator:a39ed288781aab2aeec5e9aefd931cc6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="aa6e4c4744b03b39efb77b338d442b092" name="aa6e4c4744b03b39efb77b338d442b092"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa6e4c4744b03b39efb77b338d442b092">&#9670;&#160;</a></span>action</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html">tsm::detail::wrap_transition</a>&lt; T &gt;::action =  typename T::action</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a551a38017ab37336c52c234b7c5be044" name="a551a38017ab37336c52c234b7c5be044"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a551a38017ab37336c52c234b7c5be044">&#9670;&#160;</a></span>event</h2>
 
@@ -158,22 +138,6 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ad4459c4a4463489075ebe318a80c94fb" name="ad4459c4a4463489075ebe318a80c94fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad4459c4a4463489075ebe318a80c94fb">&#9670;&#160;</a></span>guard</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html">tsm::detail::wrap_transition</a>&lt; T &gt;::guard =  typename T::guard</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a1b4f5e12031c0c6c4b05c5905f3fb339" name="a1b4f5e12031c0c6c4b05c5905f3fb339"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1b4f5e12031c0c6c4b05c5905f3fb339">&#9670;&#160;</a></span>to</h2>
 
@@ -190,8 +154,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="acbbe3ea1f0b2abfbd373ee784e298f89" name="acbbe3ea1f0b2abfbd373ee784e298f89"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acbbe3ea1f0b2abfbd373ee784e298f89">&#9670;&#160;</a></span>type</h2>
+<a id="a39ed288781aab2aeec5e9aefd931cc6c" name="a39ed288781aab2aeec5e9aefd931cc6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39ed288781aab2aeec5e9aefd931cc6c">&#9670;&#160;</a></span>type</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -199,7 +163,7 @@ template&lt;typename T &gt; </div>
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html">tsm::detail::wrap_transition</a>&lt; T &gt;::type =  <a class="el" href="structtsm_1_1detail_1_1Transition.html">Transition</a>&lt;<a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a1ce6219b8488e4f8fa068dd7b5fb9a81">wrap_from</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a551a38017ab37336c52c234b7c5be044">event</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a240309d6a1b687bb84110d8498c1747f">wrap_to</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#aa6e4c4744b03b39efb77b338d442b092">action</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#ad4459c4a4463489075ebe318a80c94fb">guard</a>&gt;</td>
+          <td class="memname">using <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html">tsm::detail::wrap_transition</a>&lt; T &gt;::type =  <a class="el" href="structtsm_1_1detail_1_1Transition.html">Transition</a>&lt;<a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a1ce6219b8488e4f8fa068dd7b5fb9a81">wrap_from</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a551a38017ab37336c52c234b7c5be044">event</a>, <a class="el" href="structtsm_1_1detail_1_1wrap__transition.html#a240309d6a1b687bb84110d8498c1747f">wrap_to</a>, T::action, T::guard&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">

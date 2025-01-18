@@ -1,3 +1,11 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$structTrafficLight_1_1LightContext_1_1G2.html" title=" " alt="" coords="5,5,216,31"/>
+<area shape="rect" id="Node000000" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1BaseHandle.html" title=" " alt="" coords="5,101,236,141"/>
+<area shape="rect" id="Node000001" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1G1.html" title=" " alt="" coords="284,5,515,45"/>
+<area shape="poly" id="edge36_Node000000_Node000001" title=" " alt="" coords="181,94,283,55,321,43,323,48,285,60,183,99"/>
+<area shape="rect" id="Node000002" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1G2.html" title=" " alt="" coords="284,69,515,109"/>
+<area shape="poly" id="edge37_Node000000_Node000002" title=" " alt="" coords="249,104,284,100,284,105,250,109"/>
+<area shape="rect" id="Node000003" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1Y1.html" title=" " alt="" coords="284,133,515,173"/>
+<area shape="poly" id="edge38_Node000000_Node000003" title=" " alt="" coords="250,133,284,137,284,143,249,139"/>
+<area shape="rect" id="Node000004" href="$structTrafficLight_1_1EmergencyOverrideContext_1_1Y2.html" title=" " alt="" coords="284,197,515,237"/>
+<area shape="poly" id="edge39_Node000000_Node000004" title=" " alt="" coords="183,144,285,183,323,195,321,200,283,188,181,149"/>
 </map>
